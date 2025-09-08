@@ -1,0 +1,66 @@
+.slider-destacados {
+  padding: 3rem 0 2rem 0;
+  background: none;
+  margin-bottom: 2.3rem;
+}
+.slider-title {
+  text-align: center;
+  color: #d63384;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  letter-spacing: 1px;
+}
+.slick-slide {
+  display: flex;
+  justify-content: center;
+  padding: 0 0.4rem;
+}
+.slick-dots {
+    height: 30px;
+    bottom: -30px;
+}
+@media (max-width: 700px) {
+  .slider-destacados {
+    padding: 2rem 0 1rem 0;
+  }
+}
+
+/* Menos aire alrededor */
+.slider-destacados { padding: 1.4rem 0 1.1rem; margin-bottom: 1.2rem; }
+.slider-title { margin-bottom: 1.1rem; }
+
+/* Gutter más chico entre slides */
+.slick-list { margin: 0 -8px; }      /* controla margen “global” */
+.slick-slide > div { padding: 0 8px; } /* gutter por item */
+
+/* Evitar centrado extra que separaba de más */
+.slick-slide { display: block; }      /* quita el flex+center anterior */
+
+/* recorta cualquier desborde del carrusel */
+.slider-destacados { overflow: hidden;}
+
+/* asegura que slick no “estire” el ancho */
+.slider-destacados .slick-track { display: flex !important; }
+.slider-destacados .slick-slide { float: none; } /* opcional, a veces ayuda */
+
+/* gutters compactos sin desbordar */
+.slick-list { margin: 0 -8px; }
+.slick-slide > div { padding: 0 8px; }
+
+@media (max-width: 480px){
+  .wish-btn{
+    position: absolute;
+    top: auto !important;
+    bottom: 220px !important;
+  }
+}
+
+/* ====== 👇 NUEVO: 1 solo producto (sin duplicados) ====== */
+.slider-destacados.is-single .single-slide{
+  display: flex;
+  justify-content: center;
+}
+.slider-destacados.is-single .single-slide > *{
+  width: min(340px, 92vw);   /* ancho cómodo y centrado */
+}

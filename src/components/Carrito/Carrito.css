@@ -1,0 +1,919 @@
+/* src/components/Carrito/Carrito.css */
+:root{
+  --brand:#ff2ea6;
+  --brand-600:#e11a8a;
+  --brand-50:#fff0f8;
+  --ink:#0f172a;
+  --muted:#6b7280;
+}
+
+/* --- Anti overflow global en móviles --- */
+html, body{ max-width:100%; overflow-x:hidden; }
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+/* ===== Shell del carrito ===== */
+.carrito-container {
+  background: #fff;
+  padding: clamp(1rem, 4vw, 2.5rem) clamp(0.8rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem);
+  max-width: 1200px;
+  margin: clamp(1rem, 4vw, 3rem) auto 2rem auto;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(255,46,166,0.10);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* guard-rail */
+}
+
+.carrito-title {
+  color: var(--brand);
+  text-align: center;
+  margin-bottom: 1.2rem;
+  letter-spacing: .3px;
+  font-weight: 900;
+  font-size: clamp(1.3rem, 4.5vw, 1.9rem);
+}
+
+.carrito-flex {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: clamp(1rem, 3vw, 2.2rem);
+  align-items: start;
+  min-width: 0; /* evita desbordes dentro del grid */
+}
+
+@media (max-width:1024px){
+  .carrito-flex{ grid-template-columns: 1fr; }
+}
+
+/* ===== Tabla estilizada ===== */
+.carrito-table-scroll{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carrito-table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0 10px;
+  min-width: 720px; /* la tabla scrollea dentro de su contenedor */
+}
+
+@media (max-width:480px){
+  .carrito-table{ min-width: 560px; } /* un poco más amigable en phones */
+}
+
+.carrito-table thead th{
+  text-align:left;
+  font-weight:800;
+  color:var(--brand);
+  background:var(--brand-50);
+  padding:12px 14px;
+  border-top-left-radius:14px;
+  border-top-right-radius:14px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.carrito-table tbody tr{ background:#fff; box-shadow:0 10px 22px rgba(255,46,166,.08); }
+.carrito-table tbody td{ padding:14px; border-bottom:1px solid #ffe0f0; }
+.carrito-table tbody tr:first-child td{ border-top-left-radius:14px; border-top-right-radius:14px; }
+.carrito-table tbody tr:last-child td{ border-bottom-left-radius:14px; border-bottom-right-radius:14px; border-bottom:none; }
+
+.cart-thumb{
+  width:64px; height:64px; border-radius:12px; object-fit:cover; box-shadow:0 1px 6px rgba(255,46,166,.15);
+}
+
+.qty-btn-group{ display:flex; align-items:center; gap:10px; }
+.qty-btn{
+  background:var(--brand-50);
+  border:none; border-radius:10px; color:var(--brand);
+  font-size:1rem; padding:10px 12px;
+  cursor:pointer; transition:background .2s, color .18s, transform .14s;
+  box-shadow:0 1px 4px rgba(255,46,166,.10);
+  min-width:44px; min-height:44px;
+}
+.qty-btn:disabled{ opacity:.6; cursor:not-allowed; }
+.qty-btn:not(:disabled):hover{ background:var(--brand); color:#fff; transform:scale(1.06); }
+
+.cantidad-span{ display:inline-block; min-width:30px; font-weight:800; color:var(--brand); text-align:center; }
+
+.cart-remove-btn, .cart-clear-btn{
+  background:var(--brand); color:#fff; border:none; border-radius:12px;
+  padding:.65rem 1rem; font-weight:800; cursor:pointer;
+  transition:background .2s, transform .15s;
+  min-height:44px;
+  position: relative;
+  left: 1.8%;
+}
+.cart-remove-btn:hover, .cart-clear-btn:hover{ background:var(--brand-600); transform:translateY(-1px); }
+
+.carrito-total{ text-align:right; margin:.5rem 0 1.5rem; }
+.total-highlight{
+  color:#fff; background:var(--brand); padding:4px 14px; border-radius:12px;
+  font-size:1.1em; font-weight:900; margin-left:7px; letter-spacing:.2px;
+}
+
+/* =======================================================================
+   CHECKOUT FORM (clases del JSX)
+   ======================================================================= */
+.checkout-form,
+.checkout-form.pro{
+  background:#fff9fd; border:1px solid #ffe0f0; border-radius:18px;
+  padding:1.6rem 1.7rem; box-shadow:0 12px 28px rgba(255,46,166,.10);
+  width:100%;
+  max-width:100%;
+}
+
+
+.checkout-form h3{ color:var(--brand); margin:0 0 .9rem 0; font-weight:900; }
+
+/* grupos e labels */
+.checkout-form .form-group{
+  margin-bottom:.9rem; text-align:left; min-width:0; /* clave para grid */
+}
+.checkout-form label{
+  font-weight:700; color:var(--brand); margin-bottom:.35rem; display:block; letter-spacing:.1px;
+}
+
+/* Controles */
+.checkout-form .control{
+  height:48px; padding:0 .95rem; width:100%; border-radius:12px;
+  border:2px solid #f4c5df; background:#fff; font-size:16px; line-height:1;
+  outline:none; transition:border-color .15s, box-shadow .15s, background .15s;
+  -webkit-appearance:none; appearance:none; min-width:0; /* evita overflow */
+}
+.checkout-form .control:focus{ border-color:var(--brand); box-shadow:0 0 0 4px rgba(255,46,166,.12); }
+
+/* File input */
+.checkout-form .control-file{
+  display:block; width:100%; height:48px; padding:.5rem .9rem;
+  border-radius:12px; border:2px dashed #fecde9; background:#fff; font-size:16px;
+}
+
+.checkout-form .control-file::-webkit-file-upload-button{
+  margin-right:12px;
+  border:0;
+  background:var(--brand);
+  color:#fff;
+  padding:.55rem 1rem;
+  border-radius:10px;
+  font-weight:10;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(255,46,166,.20);
+  position: relative;
+  top: -10%;
+}
+
+/* Grids del formulario (solo dentro del checkout) */
+.checkout-form .form-grid{ display:grid; gap:1rem 1.1rem; min-width:0; }
+.checkout-form .grid-2{ grid-template-columns:1fr 1fr; }
+.checkout-form .grid-3{ grid-template-columns:1fr 1fr 1fr; }
+.checkout-form .grid-span-2{ grid-column:span 2; }
+.checkout-form .grid-span-3{ grid-column:span 3; }
+
+/* Opciones de pago */
+.checkout-form .pay-methods{
+  display:grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:.9rem; margin-top:.25rem;
+}
+.checkout-form .pay-card{
+  position:relative; display:flex; flex-direction:column; gap:.25rem; min-height:120px;
+  padding:1rem 1rem .9rem; border:2px solid #f9cbe4; border-radius:16px; background:#fff;
+  box-shadow:0 8px 18px rgba(255,46,166,.06); cursor:pointer;
+  transition: box-shadow .2s, transform .15s, border-color .2s, background .2s; user-select:none;
+}
+.checkout-form .pay-card input{ display:none; }
+.checkout-form .pay-icon{ width:36px; height:36px; color:#b51775; margin-bottom:.25rem; }
+.checkout-form .pay-title{ font-weight:800; color:#b51775; letter-spacing:.2px; }
+.checkout-form .pay-sub{ font-size:.92rem; color:#7d4d85; }
+.checkout-form .pay-card:hover{ border-color: var(--brand); background: linear-gradient(180deg,#fff 0%, #fff6fb 100%); transform: translateY(-1px); }
+.checkout-form .pay-card.active{ border-color:#ff8fc9; background: linear-gradient(180deg,#fff 0%, #fff0f8 100%); box-shadow:0 10px 24px rgba(255,46,166,.12); }
+.checkout-form .pay-card.active::after{
+  content:"✓"; position:absolute; top:10px; right:10px; width:22px; height:22px; display:inline-flex;
+  align-items:center; justify-content:center; border-radius:999px; background:var(--brand); color:#fff;
+  font-weight:900; font-size:.85rem; box-shadow:0 2px 8px rgba(255,46,166,.28);
+}
+.checkout-form .pay-card.disabled{ opacity:.55; cursor:not-allowed; filter:grayscale(.05); pointer-events:none; }
+.checkout-form .pay-card.disabled:hover{ transform:none; border-color:#f9cbe4; }
+.checkout-form .pay-badge{ margin-top:.25rem; display:inline-block; padding:.25rem .55rem; font-size:.78rem; font-weight:800; color:#7d4d85; background:#fff3fa; border:1px solid #ffd3ea; border-radius:999px; }
+
+.checkout-form .pay-badge1{ margin-top:.25rem; display:inline-block; padding:.25rem .55rem; font-size:.78rem; font-weight:800; color:#7d4d85; background:#fff3fa; border:1px solid #ffd3ea; border-radius:999px; }
+
+.checkout-form .pay-badge2{ margin-top:.25rem; display:inline-block; padding:.25rem .55rem; font-size:.78rem; font-weight:00; color:#7d4d85; background:#fff3fa; border:1px solid #ffd3ea; border-radius:999px; }
+
+/* Envío */
+.checkout-form .shipping-options{
+  display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+}
+.checkout-form .ship-card{
+  display:flex; flex-direction:column; justify-content:center; gap:.25rem;
+  min-height:96px; border:2px solid #f9cbe4; border-radius:14px; padding:1rem;
+  background:#fff; box-shadow:0 8px 18px rgba(255,46,166,.06);
+  cursor:pointer; transition:box-shadow .2s, transform .15s, border-color .2s, background .2s;
+}
+.checkout-form .ship-card input{ display:none; }
+.checkout-form .ship-title{ font-weight:800; color:#b51775; }
+.checkout-form .ship-text{ font-size:.92rem; color:#7d4d85; }
+.checkout-form .ship-card:hover{ transform: translateY(-1px); }
+.checkout-form .ship-card.active{ border-color:#ff8fc9; background:linear-gradient(180deg,#fff 0%, #fff6fb 100%); box-shadow:0 10px 24px rgba(255,46,166,.12); transform:translateY(-1px); }
+
+/* Dirección */
+.checkout-form .shipping-form-grid{
+  display:grid; grid-template-columns:2fr 1fr 1fr; gap:1rem 1.1rem; margin-top:.2rem; min-width:0;
+}
+.checkout-form .shipping-form-grid.compact{ grid-template-columns:2fr 1fr 1fr; }
+.checkout-form .shipping-form-grid .form-group{ margin-bottom:0; min-width:0; }
+
+/* Alias */
+.checkout-form .alias-display{
+  display:flex; align-items:center; gap:.8rem; border:2px dashed #ffb3da; background:#fff;
+  border-radius:14px; padding:.85rem 1rem; cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.checkout-form .alias-display:hover{ border-color:var(--brand); box-shadow:0 0 0 4px rgba(255,46,166,.10); }
+.checkout-form .alias-text{
+  font-weight:900; font-size: clamp(1.05rem, 3.5vw, 1.3rem);
+  letter-spacing:.6px; color:#b51775; word-break: break-word;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.checkout-form .alias-hint{ display:block; margin-top:.35rem; color:#7d4d85; font-size:.9rem; }
+.checkout-form .copy-btn{ border:none; background:var(--brand); color:#fff; font-weight:800; border-radius:12px; padding:.65rem .9rem; cursor:pointer; min-height:44px; }
+.checkout-form .copy-btn:hover{ background:var(--brand-600); }
+
+/* Resumen */
+.checkout-form .summary-card{ background:#fff; border:1px solid #ffe0f0; border-radius:14px; padding:1rem 1.2rem; margin:.6rem 0 1.1rem; box-shadow:0 6px 20px rgba(255,46,166,.07); }
+.checkout-form .sum-row{ display:flex; align-items:center; justify-content:space-between; font-size:1.05rem; font-weight:800; color:var(--ink); }
+
+/* CTA */
+.checkout-form .checkout-btn{
+  background:var(--brand); color:#fff; border:none; border-radius:999px;
+  padding:1rem 2.2rem; font-weight:900; margin-top:.3rem; width:100%; font-size:1.06rem;
+  cursor:pointer; transition:background .2s, transform .15s, box-shadow .2s;
+  box-shadow:0 10px 28px rgba(255,46,166,.20); min-height:48px;
+}
+.checkout-form .checkout-btn:hover{ background:var(--brand-600); transform:translateY(-1px); }
+.checkout-form .mensaje-exito{ margin-top:1rem; background:#eafff1; color:#175b31; padding:.85rem 1rem; border-radius:12px; text-align:center; font-weight:700; }
+
+/* ===== Responsive del checkout ===== */
+@media (max-width:1024px){
+  .checkout-form .pay-methods{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width:768px){
+  .checkout-form,
+  .checkout-form.pro{ padding:1.05rem .95rem; border-radius:16px; }
+  .checkout-form h3{ text-align:center; font-size:1.05rem; }
+
+  /* grids a 1 columna */
+  .checkout-form .grid-2,
+  .checkout-form .grid-3{ grid-template-columns:1fr; }
+  .checkout-form .grid-span-2,
+  .checkout-form .grid-span-3{ grid-column:span 1; }
+  .checkout-form .form-grid{ gap:.8rem; }
+
+  /* envío apilado */
+  .checkout-form .shipping-options{ grid-template-columns:1fr; }
+
+  /* dirección a 1 columna */
+  .checkout-form .shipping-form-grid,
+  .checkout-form .shipping-form-grid.compact{ grid-template-columns:1fr; }
+
+  /* tarjetas de pago (2 col si entra) */
+  .checkout-form .pay-methods{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+
+/* phones: forzamos 1 columna en tarjetas de pago */
+@media (max-width:540px){
+  .checkout-form .pay-methods{ grid-template-columns:1fr; }
+}
+
+@media (max-width:420px){
+  .checkout-form .alias-display{ flex-direction:column; align-items:stretch; gap:.6rem; }
+  .checkout-form .copy-btn{ width:100%; }
+  .checkout-form .control,
+  .checkout-form .control-file{ height:50px; }
+  .checkout-form .summary-card{ padding:.9rem 1rem; }
+  .checkout-form .checkout-btn{ font-size:1rem; padding:.9rem 1.1rem; }
+}
+
+/* ======================================================================= */
+/* Carrito vacío + botón */
+.carrito-vacio h2{ display:flex; justify-content:center; text-align:center; }
+:root{ --brand:#ff2ea6; --brand-600:#e11a8a; }
+
+.volver-inicio-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.60rem 1.10rem; font-size:.95rem; font-weight:700; color:#fff;
+  background:var(--brand); border:none; border-radius:999px; width:auto !important;
+  max-width:max-content; box-shadow:0 4px 10px rgba(255,46,166,.25);
+  transition: transform .15s, box-shadow .2s, background .2s;
+  min-height:44px;
+  margin-inline:auto;
+  position: static;
+}
+.volver-inicio-btn:hover{ background: var(--brand-600); transform: translateY(-1px); box-shadow: 0 6px 14px rgba(255,46,166,.30); }
+.volver-inicio-btn:active{ transform: scale(.98); }
+
+/* (Opcional) estilos genéricos de métodos de pago si los usás fuera del checkout */
+.pay-methods{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+  gap:.9rem; margin-top:.25rem;
+}
+.pay-card{
+  position:relative; display:flex; flex-direction:column; gap:.25rem; min-height:120px;
+  padding:1rem 1rem .9rem; border:2px solid #f9cbe4; border-radius:16px; background:#fff;
+  box-shadow:0 8px 18px rgba(255,46,166,.06); cursor:pointer;
+  transition: box-shadow .2s, transform .15s, border-color .2s, background .2s; user-select:none;
+}
+.pay-card input{ display:none; }
+.pay-card .pay-icon{ width:36px; height:36px; color:#b51775; margin-bottom:.25rem; }
+.pay-card .pay-title{ font-weight:800; color:#b51775; letter-spacing:.2px; }
+.pay-card .pay-sub{ font-size:.92rem; color:#7d4d85; }
+.pay-card:hover{ border-color: var(--brand); background: linear-gradient(180deg,#fff 0%, #fff6fb 100%); transform: translateY(-1px); }
+.pay-card.active{ border-color:#ff8fc9; background: linear-gradient(180deg,#fff 0%, #fff0f8 100%); box-shadow:0 10px 24px rgba(255,46,166,.12); }
+.pay-card.active::after{
+  content:"✓"; position:absolute; top:10px; right:10px; width:22px; height:22px; display:inline-flex;
+  align-items:center; justify-content:center; border-radius:999px; background:var(--brand); color:#fff;
+  font-weight:900; font-size:.85rem; box-shadow:0 2px 8px rgba(255,46,166,.28);
+}
+.pay-card.disabled{ opacity:.55; cursor:not-allowed; filter:grayscale(.05); pointer-events:none; }
+.pay-card.disabled:hover{ transform:none; border-color:#f9cbe4; }
+.pay-badge{ margin-top:.25rem; display:inline-block; padding:.25rem .55rem; font-size:.78rem; font-weight:800; color:#7d4d85; background:#fff3fa; border:1px solid #ffd3ea; border-radius:999px; }
+
+/* Breakpoints generales */
+@media (max-width:480px){
+  .carrito-container{ border-radius:16px; }
+  .volver-inicio-btn { display: flex; }
+  /* ==== Pega SOLO este bloque dentro de tu media query móvil (ej. @media (max-width:768px){ … } ) ==== */
+
+/* ---------- CHECKOUT (form) ---------- */
+.checkout-form,
+.checkout-form.pro{
+  padding: 1.05rem .95rem;
+  border-radius: 16px;
+  max-width: 100%;
+}
+.checkout-form h3{ text-align:center; font-size:1.05rem; }
+
+.checkout-form .grid-2,
+.checkout-form .grid-3{ grid-template-columns:1fr; }
+.checkout-form .grid-span-2,
+.checkout-form .grid-span-3{ grid-column:span 1; }
+.checkout-form .form-grid{ gap:.8rem; min-width:0; }
+
+.checkout-form .shipping-options{ grid-template-columns:1fr; }
+.checkout-form .shipping-form-grid,
+.checkout-form .shipping-form-grid.compact{ grid-template-columns:1fr; min-width:0; }
+
+.checkout-form .pay-methods{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+.checkout-form .control,
+.checkout-form .control-file{
+  min-width:0;
+  height:50px;            /* mejor tacto en phones */
+}
+
+/* teléfonos chicos */
+@media (max-width:540px){
+  .checkout-form .pay-methods{ grid-template-columns:1fr; }
+  .checkout-form .alias-display{ flex-direction:column; align-items:stretch; gap:.6rem; }
+  .checkout-form .copy-btn{ width:100%; }
+}
+
+/* ---------- CARRITO (tabla) ---------- */
+/* Convierte la tabla en “cards” para evitar scroll horizontal en celular */
+.carrito-table-scroll{ overflow: visible; }
+
+.carrito-table{
+  width: 100%;
+  min-width: 0;           /* anula el min-width grande */
+  border-spacing: 0;      /* sin espacios entre celdas */
+}
+.carrito-table thead,
+.carrito-table tfoot{ display: none; }
+
+/* apilamos filas como tarjetas */
+.carrito-table tbody{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* cada fila vira card con grid */
+.carrito-table tbody tr{
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  grid-template-areas:
+    "thumb name"
+    "thumb price"
+    "thumb qty"
+    "thumb subtotal"
+    "thumb remove";
+  gap: 8px 12px;
+  padding: 12px;
+  border: 1px solid #ffe0f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(255,46,166,.06);
+  background: #fff;
+}
+
+.carrito-table tbody td{
+  padding: 0;
+  border: 0;
+}
+
+/* mapeo por posición de columnas (ajusta si tu orden es distinto) */
+.carrito-table tbody td:nth-child(1){ grid-area: thumb; align-self: start; }
+.carrito-table tbody td:nth-child(2){ grid-area: name; font-weight:800; color: var(--ink); }
+.carrito-table tbody td:nth-child(3){ grid-area: price; }
+.carrito-table tbody td:nth-child(4){ grid-area: qty; }
+.carrito-table tbody td:nth-child(5){ grid-area: subtotal; }
+.carrito-table tbody td:nth-child(6){ grid-area: remove; justify-self: end; }
+
+/* etiquetas visibles para entender cada dato */
+.carrito-table tbody td:nth-child(3)::before{
+  content: "Precio";
+  display: block;
+  font-size: .85rem;
+  color: #7d4d85;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.carrito-table tbody td:nth-child(4)::before{
+  content: "Cantidad";
+  display: block;
+  font-size: .85rem;
+  color: #7d4d85;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.carrito-table tbody td:nth-child(5)::before{
+  content: "Subtotal";
+  display: block;
+  font-size: .85rem;
+  color: #7d4d85;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* tamaños más compactos */
+.cart-thumb{ width:60px; height:60px; border-radius:12px; }
+.qty-btn-group{ gap: 6px; }
+.qty-btn{ min-width:40px; min-height:40px; padding:8px 10px; }
+.cart-remove-btn{ padding:.5rem .85rem; border-radius:10px; }
+
+/* si tu tabla no tiene 6 columnas, estos sobran y no rompen nada */
+
+/* Estiliza el botón nativo del input file dentro del checkout */
+.checkout-form .control-file{
+  display:block;
+  width:100%;
+  height:auto;
+  padding:.6rem .8rem;              /* que no quede pegado al borde punteado */
+  border:2px dashed #fecde9;
+  border-radius:12px;
+  background:#fff;
+  font-size:16px;                   /* evita zoom en iOS */
+  color:#7d4d85;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.checkout-form .control-file:focus{
+  outline:none;
+  border-color:var(--brand);
+  box-shadow:0 0 0 4px rgba(255,46,166,.12);
+}
+
+/* Modern browsers */
+.checkout-form .control-file::file-selector-button{
+  margin-right:12px;
+  border:0;
+  background:var(--brand);
+  color:#fff;
+  padding:.55rem 1rem;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(255,46,166,.20);
+}
+.checkout-form .control-file:hover::file-selector-button{ background:var(--brand-600); }
+
+/* WebKit (Chrome/Safari) legacy */
+.checkout-form .control-file::-webkit-file-upload-button{
+  margin-right:12px;
+  border:0;
+  background:var(--brand);
+  color:#fff;
+  padding:.55rem 1rem;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(255,46,166,.20);
+}
+
+}
+@media (min-width:481px) and (max-width:768px){
+  .carrito-container{ padding: 1.2rem; }
+}
+@media (min-width:769px) and (max-width:1024px){
+  .carrito-container{ padding: 1.6rem; }
+}
+@media (min-width:1025px) and (max-width:1440px){
+  .carrito-container{ padding: 2rem; }
+}
+@media (min-width:1441px){
+  .carrito-container{ max-width: 1400px; }
+}
+
+.checkout-form,
+  .checkout-form.pro{ padding:1.05rem .95rem; border-radius:16px; }
+  .checkout-form h3{ text-align:center; font-size:1.05rem; }
+
+  /* grids a 1 columna */
+  .checkout-form .grid-2,
+  .checkout-form .grid-3{ grid-template-columns:1fr; }
+  .checkout-form .grid-span-2,
+  .checkout-form .grid-span-3{ grid-column:span 1; }
+  .checkout-form .form-grid{ gap:.8rem; }
+
+  /* envío apilado y dirección 1 col */
+  .checkout-form .shipping-options{ grid-template-columns:1fr; }
+  .checkout-form .shipping-form-grid{ grid-template-columns:1fr; }
+
+  /* tarjetas de pago 2 col */
+  .checkout-form .pay-methods{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+
+  /* 3 columnas: Calle (2), Número (1), Piso (1)  →  siguiente fila: Ciudad, Provincia, CP */
+  .checkout-form .shipping-form-grid{
+    grid-template-columns: 2fr 1fr 1fr;
+    column-gap: 14px;
+    row-gap: 12px;
+    align-items: end;           /* alinea los controles en la misma línea */
+    min-width: 0;
+  }
+  .checkout-form .shipping-form-grid.compact{
+    grid-template-columns: 2fr 1fr 1fr; /* mantiene el mismo layout */
+  }
+  .checkout-form .shipping-form-grid .grid-span-2{
+    grid-column: 1 / span 2;    /* “Calle” ocupa 2 columnas */
+  }
+  .checkout-form .shipping-form-grid .form-group{
+    margin: 0;                  /* quita saltos verticales */
+    min-width: 0;
+  }
+
+  /* Altura homogénea y padding consistente para inputs y selects */
+  .checkout-form .control{
+    height: 46px;
+    padding: 0 .95rem;
+  }
+  .checkout-form select.control{
+    height: 46px;
+    padding-right: 2.2rem;
+    -webkit-appearance: none;
+            appearance: none;
+  }
+  .checkout-form select.control:disabled{
+    opacity: .85;
+    background: #fafafa;
+    cursor: not-allowed;
+  }
+
+  .checkout-form label{
+    margin-bottom: .30rem;      /* misma separación label/campo */
+  }
+
+  .pay-sub{
+    display: flex;
+    justify-content: center;
+  }
+
+ 
+  .pay-title{
+    width: 100px;
+  }
+
+  .pay-title-1{
+    width: 200px;
+    position: relative;
+
+  }
+
+    .pay-title-2{
+    width: 200px;
+    position: relative;
+    left: 22% !important;
+  }  
+
+  .volver-inicio-btn{
+    display: flex;
+  }
+
+/*Telefono grande*/
+@media (min-width: 380px) and (max-width: 431px){
+
+  .pay-title{
+    position: relative;
+    left: 10% !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: 12% !important;
+  }
+
+  .pay-badge1{
+    position: relative;
+    left: 10% !important;
+    width: 110px;
+  }
+
+  .pay-badge2{
+    position: relative;
+    left: 10% !important;
+    width: 110px;
+  }
+
+  div .pay-title-2{
+    position: relative;
+    left: 30% !important;
+  }
+}
+ /*Tablet */
+@media (min-width: 540px) and (max-width: 769px) {
+  .carrito-table {
+    position: relative;
+    left: -0.05% !important;
+  }
+
+  .carrito-total {
+    position: relative;
+    left: -2.5%;
+  }
+
+  .checkout-form.pro{
+    position: relative;
+    left: -1.5%;
+  }
+
+  .volver-inicio-btn{
+    display: flex;
+  }
+
+  .pay-sub{
+    position: relative;
+    bottom: 21% !important;
+  }
+
+  .pay-title{
+    position: relative;
+    left: 32% !important;
+    bottom: 23% !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: 32% !important;
+    bottom: 17% !important;
+  }
+
+  .pay-badge1{
+    border: solid;
+    width: 110px;
+    position: relative;
+    left: 32% !important;
+    bottom: 17% !important;
+  }
+
+  .pay-title-2{
+    position: relative;
+    left: 40% !important;
+    bottom: 21% !important;
+  }
+
+  .pay-badge2{
+    position: relative;
+    left: 31% !important;
+    width: 110px;
+    bottom: 20% !important;
+  }
+}
+
+@media (min-width: 980px) and (max-width: 1281px){
+  .pay-title{
+    position: relative;
+    left: -9% !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: -7% !important;
+  }
+
+  .pay-badge1{
+    position: relative;
+    left: -7% !important;
+    width: 110px;
+  }
+
+  .pay-title-2{
+    position: relative;
+    bottom: 8% !important;
+  }
+  
+  .pay-badge2{
+    width: 110px;
+    position: relative;
+    left: -8% !important;
+    bottom: 8% !important;
+  }
+}
+
+
+/*Escritorio 1*/
+@media (min-width: 1300px) and (max-width: 1441px) {
+    
+.checkout-form,
+  .checkout-form.pro{ padding:1.05rem .95rem; border-radius:16px; }
+  .checkout-form h3{ text-align:center; font-size:1.05rem; }
+
+  /* grids a 1 columna */
+  .checkout-form .grid-2,
+  .checkout-form .grid-3{ grid-template-columns:1fr; }
+  .checkout-form .grid-span-2,
+  .checkout-form .grid-span-3{ grid-column:span 1; }
+  .checkout-form .form-grid{ gap:.8rem; }
+
+  /* envío apilado y dirección 1 col */
+  .checkout-form .shipping-options{ grid-template-columns:1fr; }
+  .checkout-form .shipping-form-grid{ grid-template-columns:1fr; }
+
+  /* tarjetas de pago 2 col */
+  .checkout-form .pay-methods{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+
+  /* 3 columnas: Calle (2), Número (1), Piso (1)  →  siguiente fila: Ciudad, Provincia, CP */
+  .checkout-form .shipping-form-grid{
+    grid-template-columns: 2fr 1fr 1fr;
+    column-gap: 14px;
+    row-gap: 12px;
+    align-items: end;           /* alinea los controles en la misma línea */
+    min-width: 0;
+  }
+  .checkout-form .shipping-form-grid.compact{
+    grid-template-columns: 2fr 1fr 1fr; /* mantiene el mismo layout */
+  }
+  .checkout-form .shipping-form-grid .grid-span-2{
+    grid-column: 1 / span 2;    /* “Calle” ocupa 2 columnas */
+  }
+  .checkout-form .shipping-form-grid .form-group{
+    margin: 0;                  /* quita saltos verticales */
+    min-width: 0;
+  }
+
+  /* Altura homogénea y padding consistente para inputs y selects */
+  .checkout-form .control{
+    height: 46px;
+    padding: 0 .95rem;
+  }
+  .checkout-form select.control{
+    height: 46px;
+    padding-right: 2.2rem;
+    -webkit-appearance: none;
+            appearance: none;
+  }
+  .checkout-form select.control:disabled{
+    opacity: .85;
+    background: #fafafa;
+    cursor: not-allowed;
+  }
+
+  .checkout-form label{
+    margin-bottom: .30rem;      /* misma separación label/campo */
+  }
+
+  .pay-title {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    left: -2% !important;
+  }
+
+  .pay-sub{
+    display: flex;
+    justify-content: center;
+  }
+
+  .pay-badge{
+    position: relative;
+    left: -7% !important;
+    width: 110px !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: -7% !important;
+  }
+
+  .pay-badge1{
+    width: 110px;
+    position: relative;
+    left: -7% !important;
+  }
+
+  .pay-title-2{
+    position: relative;
+    bottom: 8% !important;
+  }
+
+  .pay-badge2{
+    width: 110px;
+    position: relative;
+    left: -7% !important;
+    bottom: 8% !important;
+  }
+
+  .volver-inicio-btn{
+    display: flex;
+  }
+}
+
+/*Mi noteboock*/
+@media (min-width: 1450px) and (max-width: 1478px) {
+   .pay-title{
+    position: relative;
+    left: 22% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-sub{
+    position: relative;
+    bottom: 10% !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: 22% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-badge1{
+    position: relative;
+    bottom: 10% !important;
+    left: 21% !important;
+    width: 110px;
+  }
+
+  .pay-title-2{
+    position: relative;
+    left: 35% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-badge2{
+     position: relative;
+    bottom: 10% !important;
+    left: 22.4% !important;
+    width: 110px;
+  }
+}
+
+
+/*Escritorio 2*/
+@media (min-width: 1500px) and (max-width: 1921px) {
+  .pay-title{
+    position: relative;
+    left: 22% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-sub{
+    position: relative;
+    bottom: 10% !important;
+  }
+
+  .pay-title-1{
+    position: relative;
+    left: 22% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-badge1{
+    position: relative;
+    bottom: 10% !important;
+    left: 21% !important;
+    width: 110px;
+  }
+
+  .pay-title-2{
+    position: relative;
+    left: 35% !important;
+    bottom: 10% !important;
+  }
+
+  .pay-badge2{
+     position: relative;
+    bottom: 10% !important;
+    left: 22.4% !important;
+    width: 110px;
+  }
+}

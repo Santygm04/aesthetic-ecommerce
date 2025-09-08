@@ -1,0 +1,79 @@
+.envios {
+  background: linear-gradient(to bottom, #fff0f5 0%, #ffffff 100%);
+  padding: 4rem 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.envios-container {
+  max-width: 900px;
+  margin: auto;
+  background-color: #fff;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(214, 51, 132, 0.08);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.envios h2 {
+  color: #d63384;
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #fcddec;
+  padding-bottom: 0.5rem;
+}
+
+.envios-intro {
+  font-size: 1.1rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.envios-box {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: #fff7fb;
+  border-left: 5px solid #d63384;
+  border-radius: 15px;
+}
+
+.envios-box h3 {
+  font-size: 1.4rem;
+  color: #d63384;
+  margin-bottom: 1rem;
+}
+
+.envios-box ul {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.envios-box ul li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.envios-box p {
+  color: #555;
+  font-size: 1rem;
+}
+
+.envios-footer-msg {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.envios-footer-msg a {
+  color: #d63384;
+  text-decoration: underline;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}

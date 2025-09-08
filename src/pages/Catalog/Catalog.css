@@ -1,0 +1,43 @@
+/* src/components/Catalog/catalog.css */
+.catalog { max-width: 1100px; margin: 1rem auto 2.5rem; padding: 0 1rem; }
+
+/* Toolbar */
+.toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; margin-bottom: .9rem;
+}
+.toolbar .left { display:flex; align-items:center; gap:.6rem; flex:1; }
+.toolbar .right { display:flex; align-items:center; gap:.6rem; }
+.search {
+  flex:1; border:1px solid #f3c9e2; border-radius:12px; padding:.55rem .8rem;
+  outline:none; font-weight:600;
+}
+.select { border:1px solid #f3c9e2; border-radius:10px; padding:.45rem .6rem; }
+.lbl { color:#7a7a7a; font-weight:700; }
+.count { color:#7a7a7a; font-weight:700; }
+
+/* Grid */
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap:16px;
+}
+.skeleton .card-skel{
+  height:300px; border-radius:16px;
+  background: linear-gradient(100deg,#f8e6f1 20%, #ffffff 40%, #f8e6f1 60%);
+  background-size:200% 100%; animation:skShine 1.2s linear infinite;
+}
+@keyframes skShine{ to{ background-position:-200% 0; } }
+
+.empty-state { padding: 2rem 1rem; text-align:center; color:#7a7a7a; font-weight:700; }
+
+/* Pager */
+.pager{
+  display:flex; gap:.4rem; justify-content:center; margin-top: 1rem;
+}
+.pager button{
+  border:1px solid #f3c9e2; background:#fff; border-radius:10px; padding:.45rem .7rem;
+  cursor:pointer; font-weight:800; color:#d63384;
+}
+.pager button.active{ background:#fff0f7; border-color:#d63384; }
+.pager button:disabled{ opacity:.5; cursor:not-allowed; }

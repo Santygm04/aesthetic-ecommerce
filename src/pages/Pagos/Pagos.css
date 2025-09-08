@@ -1,0 +1,98 @@
+/* Fondo pastel */
+.policy-wrap{
+  padding: 36px 16px 48px;
+  background: linear-gradient(180deg,#fff7fb 0%, #ffeef7 100%);
+  display:flex; justify-content:center;
+}
+
+/* Tarjeta principal */
+.policy-card{
+  width:min(960px, 96vw);
+  background:#fff;
+  border-radius:16px;
+  box-shadow: 0 14px 40px rgba(214,51,132,.12);
+  border:1px solid #ffe0f1;
+  padding: 22px 20px;
+}
+
+/* Título & sub */
+.policy-head{ text-align:center; margin: 4px 0 12px; }
+.policy-head h1{
+  margin:0 0 6px; color:#d63384; font-size:1.6rem; letter-spacing:.2px;
+}
+.policy-head p{ margin:0; color:#6b6b6b; }
+
+/* Banner destacado (mismos colores) */
+.policy-banner{
+  display:flex; gap:.6rem; align-items:center;
+  background: linear-gradient(90deg, #ff5ab7 0%, #d63384 100%);
+  border:1px solid #ffe4b3;
+  color:#ffffff;
+  border-radius:12px;
+  padding:.65rem .8rem;
+  margin: 6px 0 12px;
+}
+.banner-emoji{ font-size:1.1rem; }
+
+/* Grid de items */
+.policy-items{
+  display:grid; gap:12px; grid-template-columns:1fr;
+  margin-top: 6px;
+}
+@media (min-width: 780px){
+  .policy-items{ grid-template-columns:1fr 1fr; }
+}
+
+/* Ficha */
+.policy-item{
+  display:flex; gap:12px; align-items:flex-start;
+  background:#fffafd;
+  border:1px solid #ffd8ee;
+  border-left:4px solid #f39ac6;
+  border-radius:12px;
+  padding:12px 12px;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.policy-item:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(214,51,132,.10);
+  border-left-color:#d63384;
+}
+
+/* Icono redondo */
+.pi-icon{
+  width:34px; height:34px; flex:0 0 34px;
+  display:grid; place-items:center;
+  border-radius:50%;
+  font-size:18px;
+  background:#ffe7f3; color:#c02271;
+  box-shadow: inset 0 0 0 1px #ffd6ea;
+}
+.pi-promo{  background:#eef0ff; color:#5451ff; }
+.pi-bank{   background:#eaf9ff; color:#0b7aa6; }
+
+/* Cuerpo */
+.pi-body h3{ margin:.1rem 0 .35rem; font-size:1.05rem; color:#3b3b3b; }
+.pi-body p{ margin:0; color:#555; line-height:1.55; }
+.bullets{ margin:.45rem 0 0; padding-left:1.1rem; color:#555; }
+.bullets li{ margin:.15rem 0; }
+
+/* Chips */
+.chips{ margin-top:.45rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+.chip{
+  font-size:.8rem; padding:.25rem .5rem;
+  border-radius:999px; background:#fff; color:#663a72;
+  border:1px solid #efc9df;
+}
+.chip-soft{
+  background:#f7fafe; border-color:#d9e6ff; color:#38507a;
+}
+
+/* Footer mini */
+.policy-foot{
+  margin-top:14px; padding-top:10px;
+  border-top:1px dashed #ffe0f1;
+  color:#6c6c6c; text-align:center;
+}
+.policy-foot a{ color:#d63384; text-decoration:none; }
+.policy-foot a:hover{ text-decoration:underline; }

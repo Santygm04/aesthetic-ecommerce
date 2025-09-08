@@ -1,0 +1,177 @@
+/* src/components/Footer/Footer.css */
+/* === Footer — theme fucsia, sin línea amarilla === */
+.footer {
+  position: relative;
+  background: #ffe0f5; /* rosa claro */
+  color: #7d4d85;
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem) 1.2rem;
+  border-top: none; /* ✅ quitamos línea amarilla */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Banda superior en gradiente fucsia */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 6px;
+  background: linear-gradient(90deg, #ff5ab7 0%, #d63384 50%, #ff5ab7 100%);
+  box-shadow: 0 4px 18px rgba(214, 51, 132, .25);
+  pointer-events: none;
+}
+
+.footer-main {
+  display: grid; /* responsive override */
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 3.5vw, 3.5rem);
+  justify-content: center;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto 1rem auto;
+}
+
+@media (min-width:769px){
+  .footer-main{ grid-template-columns: 1.2fr 1fr .8fr; }
+}
+
+.footer-brand h3 {
+  color: #d63384;
+  font-size: clamp(1.3rem, 4.8vw, 2rem);
+  margin-bottom: 0.7rem;
+}
+.footer-brand p { margin-bottom: 0; color: #000; }
+
+.footer-links { display: grid; grid-auto-flow: column; gap: 2rem; align-items:start; }
+.footer-links h4, .footer-contact h4 { color: #d63384; margin-bottom: .5rem; font-size: 1.1rem; }
+.footer-links ul { list-style: none; padding: 0; margin: 0; }
+.footer-links li { margin-bottom: .5rem; }
+.footer-links a { color: #7d4d85; text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: #d63384; }
+
+/* Badge mayorista -> fucsia */
+.wh-badge{
+  display:inline-block; margin-top:.6rem; padding:.32rem .75rem; font-weight:800;
+  color:#fff; background: linear-gradient(90deg, #ff5ab7 0%, #d63384 100%);
+  border: 1px solid #f3c9e2; border-radius: 999px; box-shadow: 0 2px 10px rgba(214,51,132,.18);
+}
+
+/* bottom sin borde amarillo */
+.footer-bottom {
+  text-align: center;
+  color: #a0849d;
+  font-size: clamp(.9rem, 2.4vw, 1rem);
+  padding-top: 1rem;
+  border-top: none; /* ✅ fuera la línea */
+}
+
+/* sutil separación con un fade (no es una línea) */
+.footer-bottom::before{
+  content:""; display:block; height: 12px; margin: -12px auto 8px; max-width: 980px;
+  background: linear-gradient(180deg, rgba(214,51,132,.10), rgba(214,51,132,0));
+  border-radius: 12px;
+}
+
+/* === Créditos (nuevo) === */
+.footer-sep{
+  margin: 0 .4rem;
+  color: #c59bb3;
+}
+
+.footer-credit{
+  color: #7d4d85;
+  font-weight: 700;
+  font-size: .95em;
+}
+
+.footer-credit a{
+  color: var(--brand, #ff2ea6);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255,46,166,.35);
+  transition: color .2s, border-color .2s;
+}
+
+.footer-credit a:hover{
+  color: var(--brand-600, #e11a8a);
+  border-bottom-color: currentColor;
+}
+
+@media (max-width: 800px) {
+  .footer-links{ grid-auto-flow: row; gap:1rem; }
+  .wh-badge {
+    position: relative;
+    left: -5%;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-links{ grid-auto-flow: row; gap:1rem; }
+  .wh-badge {
+   position: relative;
+   left: -3%;
+  }
+}
+
+/*Telefono chico*/
+@media (min-width: 300px) and (max-width: 361px) {
+  .wh-badge{
+    position: relative;
+    left: -2% !important;
+  }
+}
+
+p{
+  position: relative;
+  bottom: 0.405rem !important;
+}
+
+/*Telefono grande*/
+@media (min-width: 380px) and (max-width: 430px){
+  p {
+    position: relative;
+    bottom: 0.405rem !important;
+  }
+} 
+
+/*Tablet 768px*/
+@media (min-width: 540px) and (max-width:769px) {
+  .wh-badge{
+    position: relative;
+    left: -1.8%;
+  }
+
+  p {
+    position: relative;
+    bottom: 0.405rem;
+  }
+}
+
+/*Noteboock*/
+@media (min-width: 900px) and (max-width: 1281px){
+  .wh-badge{
+    position: absolute;
+    left: 2% !important;
+  }
+}
+
+/*Escritorio 1*/
+@media (min-width: 1300px) and (max-width: 1441px) {
+  .wh-badge{
+    position: relative;
+    left: -3% !important;
+  }
+}
+
+/*Escritorio 2*/
+@media (min-width: 1500px) and (max-width: 1920px) {
+  .wh-badge{
+    position: relative;
+    left: -2.5% !important;
+  }
+}
+
+/*Mi noteboock */
+@media (min-width: 1450px) and (max-width: 1478px) {
+  .wh-badge{
+    position: relative;
+    left: -2% !important;
+  }
+}

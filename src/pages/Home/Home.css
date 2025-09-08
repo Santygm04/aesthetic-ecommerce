@@ -1,0 +1,23 @@
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* Fade-in animación para el slider de destacados */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeInSection 0.95s cubic-bezier(.41,.69,.33,1.14) 0.09s forwards;
+}
+
+@keyframes fadeInSection {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.home-strip { margin: 24px 0; }
+.strip-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.strip-head h2 { color: #d63384; font-size: 1.6rem; font-weight: 900; letter-spacing: .3px; }

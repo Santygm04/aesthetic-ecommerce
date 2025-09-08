@@ -1,0 +1,250 @@
+/* src/components/Navbar/Navbar.css */
+:root{
+  --brand:#ff2ea6;
+  --brand-600:#e11a8a;
+  --brand-50:#fff0f8;
+  --accent:#6a1b9a;
+  --shadow-brand:0 10px 25px rgba(255,46,166,.25);
+}
+
+/* ========= Base ========= */
+.navbar{
+  position:relative; /* para off-canvas */
+  display:flex; justify-content:space-between; align-items:center;
+  padding: clamp(.8rem, 2.5vw, 1rem) clamp(1rem, 4vw, 2rem);
+  background: linear-gradient(180deg, #fff 0%, #fff0f5 100%);
+  border-bottom:2px solid #f5c2e7;
+  font-family:'Segoe UI', sans-serif;
+  box-shadow:0 2px 6px rgba(0,0,0,.04);
+  z-index:111;
+}
+.navbar-logo{
+  font-size: clamp(1.2rem, 3.2vw, 1.8rem);
+  font-weight:900;
+  color:var(--brand);
+  letter-spacing:1px;
+  text-shadow:0 2px 10px rgba(255,46,166,.08);
+}
+
+/* Bloqueo de scroll cuando el drawer está abierto */
+body.nav-open{ overflow:hidden; }
+
+/* ========= Toggle / Hamburguesa / Overlay ========= */
+.nav-toggle{ position:absolute; opacity:0; pointer-events:none; }
+.hamb{
+  display:none; width:42px; height:42px; border-radius:12px;
+  border:2px solid #f3c9e2; background:#fff;
+  margin-left:.4rem; margin-right:.2rem;
+  position:relative; cursor:pointer;
+  box-shadow:0 6px 18px rgba(214,51,132,.10);
+}
+.hamb::before, .hamb::after{
+  content:""; position:absolute; left:10px; right:10px; height:2px;
+  background:linear-gradient(90deg,#ff6fb5,#ff2ea6);
+  transition:.22s transform, .22s opacity;
+  border-radius:2px;
+}
+.hamb::before{ top:14px; }
+.hamb::after{ top:24px; }
+
+.nav-overlay{ display:none; }
+
+/* ========= Links (desktop) ========= */
+.navbar-links{
+  list-style:none;
+  display:flex; gap:1.25rem; align-items:center;
+  flex:1; flex-wrap:wrap; row-gap:10px;
+}
+.navbar-links > li > a,
+.navbar .dropdown-title{
+  font-weight:600;
+  display:inline-flex; align-items:center;
+  height:38px; padding:0 .7rem; line-height:1;
+  text-decoration:none; color:#000;
+  transition: color .2s, background .2s;
+  border-radius:8px;
+  font-size: 15px;
+}
+.navbar-links li a:hover{ color:var(--brand); }
+.navbar-links .active{
+  color:#fff; background:var(--brand);
+  box-shadow:0 6px 16px rgba(255,46,166,.18);
+}
+
+/* ========= Carrito ========= */
+.cart-link{ position:relative; display:inline-block; }
+.cart-icon-wrapper{ position:relative; display:inline-flex; align-items:center; }
+.cart-badge{
+  position:absolute; top:-10px; right:-10px;
+  background:var(--brand); color:#fff;
+  font-size:.80em; font-weight:900;
+  border-radius:999px; padding:2px 7px;
+  box-shadow:var(--shadow-brand); z-index:10;
+  animation: popCart .26s cubic-bezier(.4,2,.6,1.1);
+}
+@keyframes popCart{ 0%{transform:scale(.3)} 65%{transform:scale(1.18)} 100%{transform:scale(1)} }
+.img-icon{ max-width:20px; position:relative; top:.1rem; }
+
+/* ========= Dropdown (desktop) ========= */
+.navbar .dropdown{ position:relative; display:inline-block; }
+.dropdown-title{ background:transparent; border:0; color:#000; }
+.dropdown-title:hover{ color:var(--brand); }
+.dropdown.open > .dropdown-title{ background:var(--brand); color:#fff; }
+.dropdown-title:focus-visible{ outline:2px solid #f3c9e2; outline-offset:2px; }
+.caret{ transition:transform .2s; }
+.caret.rot{ transform:rotate(180deg); }
+
+.dropdown-menu{
+  position:absolute; top:calc(100% + 8px); right:0; left:auto;
+  width:clamp(260px, 32vw, 360px);
+  display:none;
+  padding:10px 8px;
+  background:#fff0f5;
+  border-radius:14px;
+  box-shadow:0 14px 38px rgba(214,51,132,.15);
+  max-height:70vh; overflow:auto;
+  animation: fadeIn .2s;
+  z-index:1000;
+}
+@keyframes fadeIn{ from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)} }
+.dropdown.open > .dropdown-menu{ display:block; }
+
+/* Items del menú */
+.dropdown-menu li > a{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:.5rem; color:#333;
+  padding:.55rem .8rem; border-radius:10px;
+  transition: background .2s, color .2s; text-decoration:none;
+  position:relative; z-index:1;
+}
+.dropdown-menu li > a:hover{
+  background:var(--brand); color:#fff !important;
+}
+.dropdown-menu li > a:hover *, .dropdown-menu li > a:hover svg, .dropdown-menu li > a:hover i{
+  color:#fff !important; fill:#fff !important;
+}
+.menu-divider{ height:1px; background:#f6cce1; margin:8px 6px; border-radius:1px; }
+
+/* Plegable de subcategorías */
+.menu-section .section-head{
+  width:100%; border:0; background:transparent; color:var(--brand);
+  font-weight:800; display:flex; align-items:center; gap:.6rem;
+  padding:.5rem .6rem; cursor:pointer; border-radius:10px; text-align:left;
+}
+.menu-section .section-head:hover{ background:var(--brand-50); }
+.menu-section .chev{ margin-left:auto; transition:transform .2s; }
+.menu-section .chev.rot{ transform:rotate(180deg); }
+.submenu-grid{
+  display:none; grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:8px 12px; padding:.5rem .6rem .8rem .6rem;
+}
+.menu-section.open .submenu-grid{ display:grid; }
+.submenu-grid a{
+  background:transparent; color:#333;
+  padding:.45rem .6rem; border-radius:8px;
+  transition:background .15s, color .15s; text-decoration:none;
+}
+.submenu-grid a:hover{ background:var(--brand); color:#fff !important; }
+
+/* ========= Buscador ========= */
+.nav-search{ flex:1 1 260px; min-width:260px; display:flex; }
+.nav-search .search-wrap, .nav-search .sb{
+  width: clamp(260px, 60%, 640px);
+  position:relative; left:0;
+}
+
+/* ========= Drawer (≤ 1024px) ========= */
+@media (max-width:1024px){
+  .hamb{ display:inline-block; }
+
+  .nav-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.40);
+    backdrop-filter: blur(2px);
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .22s, visibility .22s;
+    z-index:109; display:block;
+  }
+
+  .navbar-links{
+    position:fixed; top:0; bottom:0; left:0; right:auto;
+    width: clamp(280px, 82vw, 360px);
+    background:#fff;
+    background-image: radial-gradient(1200px 300px at -10% -10%, #fff0f8 0%, transparent 60%);
+    padding:1rem .9rem 1.4rem;
+    display:flex; flex-direction:column; align-items:stretch; gap:.2rem;
+    transform: translateX(-101%); transition: transform .25s ease;
+    overflow:auto; z-index:110; box-shadow:8px 0 24px rgba(0,0,0,.12);
+    border-right:1px solid #f3c9e2;
+  }
+  /* Abrir */
+  #nav-toggle:checked ~ .navbar-links{ transform: translateX(0); }
+  #nav-toggle:checked + .hamb::before{ transform: translateY(5px) rotate(45deg); }
+  #nav-toggle:checked + .hamb::after{ transform: translateY(-5px) rotate(-45deg); }
+  #nav-toggle:checked ~ .nav-overlay{
+    opacity:1; visibility:visible; pointer-events:auto;
+  }
+
+  /* Buscador a ancho completo dentro del drawer */
+  .nav-search{ order:0; width:100%; padding:.2rem .2rem .6rem; }
+  .nav-search .search-wrap, .nav-search .sb{ width:100%; left:0; }
+
+  /* Dropdowns en flujo dentro del drawer */
+  .navbar-links .dropdown{ width:100%; }
+  .navbar-links .dropdown-title{
+    justify-content:space-between;
+    border:1px solid #f3c9e2; border-radius:10px; background:#fff;
+  }
+  .navbar-links .dropdown-menu{
+    position:static; inset:auto; width:100%; max-height:none;
+    margin-top:.35rem; display:none; padding:8px;
+    box-shadow:none; background:#fff0f5; border-radius:12px;
+
+  }
+  .dropdown.open > .dropdown-menu{ display:block; }
+
+  /* Botón cerrar dentro del drawer */
+  .nav-close-li{ display:block; }
+  .nav-close-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:42px; height:42px; border-radius:12px; margin:.2rem .2rem .6rem .2rem;
+    border:1px solid #f3c9e2; background:#fff; color:#d63384; font-weight:900; cursor:pointer;
+    box-shadow:0 6px 16px rgba(214,51,132,.10);
+  }
+}
+
+/* Suavizado tipográfico */
+.navbar *{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+/* Ocultar botón cerrar en desktop grandes (tu ajuste) */
+@media (min-width:900px){ .nav-close-li{ display:none; } }
+
+/*Tavlet */
+@media (min-width: 980px) and (max-width: 1281px) {
+  .dropdown-title{
+    cursor: pointer;
+  }
+
+  
+}
+
+/*Escritorio 1 */
+@media (min-width: 1300px) and (max-width: 1441px){
+  .dropdown-title{
+    cursor: pointer;
+  }
+}
+
+/*Mi noteboock*/
+@media (min-width: 1450px) and (max-width: 1478px) {
+  .dropdown-title{
+    cursor: pointer;
+  }
+}
+
+/*Escritorio 2*/
+@media (min-width: 1500px) and (max-width: 1921px) {
+  .dropdown-title{
+    cursor: pointer;
+  }
+}

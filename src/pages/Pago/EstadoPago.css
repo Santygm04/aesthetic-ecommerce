@@ -1,0 +1,125 @@
+/* === estilos equivalentes a tu objeto `styles` === */
+
+.wrap{
+  display:flex;
+  justify-content:center;
+  padding:3rem 1rem;
+}
+
+.card{
+  width:100%;
+  max-width:860px;
+  background:#fff;
+  border-radius:16px;
+  border:3px solid #eee;
+  padding:1.6rem 1.8rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  font-family:"Segoe UI", sans-serif;
+  border: solid 3px rgb(245, 158, 11);
+}
+
+.title{
+  margin:0;
+  font-size:1.9rem;
+  margin-bottom:1rem;
+}
+
+.loading{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.spinner{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:3px solid #f3f3f3;
+  border-top:3px solid #999;
+  animation:spin 1s linear infinite;
+}
+
+.muted{
+  color:#6b7280;
+  margin:0;
+  margin-top:2px;
+}
+
+.block{ margin-top:16px; }
+
+.h3{
+  margin:15px;
+  margin-bottom:8px;
+  font-size:1.1rem;
+  color:#d63384;
+}
+
+.ul{
+  margin:0;
+  padding-left:16px;
+  color:#374151;
+  line-height:1.6;
+}
+
+.p{
+  margin:6px 0;
+  color:#374151;
+}
+
+.muted{ 
+  position: relative;
+  left: 1.6% !important;
+}
+
+.actions{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.waBtn{
+  text-decoration:none;
+  background:#25D366;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:800;
+  display:inline-block;
+  margin-right:10px;
+}
+
+.homeBtn{
+  text-decoration:none;
+  background:#ff2ea6;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.outlineBtn{
+  text-decoration:none;
+  background:#fff;
+  color:#e03131;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:700;
+  border:1px solid #ffc9c9;
+}
+
+.copyBtn{
+  margin-left:8px;
+  font-size:.88rem;
+  background:#eee;
+  border:none;
+  border-radius:6px;
+  padding:4px 8px;
+  cursor:pointer;
+}
+
+/* animación del spinner */
+@keyframes spin{
+  0%{ transform:rotate(0) }
+  100%{ transform:rotate(360deg) }
+}

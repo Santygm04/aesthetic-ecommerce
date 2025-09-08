@@ -1,0 +1,491 @@
+/* Contenedor del buscador */
+.search-wrap{
+  position:relative;
+  width:min(480px, 100%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* Input + botón lupita */
+.search-input{
+  flex:1;
+  padding:.55rem .75rem;
+  border:1px solid #e8cfe0;
+  border-radius:10px;
+  font-size:1rem;
+  background:#fff;
+  color:#333;
+}
+.search-input:focus{
+  border-color:#d63384;
+  outline:none;
+  box-shadow:0 6px 18px rgba(214,51,132,.12);
+}
+.search-btn{
+  width:40px;
+  height:38px;
+  border:none;
+  border-radius:10px;
+  background:#d63384;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(214,51,132,.12);
+  position:absolute; right: 0.9rem; top:42% !important; transform:translateY(-0%);
+  border:0; background:#d63384; color:#fff; width:36px; height:33px;
+  border-radius:10px; display:grid; place-items:center; cursor:pointer;
+}
+.search-btn:hover{ filter:brightness(1.05); }
+
+/*Mi noteboock*/
+@media (min-width: 300px) and (max-width: 361px) {
+
+  .nav-search .search-btn{
+    position: absolute;
+    left: 83% !important;
+    top: auto !important;
+    bottom: 41.7% !important;
+  }
+}
+
+/* Lista de sugerencias (texto) */
+.suggest{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px;
+  box-shadow:0 16px 40px rgba(214,51,132,.10);
+  list-style:none; padding:.35rem; margin:0;
+  max-height:300px; overflow:auto; z-index:50;
+}
+.suggest li + li { margin-top:2px; }
+.suggest button{
+  width:100%; text-align:left; border:none; background:transparent;
+  padding:.5rem .55rem; border-radius:8px; cursor:pointer; color:#333;
+}
+.suggest button:hover{ background:#fff7fb; color:#d63384; }
+
+/* Panel de categorías rápidas */
+.search-quick{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px;
+  box-shadow:0 16px 40px rgba(214,51,132,.10);
+  padding:.6rem .6rem .5rem;
+  z-index:49;
+}
+.sq-head{
+  font-weight:900; color:#d63384; margin:.1rem .25rem .4rem;
+  font-size:.95rem;
+}
+
+.sq-item{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  border:1px solid #f3c9e2; background:#fff; color:#333;
+  border-radius:12px; padding:.6rem .4rem; cursor:pointer;
+  transition: transform .12s, box-shadow .2s, background .2s, border-color .2s;
+}
+.sq-item img{ width:28px; height:28px; object-fit:contain; }
+.sq-item span{ font-size:.86rem; font-weight:700; color:#d63384; }
+.sq-item:hover{
+  transform:translateY(-2px);
+  background:#fff8fc;
+  border-color:#d63384;
+  box-shadow:0 10px 26px rgba(214,51,132,.12);
+}
+
+
+/* CTA ver todas */
+.sq-all{
+  margin-top:.55rem;
+  width:100%;
+  border:1px dashed #f3c9e2;
+  background:#fff;
+  color:#d63384;
+  font-weight:800;
+  border-radius:10px;
+  padding:.5rem .6rem;
+  cursor:pointer;
+}
+.sq-all:hover{ background:#fff0f7; }
+
+/* Responsive */
+@media (max-width: 900px){
+  .sq-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 520px){
+  .sq-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+.sq-grid {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  column-gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.sq-item {
+  width: 122px; /* antes seguro está más chico, prueba con 110-120px */
+  padding: 1rem;
+}
+
+.sq-item span {
+  font-size: 0.85rem; /* reduce un poco el tamaño del texto */
+  white-space: nowrap; /* evita el salto de línea */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sq-item, button  {
+    margin: 0.2rem;
+}
+
+/* contenedor buscador */
+.search-wrap{ position:relative; width:min(420px, 100%); }
+.search-input{
+  width:100%; padding:.55rem .9rem;
+  border:1.5px solid #f3c9e2; border-radius:12px;
+  font-size:1rem; background:#fff; color:#333; outline:none;
+}
+.search-input:focus{ border-color:#d63384; box-shadow:0 8px 26px rgba(214,51,132,.12); }
+
+/* botón lupita */
+
+
+/* sugerencias por texto */
+.suggest{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px;
+  box-shadow:0 14px 36px rgba(214,51,132,.12);
+  list-style:none; padding:.35rem; margin:0; max-height:320px; overflow:auto; z-index:60;
+}
+.suggest li + li { margin-top:2px; }
+.suggest button{
+  width:100%; text-align:left; border:none; background:transparent;
+  padding:.55rem .6rem; border-radius:8px; cursor:pointer; color:#333;
+}
+.suggest button:hover{ background:#fff7fb; color:#d63384; }
+
+/* panel rápido */
+.search-quick{
+  position:absolute; left:0; right:0; top:calc(100% + 8px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:16px;
+  box-shadow:0 22px 50px rgba(214,51,132,.15); padding:.8rem; z-index:55;
+}
+.sq-head{ font-weight:900; color:#d63384; margin:.2rem .3rem .6rem; }
+
+.sq-grid{
+  display:grid; grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+@media (min-width:720px){
+  .sq-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+.sq-item{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  border:1px dashed #f3c9e2; border-radius:14px; padding:.7rem .6rem;
+  background:#fff; cursor:pointer; transition: box-shadow .15s, border-color .15s, transform .08s;
+  min-height:102px;
+  position: relative;
+  left: -6.6%;
+}
+.sq-item:hover{ box-shadow:0 10px 26px rgba(214,51,132,.10); border-color:#efb9db; transform:translateY(-1px); }
+.sq-item.is-active{ border-style:solid; border-color:#d63384; }
+
+.sq-item img{ width:44px; height:44px; object-fit:contain; }
+.sq-name{
+  display:block; text-align:center; font-weight:800; color:#333; line-height:1.1;
+  overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical;
+}
+
+/* subcategorías */
+.sq-subcats{ border-top:1px dashed #f3c9e2; margin-top:.8rem; padding-top:.6rem; }
+.sq-subhead{ font-weight:900; color:#d63384; margin:0 .3rem .35rem; }
+
+.sq-subgrid{
+  display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px;
+}
+@media (min-width:720px){
+  .sq-subgrid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+.sq-subitem{
+  background:#fff; border:1px solid #f3c9e2; color:#333; font-weight:700;
+  border-radius:10px; padding:.5rem .6rem; text-align:left; cursor:pointer;
+}
+.sq-subitem:hover{ background:#fff0f7; color:#d63384; border-color:#efb9db; }
+.sq-subitem.all{ background:#fff7fb; border-style:dashed; }
+
+/* botón ver todas */
+.sq-all{
+  width:100%; margin-top:.8rem; background:#fff; color:#d63384; font-weight:900;
+  border:1px dashed #f3c9e2; border-radius:12px; padding:.6rem .8rem; cursor:pointer;
+}
+.sq-all:hover{ background:#fff0f7; }
+
+/* src/components/NavbarSearch/NavbarSearch.css */
+/* Contenedor del buscador */
+.search-wrap{
+  position:relative; width:min(480px, 100%); display:flex; align-items:center; gap:8px;
+}
+
+/* Input + botón lupita */
+.search-input{
+  flex:1; width:100%; padding:.55rem .9rem; border:1.5px solid #f3c9e2; border-radius:12px;
+  font-size:1rem; background:#fff; color:#333; outline:none;
+}
+.search-input:focus{ border-color:#d63384; box-shadow:0 8px 26px rgba(214,51,132,.12); }
+
+/* Lista de sugerencias (texto) */
+.suggest{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px; box-shadow:0 14px 36px rgba(214,51,132,.12);
+  list-style:none; padding:.35rem; margin:0; max-height:320px; overflow:auto; z-index:60;
+}
+.suggest li + li { margin-top:2px; }
+.suggest button{
+  width:100%; text-align:left; border:none; background:transparent; padding:.55rem .6rem; border-radius:8px; cursor:pointer; color:#333;
+}
+.suggest button:hover{ background:#fff7fb; color:#d63384; }
+
+/* Panel de categorías rápidas */
+.search-quick{
+  position:absolute; left:0; right:0; top:calc(100% + 8px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:16px; box-shadow:0 22px 50px rgba(214,51,132,.15);
+  padding:.8rem; z-index:55;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  top: 58%;
+  left: -3%;
+}
+
+.sq-head{ font-weight:900; color:#d63384; margin:.2rem .3rem .6rem; }
+
+/* Grid responsive */
+.sq-grid{
+  display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px;
+}
+
+@media (min-width:720px){
+  .sq-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (min-width:1025px){
+  .sq-grid{ grid-template-columns: repeat(5, minmax(0,1fr)); }
+}
+
+.sq-item{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  border:1px dashed #f3c9e2; border-radius:14px; padding:.7rem .6rem; background:#fff; cursor:pointer;
+  transition: box-shadow .15s, border-color .15s, transform .08s; min-height:102px;
+}
+.sq-item:hover{ box-shadow:0 10px 26px rgba(214,51,132,.10); border-color:#efb9db; transform:translateY(-1px); }
+.sq-item.is-active{ border-style:solid; border-color:#d63384; }
+.sq-item img{ width:44px; height:44px; object-fit:contain; }
+.sq-name{ display:block; text-align:center; font-weight:800; color:#333; line-height:1.1; overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; }
+
+.sq-subcats{ border-top:1px dashed #f3c9e2; margin-top:.8rem; padding-top:.6rem; }
+.sq-subhead{ font-weight:900; color:#d63384; margin:0 .3rem .35rem; }
+.sq-subgrid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+@media (min-width:720px){ .sq-subgrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+.sq-subitem{
+  background:#fff; border:1px solid #f3c9e2; color:#333; font-weight:700; border-radius:10px; padding:.5rem .6rem; text-align:left; cursor:pointer;
+}
+.sq-subitem:hover{ background:#fff0f7; color:#d63384; border-color:#efb9db; }
+.sq-subitem.all{ background:#fff7fb; border-style:dashed; }
+
+/* botón ver todas */
+.sq-all{
+  width:100%; margin-top:.8rem; background:#fff; color:#d63384; font-weight:900;
+  border:1px dashed #f3c9e2; border-radius:12px; padding:.6rem .8rem; cursor:pointer;
+}
+.sq-all:hover{ background:#fff0f7; }
+
+/* el contenedor del input es el ancla */
+.search-wrap{
+  position: relative !important;
+  display: flex;
+  align-items: center;
+  width: min(480px, 100%);
+}
+
+/* dejamos espacio para la lupa dentro del input */
+.search-input{
+  padding-right: 44px !important;
+}
+
+/* la lupa queda centrada verticalmente respecto del input, siempre */
+.search-btn{
+  position: absolute !important;
+  top: 49.6% !important;
+  right: 4px !important;
+  left: 87% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  /* evita que otros media queries la muevan */
+}
+
+@media (min-width: 380px) and (max-width: 431px) {
+  .search-btn {
+    position: absolute;
+    top: 17.6rem !important;
+  }
+}
+
+@media (min-width: 540px) and (max-width: 769px) {
+  .search-btn{
+    position: absolute;
+    top: auto !important;
+    bottom: 18.4rem !important;
+    left: 87% !important;
+  }
+
+  .sq-grid {
+    display: flex;
+    justify-content: end;
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  }
+
+}
+
+
+/*Noteboock */
+@media (min-width: 980px) and (max-width: 1281px) {
+   /* === 2 columnas ordenadas sin scroll === */
+   /* el contenedor del input sirve de ancla */
+  .search-input{
+    position: absolute;
+    left: 24% !important;
+  }
+
+  /* el panel cuelga del borde inferior del buscador */
+  .nav-search .search-quick{
+    position: absolute;
+    top: calc(100% + 8px);   /* debajo del input */
+    left: 0%;                 /* alineado al borde izquierdo del input */
+    width: 360px;
+    display: flex;            /* ancho del panel */
+    margin: 1rem !important;
+    z-index: 40;             /* que quede por encima */
+  }
+
+  .nav-search .sq-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    gap: 14px 12px;
+    padding: 12px;
+    width: 100%;
+    max-height: none !important;
+    overflow: hidden !important;
+    display: flex;
+    justify-content: end;
+  }
+
+  .nav-search .search-btn{
+    position: absolute;
+    left: 19rem !important;
+    top: auto !important;
+    bottom: -2.250rem !important;
+  }
+}
+
+/*Escritorio 1*/
+@media (min-width: 1300px) and (max-width: 1441px) {
+  .search-wrap{
+    position: absolute;
+    left: 30% !important;
+  }
+
+  .nav-search .search-btn{
+    position: absolute;
+    top: auto !important;
+    left: 88% !important;
+    bottom: -45% !important;
+  }
+
+  .search-quick{
+    display: flex;
+    margin-top: 1rem !important;
+  }
+
+  .sq-grid{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    left: 6.5% !important;
+  }
+
+}
+
+/*Mi noteboock*/
+@media (min-width: 1450px) and (max-width: 1478px) {
+  .nav-search .search-input{
+    position: absolute;
+    left: 25% !important;
+  }
+
+  .nav-search .search-btn{
+    position: absolute;
+    left: 118.5% !important;
+    top: auto !important;
+    bottom: -2.3rem !important;
+  }
+  /* centrar la barra sin left fijos */
+  .nav-search .search-wrap,
+  .nav-search .sb{
+    position: relative;
+    left: -22.5% !important;
+    width: clamp(500px, 46vw, 740px);
+    margin: 0 auto;
+  }
+
+/* opciones centradas bajo la barra */
+  .nav-search .search-quick{
+    position: absolute;
+    top: calc(100% + 20px);
+    left: 75%;
+    transform: translateX(-50%);
+    width: min(100%, clamp(500px, 46vw, 740px));
+    max-width: clamp(500px, 46vw, 740px);
+    z-index: 120;
+  }
+  
+}
+
+/*Escritorio 2*/
+@media (min-width:1500px) and (max-width:1921px){
+  /* El contenedor de la búsqueda será el ancla del dropdown */
+  
+
+  /* Centrar la barra sin usar left fijo */
+  .nav-search .search-wrap,
+  .nav-search .sb{
+    position: relative;
+    left: 0 !important;          /* anulamos desplazamientos previos */
+    width: clamp(520px, 48vw, 780px);
+    margin: 0 auto;              /* centra horizontalmente */
+  }
+
+  /* El input vuelve al flujo normal */
+  .search-input{
+    position: static !important; /* evita “saltos” del navbar */
+  }
+
+  /* El botón se posiciona dentro del wrapper, alineado a la derecha */
+  .search-btn{
+    position: absolute;
+    top: 40% !important;
+    right: 8px;
+    left: auto !important;
+    transform: translateY(-50%);
+  }
+
+  /* El panel de opciones queda CENTRADO bajo la barra */
+  .nav-search .search-quick{
+    position: absolute;
+    top: calc(100% + 8px);       /* bajo la barra */
+    left: 50%;
+    transform: translateX(-50%); /* centra respecto del wrapper */
+    width: min(100%, clamp(520px, 48vw, 780px)); /* igual ancho que la barra */
+    max-width: clamp(520px, 48vw, 780px);
+    z-index: 120;                /* sobre el navbar */
+  }
+}

@@ -1,0 +1,30 @@
+/* src/components/ProductList/ProductList.css */
+
+.product-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #fafafa;
+  border-radius: 16px;
+}
+
+.product-list-empty {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #999;
+  padding: 3rem;
+}
+
+
+.product-list-container{
+  display:grid;
+  gap:2rem;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+}
+
+.product-list-empty{
+  padding:2rem;
+  text-align:center;
+  color:#777;
+}
