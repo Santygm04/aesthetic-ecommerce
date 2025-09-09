@@ -1,7 +1,9 @@
 // src/hooks/useProductStream.js
 import { useEffect, useRef } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+// Tomamos la URL y le sacamos cualquier "/" del final para evitar doble slash
+const raw = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API_URL = raw.replace(/\/+$/, "");
 
 /**
  * Suscripción SSE al stream de productos.
@@ -18,17 +20,16 @@ export default function useProductStream({ onUpsert, onDelete }) {
       try {
         const p = JSON.parse(e.data);
         onUpsert && onUpsert(p);
-      } catch {/* ignore */}
+      } catch { /* ignore */ }
     });
 
     es.addEventListener("product:delete", (e) => {
       try {
         const { _id } = JSON.parse(e.data);
         onDelete && onDelete(_id);
-      } catch {/* ignore */}
+      } catch { /* ignore */ }
     });
 
-    // keep reference
     esRef.current = es;
     return () => {
       try { esRef.current?.close(); } catch {}
