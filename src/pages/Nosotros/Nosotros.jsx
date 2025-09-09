@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "../../pages/Nosotros/Nosotros.css";
 
+
 export default function Nosotros() {
   useEffect(() => {
     const elements = document.querySelectorAll(".fade-in");
@@ -46,7 +47,7 @@ export default function Nosotros() {
           </div>
           <div className="nosotros-img fade-in">
             <img
-              src= "../../assets/Indumentaria.avif"
+              src= "../../public/Indumentaria.avif"
               alt="Chica moda Aesthetic"
             />
             <div className="img-brillo"></div>
