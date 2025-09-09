@@ -47,7 +47,7 @@ export default function Nosotros() {
           </div>
           <div className="nosotros-img fade-in">
             <img
-              src= "../../public/indumentaria.avif"
+              src= "../../assets/indumentaria.avif"
               alt="Chica moda Aesthetic"
             />
             <div className="img-brillo"></div>
