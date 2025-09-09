@@ -504,3 +504,10 @@
     margin-bottom: 1.5rem !important;
   }
 }
+
+/* swatches sin stock */
+.swatch.disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}

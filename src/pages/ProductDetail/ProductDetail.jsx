@@ -1,4 +1,3 @@
-// src/pages/ProductDetail/ProductDetail.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../../utils/api";
@@ -32,6 +31,13 @@ export default function ProductDetail() {
   // selección de variantes
   const [selSize, setSelSize] = useState("");
   const [selColor, setSelColor] = useState("");
+
+  // Reset de selección al cambiar de producto
+  useEffect(() => {
+    setSelSize("");
+    setSelColor("");
+    setQty(1);
+  }, [id]);
 
   // ===== Carga inicial =====
   useEffect(() => {
@@ -76,7 +82,7 @@ export default function ProductDetail() {
         const { data } = await api.get(`/api/productos/${id}`, {
           params: { admin: true, _t: Date.now() },
         });
-        setRaw(data);
+      setRaw(data);
       } catch (e) {
         console.warn("SSE refetch error:", e?.message || e);
       }
@@ -102,7 +108,6 @@ export default function ProductDetail() {
 
     es.addEventListener("product:upsert", onUpsert);
     es.addEventListener("product:delete", onDelete);
-    // keep-alive opcional
     es.addEventListener("ping", () => {});
 
     return () => {
@@ -122,31 +127,84 @@ export default function ProductDetail() {
     return Array.isArray(v) ? v : [];
   }, [raw]);
 
+  // Variantes con stock
+  const variantsInStock = useMemo(
+    () => variants.filter((v) => Number(v?.stock || 0) > 0),
+    [variants]
+  );
+
+  // Preseleccionar automáticamente la primera variante con stock
+  useEffect(() => {
+    if (!variants.length) return;
+    if (selSize || selColor) return; // ya hay selección del usuario
+    const firstOk = variantsInStock[0] || variants[0];
+    if (firstOk?.size) setSelSize(firstOk.size);
+    if (firstOk?.color) setSelColor(firstOk.color);
+  }, [variants, variantsInStock, selSize, selColor]);
+
   const sizes = useMemo(
     () => Array.from(new Set(variants.map((v) => v.size).filter(Boolean))),
     [variants]
   );
 
+  const isSizeDisabled = (s) =>
+    !variants.some((v) => v.size === s && Number(v.stock || 0) > 0);
+
   const colorsForSize = useMemo(() => {
-    if (!selSize)
-      return Array.from(new Set(variants.map((v) => v.color).filter(Boolean)));
-    return Array.from(
-      new Set(
-        variants
-          .filter((v) => v.size === selSize)
-          .map((v) => v.color)
-          .filter(Boolean)
-      )
-    );
+    // mostrar todos los colores posibles de ese talle (únicos)
+    const base = selSize
+      ? variants.filter((v) => v.size === selSize)
+      : variants;
+    return Array.from(new Set(base.map((v) => v.color).filter(Boolean)));
   }, [variants, selSize]);
 
-  // variante elegida (si hay size/color seleccionados)
+  const isColorDisabled = (c) => {
+    // si hay talle elegido, miramos stock del par (talle,color)
+    if (selSize) {
+      const v = variants.find(
+        (x) => x.size === selSize && x.color === c
+      );
+      return !v || Number(v.stock || 0) <= 0;
+    }
+    // sin talle elegido, deshabilitamos color si todas sus variantes están en 0
+    const hasStock = variants.some(
+      (x) => x.color === c && Number(x.stock || 0) > 0
+    );
+    return !hasStock;
+  };
+
+  // Variante elegida
+  const firstInStock = useMemo(
+    () => variantsInStock[0] || null,
+    [variantsInStock]
+  );
+
   const chosenVariant = useMemo(() => {
     if (!variants.length) return null;
-    const base = selSize ? variants.filter((v) => v.size === selSize) : variants;
-    const byColor = selColor ? base.find((v) => v.color === selColor) : base[0];
-    return byColor || null;
-  }, [variants, selSize, selColor]);
+
+    // si hay selección completa, tomamos esa
+    const full =
+      selSize && selColor
+        ? variants.find((v) => v.size === selSize && v.color === selColor)
+        : null;
+    if (full) return full;
+
+    // si hay talle elegido, elegimos el primer color con stock para ese talle
+    if (selSize) {
+      const withStockForSize =
+        variants.find(
+          (v) => v.size === selSize && Number(v.stock || 0) > 0
+        ) || null;
+      if (withStockForSize) return withStockForSize;
+
+      // sin stock para ese talle → la primera de ese talle (aunque sea 0)
+      const anyForSize = variants.find((v) => v.size === selSize) || null;
+      if (anyForSize) return anyForSize;
+    }
+
+    // si no hay selección, devolvemos la primera en stock; si no, la primera general
+    return firstInStock || variants[0] || null;
+  }, [variants, selSize, selColor, firstInStock]);
 
   // Precio con promo si corresponde
   const basePriceForView = Number(chosenVariant?.price ?? p?.precio ?? 0);
@@ -282,23 +340,40 @@ export default function ProductDetail() {
                   <div className="pd-var-row">
                     <span className="pd-var-label">Talle</span>
                     <div className="swatches">
-                      {sizes.map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          className={`swatch ${selSize === s ? "active" : ""}`}
-                          onClick={() => {
-                            setSelSize(s);
-                            const colorsAvail = variants
-                              .filter((v) => v.size === s)
-                              .map((v) => v.color);
-                            if (selColor && !colorsAvail.includes(selColor))
-                              setSelColor("");
-                          }}
-                        >
-                          {s}
-                        </button>
-                      ))}
+                      {sizes.map((s) => {
+                        const disabled = isSizeDisabled(s);
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            className={`swatch ${selSize === s ? "active" : ""} ${
+                              disabled ? "disabled" : ""
+                            }`}
+                            disabled={disabled}
+                            onClick={() => {
+                              if (disabled) return;
+                              setSelSize(s);
+                              // elegir color con stock para ese talle si el actual no sirve
+                              const colorsWithStock = variants
+                                .filter(
+                                  (v) =>
+                                    v.size === s &&
+                                    Number(v.stock || 0) > 0 &&
+                                    v.color
+                                )
+                                .map((v) => v.color);
+                              if (
+                                !selColor ||
+                                (selColor && !colorsWithStock.includes(selColor))
+                              ) {
+                                setSelColor(colorsWithStock[0] || "");
+                              }
+                            }}
+                          >
+                            {s}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -308,17 +383,26 @@ export default function ProductDetail() {
                   <div className="pd-var-row">
                     <span className="pd-var-label">Color</span>
                     <div className="swatches">
-                      {colorsForSize.map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          className={`swatch ${selColor === c ? "active" : ""}`}
-                          onClick={() => setSelColor(c)}
-                          title={c}
-                        >
-                          {c}
-                        </button>
-                      ))}
+                      {colorsForSize.map((c) => {
+                        const disabled = isColorDisabled(c);
+                        return (
+                          <button
+                            key={c}
+                            type="button"
+                            className={`swatch ${selColor === c ? "active" : ""} ${
+                              disabled ? "disabled" : ""
+                            }`}
+                            disabled={disabled}
+                            onClick={() => {
+                              if (disabled) return;
+                              setSelColor(c);
+                            }}
+                            title={c}
+                          >
+                            {c}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
