@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "../../pages/Nosotros/Nosotros.css";
-import indumentaria from "../../assets/indumentaria.avif"; 
+
 
 export default function Nosotros() {
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Nosotros() {
           </div>
           <div className="nosotros-img fade-in">
             <img
-              src= {indumentaria}
+              src= "../../assets/indumentaria.avif"
               alt="Chica moda Aesthetic"
               loading="lazy"
             />
