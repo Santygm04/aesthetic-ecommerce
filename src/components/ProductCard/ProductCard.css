@@ -351,6 +351,11 @@
     position: absolute;
     bottom: 86% !important;
   }
+
+  .wish-btn{
+    position: absolute;
+    bottom: 10% !important;
+  }
 }
 
 /*Escritorio 2*/
