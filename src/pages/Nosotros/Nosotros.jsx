@@ -47,7 +47,7 @@ export default function Nosotros() {
           </div>
           <div className="nosotros-img fade-in">
             <img
-              src= "../../../assets/indumentaria.jpg"
+              src= "./assets/indumentaria.jpg"
               alt="Chica moda Aesthetic"
               loading="lazy"
             />
