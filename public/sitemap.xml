@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Inicio -->
+  <url>
+    <loc>https://TU-DOMINIO.COM/</loc>
+  </url>
+
+  <!-- Categorías (ejemplos, cambiá por las tuyas reales) -->
+  <url>
+    <loc>https://TU-DOMINIO.COM/category/skincare</loc>
+  </url>
+  <url>
+    <loc>https://TU-DOMINIO.COM/category/maquillaje</loc>
+  </url>
+  <url>
+    <loc>https://TU-DOMINIO.COM/category/uñas</loc>
+  </url>
+
+  <!-- Páginas fijas si existen (contacto, envíos, etc.) -->
+  <url>
+    <loc>https://TU-DOMINIO.COM/contacto</loc>
+  </url>
+  <url>
+    <loc>https://TU-DOMINIO.COM/envios</loc>
+  </url>
+
+  <!-- (Opcional) Productos destacados con URL fija -->
+  <!-- <url><loc>https://TU-DOMINIO.COM/product/slug-del-producto</loc></url> -->
+
+</urlset>
