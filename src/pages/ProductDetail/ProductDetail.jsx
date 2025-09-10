@@ -70,7 +70,7 @@ export default function ProductDetail() {
     };
   }, [id]);
 
-  // ===== LIVE: SSE =====
+  // ===== LIVE: escuchar SSE y refrescar si este producto cambia =====
   useEffect(() => {
     const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
     const es = new EventSource(`${API}/api/products/stream`, {
@@ -118,7 +118,7 @@ export default function ProductDetail() {
     if (p?.id) setWish(wishlist.has(p.id));
   }, [p?.id, wishlist]);
 
-  // === Variantes (raw.variants o raw.variantes) ===
+  // === Variantes (soporta raw.variants o raw.variantes) ===
   const variants = useMemo(() => {
     const v = raw?.variants ?? raw?.variantes;
     return Array.isArray(v) ? v : [];
@@ -133,7 +133,7 @@ export default function ProductDetail() {
   // Preseleccionar automáticamente la primera variante con stock
   useEffect(() => {
     if (!variants.length) return;
-    if (selSize || selColor) return;
+    if (selSize || selColor) return; // ya hay selección del usuario
     const firstOk = variantsInStock[0] || variants[0];
     if (firstOk?.size) setSelSize(firstOk.size);
     if (firstOk?.color) setSelColor(firstOk.color);
@@ -192,7 +192,7 @@ export default function ProductDetail() {
     return firstInStock || variants[0] || null;
   }, [variants, selSize, selColor, firstInStock]);
 
-  // Precio
+  // Precio con promo si corresponde
   const basePriceForView = Number(chosenVariant?.price ?? p?.precio ?? 0);
   const promoActive = isPromoActive(raw?.promo);
   const priceToShow =
@@ -207,21 +207,26 @@ export default function ProductDetail() {
 
   const off = getOff(priceToShow, originalForOff);
 
-  // Stock a mostrar (si no hay variantes con stock, cae al stock del producto)
+  // Fallback: usar stock del producto si ninguna variante tiene stock
   const hasVariantStock = variantsInStock.length > 0;
   const stockToShow = hasVariantStock
     ? (chosenVariant ? Number(chosenVariant.stock || 0) : 0)
     : Number(p?.stock || 0);
   const agotado = stockToShow <= 0;
 
-  // clamp de cantidad
+  // Limitar cantidad máxima al stock disponible
+  const maxQty = Math.max(agotado ? 1 : stockToShow, 1);
   useEffect(() => {
-    setQty((q) => Math.min(Math.max(1, q), Math.max(agotado ? 1 : 1, stockToShow || 1)));
-  }, [stockToShow, agotado]);
+    setQty((q) => {
+      const n = Number(q) || 1;
+      return Math.min(Math.max(1, n), maxQty);
+    });
+  }, [maxQty]);
 
   const handleAddToCart = () => {
     if (agotado || !p) return;
     const img = p.imagenes?.[0] || p.imagen;
+
     addToCart({
       ...(p.raw || {}),
       _id: p.id,
@@ -229,7 +234,11 @@ export default function ProductDetail() {
       imagen: img,
       precio: priceToShow,
       variant: chosenVariant
-        ? { vid: chosenVariant.vid, size: chosenVariant.size, color: chosenVariant.color }
+        ? {
+            vid: chosenVariant.vid,
+            size: chosenVariant.size,
+            color: chosenVariant.color,
+          }
         : undefined,
       cantidad: qty,
     });
@@ -292,6 +301,7 @@ export default function ProductDetail() {
             onToggleWish={toggleWish}
           />
 
+          {/* === BUY BOX + selectores de variantes === */}
           <div className="pd-buy">
             <h1 className="pd-title">{p.nombre}</h1>
 
@@ -312,7 +322,7 @@ export default function ProductDetail() {
               {off ? <span className="pd-off">-{off}%</span> : null}
             </div>
 
-            {/* Selectores de variantes */}
+            {/* Selectores de variantes (solo si hay) */}
             {variants.length > 0 && (
               <div className="pd-variants">
                 {/* Talles */}
@@ -321,22 +331,28 @@ export default function ProductDetail() {
                     <span className="pd-var-label">Talle</span>
                     <div className="swatches">
                       {sizes.map((s) => {
-                        const out = isSizeDisabled(s);
+                        const out = isSizeDisabled(s); // true = ese talle no tiene stock
                         return (
                           <button
                             key={s}
                             type="button"
-                            className={`swatch ${selSize === s ? "active" : ""} ${out ? "disabled" : ""}`}
+                            // 👇 sin disabled: siempre clickeable
+                            className={`swatch ${selSize === s ? "active" : ""} ${out ? "" : ""}`}
                             title={out ? "Sin stock" : ""}
                             onClick={() => {
-                              // permitir click aunque no haya stock → solo informamos
                               setSelSize(s);
-                              // si el color actual no existe con ese talle, elegir el primero disponible (con o sin stock)
-                              const colorsForThisSize = variants
+                              // elegir color consistente con el talle
+                              const colorsOfSize = variants
                                 .filter((v) => v.size === s && v.color)
                                 .map((v) => v.color);
-                              if (!colorsForThisSize.includes(selColor)) {
-                                setSelColor(colorsForThisSize[0] || "");
+
+                              // preferir color con stock para ese talle
+                              const colorWithStockForSize = variants.find(
+                                (v) => v.size === s && Number(v.stock || 0) > 0 && v.color
+                              )?.color;
+
+                              if (!colorsOfSize.includes(selColor)) {
+                                setSelColor(colorWithStockForSize || colorsOfSize[0] || "");
                               }
                             }}
                           >
@@ -354,14 +370,15 @@ export default function ProductDetail() {
                     <span className="pd-var-label">Color</span>
                     <div className="swatches">
                       {colorsForSize.map((c) => {
-                        const out = isColorDisabled(c);
+                        const out = isColorDisabled(c); // true = ese color (con el talle actual) no tiene stock
                         return (
                           <button
                             key={c}
                             type="button"
-                            className={`swatch ${selColor === c ? "active" : ""} ${out ? "disabled" : ""}`}
+                            // 👇 sin disabled: siempre clickeable
+                            className={`swatch ${selColor === c ? "active" : ""} ${out ? "" : ""}`}
                             title={out ? "Sin stock" : c}
-                            onClick={() => setSelColor(c)} // permitimos click aunque sea sin stock
+                            onClick={() => setSelColor(c)}
                           >
                             {c}
                           </button>
@@ -391,16 +408,16 @@ export default function ProductDetail() {
                 <input
                   value={qty}
                   min={1}
-                  max={Math.max(1, stockToShow || 1)}
+                  max={maxQty}
                   onChange={(e) => {
-                    const n = Number(e.target.value) || 1;
-                    setQty(Math.min(Math.max(1, n), Math.max(1, stockToShow || 1)));
+                    const n = Math.max(1, Math.min(Number(e.target.value) || 1, maxQty));
+                    setQty(n);
                   }}
                 />
                 <button
-                  onClick={() => setQty((q) => Math.min(stockToShow || 1, q + 1))}
+                  onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
                   type="button"
-                  disabled={qty >= (stockToShow || 1)}
+                  disabled={qty >= maxQty || agotado}
                 >
                   +
                 </button>
@@ -418,6 +435,7 @@ export default function ProductDetail() {
               {agotado ? "Sin stock" : "Agregar al carrito"}
             </button>
 
+            {/* Beneficios */}
             <ul className="pd-benefits" style={{ marginTop: 12 }}>
               <li>
                 <span>🚚</span>
