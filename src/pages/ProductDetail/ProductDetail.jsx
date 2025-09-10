@@ -161,9 +161,7 @@ export default function ProductDetail() {
   const isColorDisabled = (c) => {
     // si hay talle elegido, miramos stock del par (talle,color)
     if (selSize) {
-      const v = variants.find(
-        (x) => x.size === selSize && x.color === c
-      );
+      const v = variants.find((x) => x.size === selSize && x.color === c);
       return !v || Number(v.stock || 0) <= 0;
     }
     // sin talle elegido, deshabilitamos color si todas sus variantes están en 0
@@ -222,15 +220,24 @@ export default function ProductDetail() {
 
   const off = getOff(priceToShow, originalForOff);
 
-  // ========= ÚNICO CAMBIO: fallback al stock del producto si no hay stock en ninguna variante =========
+  // ========= Fallback: usar stock del producto si ninguna variante tiene stock =========
   const hasVariantStock = variantsInStock.length > 0;
-
   const stockToShow = hasVariantStock
     ? (chosenVariant ? Number(chosenVariant.stock || 0) : 0)
     : Number(p?.stock || 0);
-
   const agotado = stockToShow <= 0;
-  // ====================================================================================================
+
+  // === NUEVO: limitar cantidad máxima al stock disponible ===
+  const maxQty = Math.max(agotado ? 1 : stockToShow, 1);
+
+  // cada vez que cambia el stock visible (por selección/variantes), clamp de qty
+  useEffect(() => {
+    setQty((q) => {
+      const n = Number(q) || 1;
+      return Math.min(Math.max(1, n), maxQty);
+    });
+  }, [maxQty]);
+  // ===================================================================
 
   const handleAddToCart = () => {
     if (agotado || !p) return;
@@ -310,18 +317,14 @@ export default function ProductDetail() {
             onToggleWish={toggleWish}
           />
 
-          {/* === BUY BOX + selectores de variantes === */}
+        {/* === BUY BOX + selectores de variantes === */}
           <div className="pd-buy">
             <h1 className="pd-title">{p.nombre}</h1>
 
             {/* Chips (categoría) */}
             <div className="pd-chips">
-              {p.categoria && (
-                <span className="chip outline">{p.categoria}</span>
-              )}
-              {p.subcategoria && (
-                <span className="chip outline">{p.subcategoria}</span>
-              )}
+              {p.categoria && <span className="chip outline">{p.categoria}</span>}
+              {p.subcategoria && <span className="chip outline">{p.subcategoria}</span>}
             </div>
 
             {/* Precio */}
@@ -427,16 +430,27 @@ export default function ProductDetail() {
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   type="button"
+                  disabled={qty <= 1}
                 >
                   -
                 </button>
                 <input
                   value={qty}
-                  onChange={(e) =>
-                    setQty(Math.max(1, Number(e.target.value) || 1))
-                  }
+                  min={1}
+                  max={maxQty}
+                  onChange={(e) => {
+                    const n = Math.max(
+                      1,
+                      Math.min(Number(e.target.value) || 1, maxQty)
+                    );
+                    setQty(n);
+                  }}
                 />
-                <button onClick={() => setQty((q) => q + 1)} type="button">
+                <button
+                  onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                  type="button"
+                  disabled={qty >= maxQty || agotado}
+                >
                   +
                 </button>
               </div>
