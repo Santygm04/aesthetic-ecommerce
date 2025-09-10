@@ -1,3 +1,4 @@
+// src/pages/ProductDetail/ProductDetail.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../../utils/api";
@@ -45,7 +46,6 @@ export default function ProductDetail() {
     (async () => {
       try {
         setLoading(true);
-        // pedimos como admin para evitar filtros viejos en deploys
         const { data } = await api.get(`/api/productos/${id}`, {
           params: { admin: true, _t: Date.now() },
         });
@@ -70,7 +70,7 @@ export default function ProductDetail() {
     };
   }, [id]);
 
-  // ===== LIVE: escuchar SSE y refrescar si este producto cambia =====
+  // ===== LIVE: SSE =====
   useEffect(() => {
     const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
     const es = new EventSource(`${API}/api/products/stream`, {
@@ -109,10 +109,7 @@ export default function ProductDetail() {
     es.addEventListener("product:upsert", onUpsert);
     es.addEventListener("product:delete", onDelete);
     es.addEventListener("ping", () => {});
-
-    return () => {
-      es.close();
-    };
+    return () => es.close();
   }, [id]);
 
   const p = useMemo(() => (raw ? normalizeProduct(raw) : null), [raw]);
@@ -121,7 +118,7 @@ export default function ProductDetail() {
     if (p?.id) setWish(wishlist.has(p.id));
   }, [p?.id, wishlist]);
 
-  // === Variantes (soporta raw.variants o raw.variantes) ===
+  // === Variantes (raw.variants o raw.variantes) ===
   const variants = useMemo(() => {
     const v = raw?.variants ?? raw?.variantes;
     return Array.isArray(v) ? v : [];
@@ -136,7 +133,7 @@ export default function ProductDetail() {
   // Preseleccionar automáticamente la primera variante con stock
   useEffect(() => {
     if (!variants.length) return;
-    if (selSize || selColor) return; // ya hay selección del usuario
+    if (selSize || selColor) return;
     const firstOk = variantsInStock[0] || variants[0];
     if (firstOk?.size) setSelSize(firstOk.size);
     if (firstOk?.color) setSelColor(firstOk.color);
@@ -151,20 +148,15 @@ export default function ProductDetail() {
     !variants.some((v) => v.size === s && Number(v.stock || 0) > 0);
 
   const colorsForSize = useMemo(() => {
-    // mostrar todos los colores posibles de ese talle (únicos)
-    const base = selSize
-      ? variants.filter((v) => v.size === selSize)
-      : variants;
+    const base = selSize ? variants.filter((v) => v.size === selSize) : variants;
     return Array.from(new Set(base.map((v) => v.color).filter(Boolean)));
   }, [variants, selSize]);
 
   const isColorDisabled = (c) => {
-    // si hay talle elegido, miramos stock del par (talle,color)
     if (selSize) {
       const v = variants.find((x) => x.size === selSize && x.color === c);
       return !v || Number(v.stock || 0) <= 0;
     }
-    // sin talle elegido, deshabilitamos color si todas sus variantes están en 0
     const hasStock = variants.some(
       (x) => x.color === c && Number(x.stock || 0) > 0
     );
@@ -180,14 +172,12 @@ export default function ProductDetail() {
   const chosenVariant = useMemo(() => {
     if (!variants.length) return null;
 
-    // si hay selección completa, tomamos esa
     const full =
       selSize && selColor
         ? variants.find((v) => v.size === selSize && v.color === selColor)
         : null;
     if (full) return full;
 
-    // si hay talle elegido, elegimos el primer color con stock para ese talle
     if (selSize) {
       const withStockForSize =
         variants.find(
@@ -195,16 +185,14 @@ export default function ProductDetail() {
         ) || null;
       if (withStockForSize) return withStockForSize;
 
-      // sin stock para ese talle → la primera de ese talle (aunque sea 0)
       const anyForSize = variants.find((v) => v.size === selSize) || null;
       if (anyForSize) return anyForSize;
     }
 
-    // si no hay selección, devolvemos la primera en stock; si no, la primera general
     return firstInStock || variants[0] || null;
   }, [variants, selSize, selColor, firstInStock]);
 
-  // Precio con promo si corresponde
+  // Precio
   const basePriceForView = Number(chosenVariant?.price ?? p?.precio ?? 0);
   const promoActive = isPromoActive(raw?.promo);
   const priceToShow =
@@ -212,7 +200,6 @@ export default function ProductDetail() {
       ? Number(raw.promo.precio)
       : basePriceForView;
 
-  // precio original a tachar
   const originalForOff =
     promoActive && Number(raw?.promo?.precio) < basePriceForView
       ? basePriceForView
@@ -220,29 +207,21 @@ export default function ProductDetail() {
 
   const off = getOff(priceToShow, originalForOff);
 
-  // ========= Fallback: usar stock del producto si ninguna variante tiene stock =========
+  // Stock a mostrar (si no hay variantes con stock, cae al stock del producto)
   const hasVariantStock = variantsInStock.length > 0;
   const stockToShow = hasVariantStock
     ? (chosenVariant ? Number(chosenVariant.stock || 0) : 0)
     : Number(p?.stock || 0);
   const agotado = stockToShow <= 0;
 
-  // === NUEVO: limitar cantidad máxima al stock disponible ===
-  const maxQty = Math.max(agotado ? 1 : stockToShow, 1);
-
-  // cada vez que cambia el stock visible (por selección/variantes), clamp de qty
+  // clamp de cantidad
   useEffect(() => {
-    setQty((q) => {
-      const n = Number(q) || 1;
-      return Math.min(Math.max(1, n), maxQty);
-    });
-  }, [maxQty]);
-  // ===================================================================
+    setQty((q) => Math.min(Math.max(1, q), Math.max(agotado ? 1 : 1, stockToShow || 1)));
+  }, [stockToShow, agotado]);
 
   const handleAddToCart = () => {
     if (agotado || !p) return;
     const img = p.imagenes?.[0] || p.imagen;
-
     addToCart({
       ...(p.raw || {}),
       _id: p.id,
@@ -250,11 +229,7 @@ export default function ProductDetail() {
       imagen: img,
       precio: priceToShow,
       variant: chosenVariant
-        ? {
-            vid: chosenVariant.vid,
-            size: chosenVariant.size,
-            color: chosenVariant.color,
-          }
+        ? { vid: chosenVariant.vid, size: chosenVariant.size, color: chosenVariant.color }
         : undefined,
       cantidad: qty,
     });
@@ -317,17 +292,14 @@ export default function ProductDetail() {
             onToggleWish={toggleWish}
           />
 
-        {/* === BUY BOX + selectores de variantes === */}
           <div className="pd-buy">
             <h1 className="pd-title">{p.nombre}</h1>
 
-            {/* Chips (categoría) */}
             <div className="pd-chips">
               {p.categoria && <span className="chip outline">{p.categoria}</span>}
               {p.subcategoria && <span className="chip outline">{p.subcategoria}</span>}
             </div>
 
-            {/* Precio */}
             <div className="pd-price">
               <span className="now">
                 ${Number(priceToShow).toLocaleString("es-AR")}
@@ -340,7 +312,7 @@ export default function ProductDetail() {
               {off ? <span className="pd-off">-{off}%</span> : null}
             </div>
 
-            {/* Selectores de variantes (solo si hay) */}
+            {/* Selectores de variantes */}
             {variants.length > 0 && (
               <div className="pd-variants">
                 {/* Talles */}
@@ -349,32 +321,22 @@ export default function ProductDetail() {
                     <span className="pd-var-label">Talle</span>
                     <div className="swatches">
                       {sizes.map((s) => {
-                        const disabled = isSizeDisabled(s);
+                        const out = isSizeDisabled(s);
                         return (
                           <button
                             key={s}
                             type="button"
-                            className={`swatch ${selSize === s ? "active" : ""} ${
-                              disabled ? "disabled" : ""
-                            }`}
-                            disabled={disabled}
+                            className={`swatch ${selSize === s ? "active" : ""} ${out ? "disabled" : ""}`}
+                            title={out ? "Sin stock" : ""}
                             onClick={() => {
-                              if (disabled) return;
+                              // permitir click aunque no haya stock → solo informamos
                               setSelSize(s);
-                              // elegir color con stock para ese talle si el actual no sirve
-                              const colorsWithStock = variants
-                                .filter(
-                                  (v) =>
-                                    v.size === s &&
-                                    Number(v.stock || 0) > 0 &&
-                                    v.color
-                                )
+                              // si el color actual no existe con ese talle, elegir el primero disponible (con o sin stock)
+                              const colorsForThisSize = variants
+                                .filter((v) => v.size === s && v.color)
                                 .map((v) => v.color);
-                              if (
-                                !selColor ||
-                                (selColor && !colorsWithStock.includes(selColor))
-                              ) {
-                                setSelColor(colorsWithStock[0] || "");
+                              if (!colorsForThisSize.includes(selColor)) {
+                                setSelColor(colorsForThisSize[0] || "");
                               }
                             }}
                           >
@@ -392,20 +354,14 @@ export default function ProductDetail() {
                     <span className="pd-var-label">Color</span>
                     <div className="swatches">
                       {colorsForSize.map((c) => {
-                        const disabled = isColorDisabled(c);
+                        const out = isColorDisabled(c);
                         return (
                           <button
                             key={c}
                             type="button"
-                            className={`swatch ${selColor === c ? "active" : ""} ${
-                              disabled ? "disabled" : ""
-                            }`}
-                            disabled={disabled}
-                            onClick={() => {
-                              if (disabled) return;
-                              setSelColor(c);
-                            }}
-                            title={c}
+                            className={`swatch ${selColor === c ? "active" : ""} ${out ? "disabled" : ""}`}
+                            title={out ? "Sin stock" : c}
+                            onClick={() => setSelColor(c)} // permitimos click aunque sea sin stock
                           >
                             {c}
                           </button>
@@ -421,9 +377,7 @@ export default function ProductDetail() {
             <div className="pd-stock-row">
               <span className={`stock ${agotado ? "danger" : "ok"}`}>
                 {agotado ? "Sin stock" : `Stock: ${stockToShow}`}
-                {chosenVariant
-                  ? ` · ${chosenVariant.size} / ${chosenVariant.color}`
-                  : ""}
+                {chosenVariant ? ` · ${chosenVariant.size} / ${chosenVariant.color}` : ""}
               </span>
 
               <div className="qty">
@@ -437,26 +391,23 @@ export default function ProductDetail() {
                 <input
                   value={qty}
                   min={1}
-                  max={maxQty}
+                  max={Math.max(1, stockToShow || 1)}
                   onChange={(e) => {
-                    const n = Math.max(
-                      1,
-                      Math.min(Number(e.target.value) || 1, maxQty)
-                    );
-                    setQty(n);
+                    const n = Number(e.target.value) || 1;
+                    setQty(Math.min(Math.max(1, n), Math.max(1, stockToShow || 1)));
                   }}
                 />
                 <button
-                  onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                  onClick={() => setQty((q) => Math.min(stockToShow || 1, q + 1))}
                   type="button"
-                  disabled={qty >= maxQty || agotado}
+                  disabled={qty >= (stockToShow || 1)}
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* ÚNICO CTA */}
+            {/* CTA */}
             <button
               className="pd-cta"
               onClick={handleAddToCart}
@@ -467,7 +418,6 @@ export default function ProductDetail() {
               {agotado ? "Sin stock" : "Agregar al carrito"}
             </button>
 
-            {/* Beneficios (texto simple) */}
             <ul className="pd-benefits" style={{ marginTop: 12 }}>
               <li>
                 <span>🚚</span>
