@@ -82,7 +82,7 @@ export default function ProductDetail() {
         const { data } = await api.get(`/api/productos/${id}`, {
           params: { admin: true, _t: Date.now() },
         });
-      setRaw(data);
+        setRaw(data);
       } catch (e) {
         console.warn("SSE refetch error:", e?.message || e);
       }
@@ -222,10 +222,15 @@ export default function ProductDetail() {
 
   const off = getOff(priceToShow, originalForOff);
 
-  const stockToShow = chosenVariant
-    ? Number(chosenVariant.stock || 0)
+  // ========= ÚNICO CAMBIO: fallback al stock del producto si no hay stock en ninguna variante =========
+  const hasVariantStock = variantsInStock.length > 0;
+
+  const stockToShow = hasVariantStock
+    ? (chosenVariant ? Number(chosenVariant.stock || 0) : 0)
     : Number(p?.stock || 0);
+
   const agotado = stockToShow <= 0;
+  // ====================================================================================================
 
   const handleAddToCart = () => {
     if (agotado || !p) return;
