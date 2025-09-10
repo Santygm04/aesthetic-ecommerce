@@ -10,6 +10,22 @@ import useCatalogStats from "../../hooks/useCatalogStats";
 import { hasUpdates, markSeen } from "../../utils/seen";
 
 const categorias = [
+  // 👉 Secciones primero
+  {
+    titulo: "Secciones",
+    icono: section,
+    rutas: [
+      { nombre: "Skincare", ruta: "/category/skincare" },
+      { nombre: "Maquillaje", ruta: "/category/maquillaje" },
+      { nombre: "Uñas", ruta: "/category/uñas" },
+      { nombre: "Pestañas", ruta: "/category/pestañas" },
+      { nombre: "Bijouteria", ruta: "/category/bijouteria" },
+      { nombre: "Bodycare", ruta: "/category/bodycare" },
+      { nombre: "Marroquineria", ruta: "/category/marroquineria" },
+      { nombre: "Peluqueria", ruta: "/category/peluquería" }
+    ]
+  },
+  // 👉 Lencería después
   {
     titulo: "Lencería / Ropa interior",
     icono: lenceriaIcon,
@@ -25,20 +41,7 @@ const categorias = [
       { nombre: "Medias", ruta: "/category/lenceria/medias" }
     ]
   },
-  {
-    titulo: "Secciones",
-    icono: section,
-    rutas: [
-      { nombre: "Skincare", ruta: "/category/skincare" },
-      { nombre: "Maquillaje", ruta: "/category/maquillaje" },
-      { nombre: "Uñas", ruta: "/category/uñas" },
-      { nombre: "Pestañas", ruta: "/category/pestañas" },
-      { nombre: "Bijouteria", ruta: "/category/bijouteria" },
-      { nombre: "Bodycare", ruta: "/category/bodycare" },
-      { nombre: "Marroquineria", ruta: "/category/marroquineria" },
-      { nombre: "Peluqueria", ruta: "/category/peluquería" }
-    ]
-  },
+  // 👉 Nuevos ingresos al final
   {
     titulo: "Nuevos ingresos",
     icono: novedades,

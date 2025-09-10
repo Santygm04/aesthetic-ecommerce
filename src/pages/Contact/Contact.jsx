@@ -80,7 +80,7 @@ export default function Contact() {
               <div className="ico">📌</div>
               <div>
                 <div className="strong">Ubicación</div>
-                <div className="muted">Tucumán, Argentina</div>
+                <div className="muted">Santiago del Estero, Argentina</div>
               </div>
             </li>
 
@@ -96,7 +96,7 @@ export default function Contact() {
               <div className="ico">💳</div>
               <div>
                 <div className="strong">Pagos</div>
-                <div className="muted">Transferencia • 2 Cuotas</div>
+                <div className="muted">Transferencia</div>
               </div>
             </li>
           </ul>
