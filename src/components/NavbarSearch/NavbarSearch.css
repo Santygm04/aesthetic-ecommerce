@@ -330,7 +330,7 @@
   }
 }
 
-@media (min-width: 391px) and (max-width: 412px) {
+@media (min-width: 391px) {
   .search-btn{
     position: absolute;
     top: auto;
