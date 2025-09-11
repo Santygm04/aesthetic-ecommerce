@@ -330,6 +330,14 @@
   }
 }
 
+@media (max-width: 540px) {
+  .search-btn{
+    position: absolute;
+    top: auto;
+    bottom: 18.4rem !important;
+  }
+}
+
 @media (min-width: 540px) and (max-width: 769px) {
   .search-btn{
     position: absolute;
