@@ -330,11 +330,11 @@
   }
 }
 
-@media (max-width: 540px) {
+@media (min-width: 430px) and (max-width: 540px) {
   .search-btn{
     position: absolute;
     top: auto;
-    bottom: 18.4rem !important;
+    bottom:19rem !important;
   }
 }
 
