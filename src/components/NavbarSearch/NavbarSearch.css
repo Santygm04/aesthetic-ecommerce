@@ -509,8 +509,8 @@
   /* lupa SIEMPRE a la derecha, centrada verticalmente */
   .nav-search .search-btn{
     position: absolute !important;
-    top: 50% !important;
-    right: 8px !important;
+    top: 51% !important;
+    right: 13px !important;
     left: auto !important;
     bottom: auto !important;
     transform: translateY(-50%) !important;
