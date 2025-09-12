@@ -50,7 +50,8 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo brand-script">AESTHETIC</div>
+      <div className="navbar-logo brand-script"><a href="#">AESTHETIC</a>
+      </div>
 
       {/* === Toggle + Hamburguesa + Overlay (no rompe rutas/JS) === */}
       <input id="nav-toggle" className="nav-toggle" type="checkbox" aria-hidden="true" />
