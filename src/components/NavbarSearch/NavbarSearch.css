@@ -521,7 +521,7 @@
   /* el dropdown cuelga del borde inferior del input y ocupa todo el ancho */
   .nav-search .search-quick{
     position: absolute !important;
-    top: calc(80% + 8px) !important;
+    top: calc(55% + 8px) !important;
     left: 0 !important;
     right: 0 !important;
     transform: none !important;
