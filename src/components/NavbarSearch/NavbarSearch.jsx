@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import api from "../../utils/api";
 import "../../components/NavbarSearch/NavbarSearch.css";
 
-/* Íconos (mismos que usás en el Navbar) */
+/* Íconos */
 import skincare from "../../../assets/iconos/skincare.png";
 import bodycare from "../../../assets/iconos/bodycare.png";
 import maquillaje from "../../../assets/iconos/maquillaje.png";
@@ -44,7 +44,7 @@ const SUBCATS = {
   ],
 };
 
-export default function NavbarSearch() {
+function NavbarSearch({ inputRef }) {
   const [q, setQ] = useState("");
   const [sug, setSug] = useState([]);
   const [focused, setFocused] = useState(false);
@@ -117,6 +117,7 @@ export default function NavbarSearch() {
   return (
     <div className="search-wrap" ref={boxRef}>
       <input
+        ref={inputRef}          
         className="search-input"
         value={q}
         onChange={(e)=> { setQ(e.target.value); setOpenCat(null); }}
@@ -167,7 +168,6 @@ export default function NavbarSearch() {
             ))}
           </div>
 
-          {/* subcategorías (solo si la cat tiene) */}
           {!!openCat && SUBCATS[openCat] && (
             <div className="sq-subcats">
               <div className="sq-subhead">
@@ -200,3 +200,5 @@ export default function NavbarSearch() {
     </div>
   );
 }
+
+export default NavbarSearch;

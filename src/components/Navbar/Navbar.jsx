@@ -1,9 +1,9 @@
 // src/components/Navbar/Navbar.jsx
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../../components/Navbar/Navbar.css";
 import { useCart } from "../Carrito/CartContext";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch } from "react-icons/fa";
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
 
 // ICONOS
@@ -25,6 +25,10 @@ export default function Navbar() {
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [isLenOpen, setIsLenOpen] = useState(false);
   const ddRef = useRef(null);
+
+  // 🔎 para el botón "Buscar" de la tab bar inferior
+  const mobileSearchRef = useRef(null);
+  const nav = useNavigate();
 
   const toggleCats = () => setIsCatOpen((v) => !v);
   const toggleLen = () => setIsLenOpen((v) => !v);
@@ -48,6 +52,24 @@ export default function Navbar() {
     };
   }, []);
 
+  // === helpers tabbar móvil ===
+  const focusMobileSearch = () => {
+    // aseguramos estar arriba y dar foco
+    try {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {}
+    setTimeout(() => {
+      mobileSearchRef.current?.focus?.();
+    }, 150);
+  };
+
+  const openCategoriesDrawer = () => {
+    // abre el drawer y muestra categorías
+    const toggle = document.getElementById("nav-toggle");
+    if (toggle) toggle.checked = true;
+    setIsCatOpen(true);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo brand-script">AESTHETIC</div>
@@ -57,12 +79,18 @@ export default function Navbar() {
       <label htmlFor="nav-toggle" className="hamb" aria-label="Abrir menú" aria-controls="main-menu" />
       <label htmlFor="nav-toggle" className="nav-overlay" aria-hidden="true" />
 
+      {/* 🔎 Buscador visible en el header del móvil */}
+      <div className="nav-search mobile-top">
+        <NavbarSearch inputRef={mobileSearchRef} />
+      </div>
+
       <ul className="navbar-links" id="main-menu">
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
         <li className="nav-close-li">
           <label htmlFor="nav-toggle" className="nav-close-btn" title="Cerrar">✕</label>
         </li>
 
+        {/* buscador dentro del drawer / desktop como estaba */}
         <li className="nav-search">
           <NavbarSearch />
         </li>
@@ -199,6 +227,37 @@ export default function Navbar() {
           </NavLink>
         </li>
       </ul>
+
+      {/* ===== Tab bar inferior móvil ===== */}
+      <div className="mobile-tabbar">
+        <NavLink to="/" className={({isActive}) => "tab-btn" + (isActive ? " is-active" : "")}>
+          <FaHome />
+          <span>Inicio</span>
+        </NavLink>
+
+        <button type="button" className="tab-btn" onClick={focusMobileSearch}>
+          <FaSearch />
+          <span>Buscar</span>
+        </button>
+
+        <button type="button" className="tab-btn" onClick={openCategoriesDrawer}>
+          <FaThLarge />
+          <span>Categorías</span>
+        </button>
+
+        <NavLink to="/promos" className={({isActive}) => "tab-btn" + (isActive ? " is-active" : "")}>
+          <FaTags />
+          <span>Promos</span>
+        </NavLink>
+
+        <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
+          <span className="cart-icon-wrapper">
+            <FaShoppingCart />
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </span>
+          <span>Carrito</span>
+        </NavLink>
+      </div>
     </nav>
   );
 }

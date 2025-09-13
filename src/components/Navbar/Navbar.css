@@ -9,7 +9,7 @@
 
 /* ========= Base ========= */
 .navbar{
-  position:relative; /* para off-canvas */
+  position:relative; /* para off-canvas y tabbar */
   display:flex; justify-content:space-between; align-items:center;
   padding: clamp(.8rem, 2.5vw, 1rem) clamp(1rem, 4vw, 2rem);
   background: linear-gradient(180deg, #fff 0%, #fff0f5 100%);
@@ -24,6 +24,15 @@
   color:var(--brand);
   letter-spacing:1px;
   text-shadow:0 2px 10px rgba(255,46,166,.08);
+}
+
+/* Header fijo para móvil (para que la búsqueda quede arriba) */
+@media (max-width: 768px){
+  .navbar{
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
 }
 
 /* Bloqueo de scroll cuando el drawer está abierto */
@@ -109,7 +118,6 @@ body.nav-open{ overflow:hidden; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)} }
 .dropdown.open > .dropdown-menu{ display:block; }
 
-/* Items del menú */
 .dropdown-menu li > a{
   display:flex; align-items:center; justify-content:space-between;
   gap:.5rem; color:#333;
@@ -153,10 +161,14 @@ body.nav-open{ overflow:hidden; }
   position:relative; left:0;
 }
 
-/* ========= Drawer (≤ 1024px) ========= */
+/* buscador visible en header móvil */
+.nav-search.mobile-top{ display:none; width:100%; padding: .4rem 0 .8rem; }
+@media (max-width:768px){
+  .nav-search.mobile-top{ display:flex; }
+}
+/* en desktop / drawer se mantiene como estaba */
 @media (max-width:1024px){
   .hamb{ display:inline-block; }
-
   .nav-overlay{
     position:fixed; inset:0;
     background:rgba(0,0,0,.40);
@@ -165,7 +177,6 @@ body.nav-open{ overflow:hidden; }
     transition:opacity .22s, visibility .22s;
     z-index:109; display:block;
   }
-
   .navbar-links{
     position:fixed; top:0; bottom:0; left:0; right:auto;
     width: clamp(280px, 82vw, 360px);
@@ -177,7 +188,6 @@ body.nav-open{ overflow:hidden; }
     overflow:auto; z-index:110; box-shadow:8px 0 24px rgba(0,0,0,.12);
     border-right:1px solid #f3c9e2;
   }
-  /* Abrir */
   #nav-toggle:checked ~ .navbar-links{ transform: translateX(0); }
   #nav-toggle:checked + .hamb::before{ transform: translateY(5px) rotate(45deg); }
   #nav-toggle:checked + .hamb::after{ transform: translateY(-5px) rotate(-45deg); }
@@ -185,11 +195,9 @@ body.nav-open{ overflow:hidden; }
     opacity:1; visibility:visible; pointer-events:auto;
   }
 
-  /* Buscador a ancho completo dentro del drawer */
   .nav-search{ order:0; width:100%; padding:.2rem .2rem .6rem; }
   .nav-search .search-wrap, .nav-search .sb{ width:100%; left:0; }
 
-  /* Dropdowns en flujo dentro del drawer */
   .navbar-links .dropdown{ width:100%; }
   .navbar-links .dropdown-title{
     justify-content:space-between;
@@ -199,11 +207,9 @@ body.nav-open{ overflow:hidden; }
     position:static; inset:auto; width:100%; max-height:none;
     margin-top:.35rem; display:none; padding:8px;
     box-shadow:none; background:#fff0f5; border-radius:12px;
-
   }
   .dropdown.open > .dropdown-menu{ display:block; }
 
-  /* Botón cerrar dentro del drawer */
   .nav-close-li{ display:block; }
   .nav-close-btn{
     display:inline-flex; align-items:center; justify-content:center;
@@ -219,32 +225,63 @@ body.nav-open{ overflow:hidden; }
 /* Ocultar botón cerrar en desktop grandes (tu ajuste) */
 @media (min-width:900px){ .nav-close-li{ display:none; } }
 
-/*Tavlet */
-@media (min-width: 980px) and (max-width: 1281px) {
-  .dropdown-title{
-    cursor: pointer;
+/* ===== Tab bar inferior móvil ===== */
+.mobile-tabbar{
+  display:none;
+}
+@media (max-width:768px){
+  .mobile-tabbar{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 64px;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    background:#fff;
+    border-top:1px solid #f3c9e2;
+    box-shadow: 0 -6px 16px rgba(214,51,132,.10);
+    display:flex; align-items:center; justify-content:space-around;
+    z-index: 210;
+  }
+  .mobile-tabbar .tab-btn{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    text-decoration:none; background:transparent; border:0;
+    color:#333; font-weight:700; font-size:12px; border-radius:10px; padding:6px 10px;
+  }
+  .mobile-tabbar .tab-btn svg{ font-size:18px; }
+  .mobile-tabbar .tab-btn.is-active,
+  .mobile-tabbar .tab-btn:hover{
+    color:#fff; background:var(--brand);
+    box-shadow:0 6px 16px rgba(255,46,166,.18);
   }
 
-  
+  /* badge del carrito dentro de la tab */
+  .mobile-tabbar .cart .cart-icon-wrapper{
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .mobile-tabbar .cart-badge{
+    position:absolute; top:-8px; right:-10px;
+    font-size:10px; padding:1px 6px;
+  }
+
+  /* dar espacio al contenido para que no quede tapado */
+  body{ padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+}
+
+/*Tavlet */
+@media (min-width: 980px) and (max-width: 1281px) {
+  .dropdown-title{ cursor: pointer; }
 }
 
 /*Escritorio 1 */
 @media (min-width: 1300px) and (max-width: 1441px){
-  .dropdown-title{
-    cursor: pointer;
-  }
+  .dropdown-title{ cursor: pointer; }
 }
 
 /*Mi noteboock*/
 @media (min-width: 1450px) and (max-width: 1478px) {
-  .dropdown-title{
-    cursor: pointer;
-  }
+  .dropdown-title{ cursor: pointer; }
 }
 
 /*Escritorio 2*/
 @media (min-width: 1500px) and (max-width: 1921px) {
-  .dropdown-title{
-    cursor: pointer;
-  }
+  .dropdown-title{ cursor: pointer; }
 }
