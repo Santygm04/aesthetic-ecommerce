@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, forwardRef } from "react";
+// src/components/NavbarSearch/NavbarSearch.jsx
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import api from "../../utils/api";
@@ -29,7 +30,6 @@ const QUICK_CATS = [
   { name: "Nuevos ingresos", slug: "nuevos-ingresos",icon: nuevosIngresos },
 ];
 
-/* ⬇️ subcategorías para expandir dentro del buscador */
 const SUBCATS = {
   lenceria: [
     { name: "Ver todo",        slug: "" },
@@ -44,11 +44,11 @@ const SUBCATS = {
   ],
 };
 
-function NavbarSearch({ inputRef }) {
+export default function NavbarSearch({ inputRef }) {
   const [q, setQ] = useState("");
   const [sug, setSug] = useState([]);
   const [focused, setFocused] = useState(false);
-  const [openCat, setOpenCat] = useState(null);   // 👈 categoría expandida (ej: "lenceria")
+  const [openCat, setOpenCat] = useState(null);
   const nav = useNavigate();
   const boxRef = useRef(null);
 
@@ -83,33 +83,24 @@ function NavbarSearch({ inputRef }) {
   const goSearch = (term) => {
     const t = (term ?? q).trim();
     if (!t) return;
-    setSug([]);
-    setFocused(false);
-    setOpenCat(null);
+    setSug([]); setFocused(false); setOpenCat(null);
     nav(`/buscar?q=${encodeURIComponent(t)}`);
   };
 
   const goCategory = (slug) => {
-    setSug([]);
-    setFocused(false);
-    setOpenCat(null);
+    setSug([]); setFocused(false); setOpenCat(null);
     nav(`/category/${encodeURIComponent(slug)}`);
   };
 
   const goSub = (cat, sub) => {
-    setSug([]);
-    setFocused(false);
-    setOpenCat(null);
+    setSug([]); setFocused(false); setOpenCat(null);
     if (sub) nav(`/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}`);
     else nav(`/category/${encodeURIComponent(cat)}`);
   };
 
   const onCatClick = (slug) => {
-    if (SUBCATS[slug]) {
-      setOpenCat((curr) => (curr === slug ? null : slug)); // toggle
-    } else {
-      goCategory(slug);
-    }
+    if (SUBCATS[slug]) setOpenCat((curr) => (curr === slug ? null : slug));
+    else goCategory(slug);
   };
 
   const showQuickCats = focused && q.trim() === "" && sug.length === 0;
@@ -117,7 +108,7 @@ function NavbarSearch({ inputRef }) {
   return (
     <div className="search-wrap" ref={boxRef}>
       <input
-        ref={inputRef}          
+        ref={inputRef}
         className="search-input"
         value={q}
         onChange={(e)=> { setQ(e.target.value); setOpenCat(null); }}
@@ -200,5 +191,3 @@ function NavbarSearch({ inputRef }) {
     </div>
   );
 }
-
-export default NavbarSearch;

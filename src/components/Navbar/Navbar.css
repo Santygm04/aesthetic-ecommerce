@@ -3,7 +3,6 @@
   --brand:#ff2ea6;
   --brand-600:#e11a8a;
   --brand-50:#fff0f8;
-  --accent:#6a1b9a;
   --shadow-brand:0 10px 25px rgba(255,46,166,.25);
 }
 
@@ -24,15 +23,12 @@
   color:var(--brand);
   letter-spacing:1px;
   text-shadow:0 2px 10px rgba(255,46,166,.08);
+  text-decoration:none;               /* el logo es un <a> ahora */
 }
 
 /* Header fijo para móvil (para que la búsqueda quede arriba) */
 @media (max-width: 768px){
-  .navbar{
-    position: sticky;
-    top: 0;
-    z-index: 200;
-  }
+  .navbar{ position: sticky; top: 0; z-index: 200; }
 }
 
 /* Bloqueo de scroll cuando el drawer está abierto */
@@ -166,7 +162,8 @@ body.nav-open{ overflow:hidden; }
 @media (max-width:768px){
   .nav-search.mobile-top{ display:flex; }
 }
-/* en desktop / drawer se mantiene como estaba */
+
+/* ========= Drawer (≤ 1024px) ========= */
 @media (max-width:1024px){
   .hamb{ display:inline-block; }
   .nav-overlay{
@@ -222,13 +219,11 @@ body.nav-open{ overflow:hidden; }
 /* Suavizado tipográfico */
 .navbar *{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
-/* Ocultar botón cerrar en desktop grandes (tu ajuste) */
+/* Ocultar botón cerrar en desktop grandes */
 @media (min-width:900px){ .nav-close-li{ display:none; } }
 
 /* ===== Tab bar inferior móvil ===== */
-.mobile-tabbar{
-  display:none;
-}
+.mobile-tabbar{ display:none; }
 @media (max-width:768px){
   .mobile-tabbar{
     position: fixed;
@@ -237,14 +232,14 @@ body.nav-open{ overflow:hidden; }
     padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
     background:#fff;
     border-top:1px solid #f3c9e2;
-    box-shadow: 0 -6px 16px rgba(214,51,132,.10);
+    box-shadow: 0 -6px 18px rgba(214,51,132,.12);
     display:flex; align-items:center; justify-content:space-around;
     z-index: 210;
   }
   .mobile-tabbar .tab-btn{
     display:flex; flex-direction:column; align-items:center; gap:4px;
     text-decoration:none; background:transparent; border:0;
-    color:#333; font-weight:700; font-size:12px; border-radius:10px; padding:6px 10px;
+    color:#333; font-weight:800; font-size:12px; border-radius:12px; padding:6px 10px;
   }
   .mobile-tabbar .tab-btn svg{ font-size:18px; }
   .mobile-tabbar .tab-btn.is-active,
@@ -254,34 +249,24 @@ body.nav-open{ overflow:hidden; }
   }
 
   /* badge del carrito dentro de la tab */
-  .mobile-tabbar .cart .cart-icon-wrapper{
-    position:relative; display:inline-flex; align-items:center; justify-content:center;
-  }
-  .mobile-tabbar .cart-badge{
-    position:absolute; top:-8px; right:-10px;
-    font-size:10px; padding:1px 6px;
-  }
+  .mobile-tabbar .cart .cart-icon-wrapper{ position:relative; display:inline-flex; align-items:center; justify-content:center; }
+  .mobile-tabbar .cart-badge{ position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; }
 
-  /* dar espacio al contenido para que no quede tapado */
-  body{ padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  /* espacio al contenido para que no quede tapado */
+  body{ padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 
-/*Tavlet */
-@media (min-width: 980px) and (max-width: 1281px) {
-  .dropdown-title{ cursor: pointer; }
+/* Empujar el FAB de WhatsApp para que no tape la tabbar (intentamos cubrir las clases comunes) */
+.wsp-fab,
+.whatsapp-float,
+.whatsapp-button,
+.whatsapp,
+.btn-whatsapp-floating{
+  position: fixed !important;
+  right: 16px !important;
+  bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  z-index: 220 !important;
 }
 
-/*Escritorio 1 */
-@media (min-width: 1300px) and (max-width: 1441px){
-  .dropdown-title{ cursor: pointer; }
-}
-
-/*Mi noteboock*/
-@media (min-width: 1450px) and (max-width: 1478px) {
-  .dropdown-title{ cursor: pointer; }
-}
-
-/*Escritorio 2*/
-@media (min-width: 1500px) and (max-width: 1921px) {
-  .dropdown-title{ cursor: pointer; }
-}
+/*Tavlet/Escritorio: puntero */
+@media (min-width: 980px){ .dropdown-title{ cursor:pointer; } }
