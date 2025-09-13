@@ -567,3 +567,167 @@
     transform:none !important;
   }
 }
+
+/* Contenedor del buscador */
+.search-wrap{
+  position:relative;
+  width:min(480px, 100%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* Input + botón lupita */
+.search-input{
+  flex:1;
+  padding:.55rem .75rem;
+  border:1px solid #e8cfe0;
+  border-radius:10px;
+  font-size:1rem;
+  background:#fff;
+  color:#333;
+}
+.search-input:focus{
+  border-color:#d63384;
+  outline:none;
+  box-shadow:0 6px 18px rgba(214,51,132,.12);
+}
+.search-btn{
+  width:40px;
+  height:38px;
+  border:none;
+  border-radius:10px;
+  background:#d63384;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(214,51,132,.12);
+  position:absolute; right: 0.9rem; top:42% !important; transform:translateY(-0%);
+  border:0; background:#d63384; color:#fff; width:36px; height:33px;
+  border-radius:10px; display:grid; place-items:center; cursor:pointer;
+}
+.search-btn:hover{ filter:brightness(1.05); }
+
+/*Mi noteboock*/
+@media (min-width: 300px) and (max-width: 361px) {
+  .nav-search .search-btn{
+    position: absolute;
+    left: 83% !important;
+    top: auto !important;
+    bottom: 41.7% !important;
+  }
+}
+
+/* Lista de sugerencias (texto) */
+.suggest{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px;
+  box-shadow:0 16px 40px rgba(214,51,132,.10);
+  list-style:none; padding:.35rem; margin:0;
+  max-height:300px; overflow:auto; z-index:50;
+}
+.suggest li + li { margin-top:2px; }
+.suggest button{
+  width:100%; text-align:left; border:none; background:transparent;
+  padding:.5rem .55rem; border-radius:8px; cursor:pointer; color:#333;
+}
+.suggest button:hover{ background:#fff7fb; color:#d63384; }
+
+/* Panel de categorías rápidas */
+.search-quick{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px;
+  box-shadow:0 16px 40px rgba(214,51,132,.10);
+  padding:.6rem .6rem .5rem;
+  z-index:49;
+}
+.sq-head{
+  font-weight:900; color:#d63384; margin:.1rem .25rem .4rem;
+  font-size:.95rem;
+}
+
+.sq-item{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  border:1px solid #f3c9e2; background:#fff; color:#333;
+  border-radius:12px; padding:.6rem .4rem; cursor:pointer;
+  transition: transform .12s, box-shadow .2s, background .2s, border-color .2s;
+}
+.sq-item img{ width:28px; height:28px; object-fit:contain; }
+.sq-item span{ font-size:.86rem; font-weight:700; color:#d63384; }
+.sq-item:hover{
+  transform:translateY(-2px);
+  background:#fff8fc;
+  border-color:#d63384;
+  box-shadow:0 10px 26px rgba(214,51,132,.12);
+}
+
+/* CTA ver todas */
+.sq-all{
+  margin-top:.55rem;
+  width:100%;
+  border:1px dashed #f3c9e2;
+  background:#fff;
+  color:#d63384;
+  font-weight:800;
+  border-radius:10px;
+  padding:.5rem .6rem;
+  cursor:pointer;
+}
+.sq-all:hover{ background:#fff0f7; }
+
+/* Responsive */
+@media (max-width: 900px){
+  .sq-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 520px){
+  .sq-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+.sq-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); column-gap: 12px; display: flex; flex-wrap: wrap; }
+.sq-item { width: 122px; padding: 1rem; }
+.sq-item span { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sq-item, button  { margin: 0.2rem; }
+
+/* contenedor buscador */
+.search-wrap{ position:relative; width:min(420px, 100%); }
+.search-input{ width:100%; padding:.55rem .9rem; border:1.5px solid #f3c9e2; border-radius:12px; font-size:1rem; background:#fff; color:#333; outline:none; }
+.search-input:focus{ border-color:#d63384; box-shadow:0 8px 26px rgba(214,51,132,.12); }
+
+/* (…resto de tu css existente para grids/subcats/responsivo…) */
+
+/* === Ajuste del buscador en el header móvil (limpio y centrado) === */
+@media (max-width:768px){
+  .mobile-top .search-wrap{ width:100% !important; }
+  .mobile-top .search-input{
+    width:100% !important;
+    padding-right:44px !important;
+    border:1.5px solid #f3c9e2;
+    border-radius:12px;
+  }
+  .mobile-top .search-btn{
+    position:absolute !important;
+    right:6px !important;
+    left:auto !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+    width:36px !important; height:36px !important;
+  }
+  .mobile-top .search-quick{
+    left:0 !important; right:0 !important;
+    top:calc(100% + 8px) !important;
+    transform:none !important;
+  }
+}
+
+/* ===== FIX DEFINITIVO LUPA CENTRADA (pisa cualquier override) ===== */
+.search-wrap > .search-btn{
+  position:absolute !important;
+  right:6px !important;
+  left:auto !important;
+  bottom:auto !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:36px !important;
+  height:36px !important;
+  display:grid !important;
+  place-items:center !important;
+}

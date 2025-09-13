@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../components/Navbar/Navbar.css";
 import { useCart } from "../Carrito/CartContext";
-import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch } from "react-icons/fa";
+import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch, FaEllipsisH } from "react-icons/fa";
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
 
 // ICONOS
@@ -26,8 +26,9 @@ export default function Navbar() {
   const [isLenOpen, setIsLenOpen] = useState(false);
   const ddRef = useRef(null);
 
-  // sheet de categorías (para la tabbar móvil)
+  // sheets móviles
   const [catSheetOpen, setCatSheetOpen] = useState(false);
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
   // para el botón "Buscar" de la tab bar inferior
   const mobileSearchRef = useRef(null);
@@ -48,6 +49,7 @@ export default function Navbar() {
       if (e.key === "Escape") {
         closeAll();
         setCatSheetOpen(false);
+        setMoreSheetOpen(false);
       }
     };
     document.addEventListener("click", handleDocClick);
@@ -64,7 +66,7 @@ export default function Navbar() {
     setTimeout(() => mobileSearchRef.current?.focus?.(), 150);
   };
 
-  // items para el sheet rápido
+  // items para el sheet rápido de categorías
   const CAT_ITEMS = [
     { name: "Skincare", slug: "skincare", icon: skincare },
     { name: "Bodycare", slug: "bodycare", icon: bodycare },
@@ -246,12 +248,8 @@ export default function Navbar() {
           <span>Buscar</span>
         </button>
 
-        {/* Categorías: abre bottom-sheet (no el drawer) */}
-        <button
-          type="button"
-          className="tab-btn"
-          onClick={() => setCatSheetOpen(true)}
-        >
+        {/* Categorías: bottom-sheet (no el drawer) */}
+        <button type="button" className="tab-btn" onClick={() => setCatSheetOpen(true)}>
           <FaThLarge />
           <span>Categorías</span>
         </button>
@@ -260,6 +258,12 @@ export default function Navbar() {
           <FaTags />
           <span>Promos</span>
         </NavLink>
+
+        {/* Más: Nosotros / Contacto */}
+        <button type="button" className="tab-btn" onClick={() => setMoreSheetOpen(true)}>
+          <FaEllipsisH />
+          <span>Más</span>
+        </button>
 
         <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
           <span className="cart-icon-wrapper">
@@ -289,6 +293,24 @@ export default function Navbar() {
         <button type="button" className="cat-sheet-all" onClick={() => { setCatSheetOpen(false); nav("/category"); }}>
           Ver todas las categorías
         </button>
+      </div>
+
+      {/* ==== Bottom Sheet “Más” (Nosotros / Contacto) ==== */}
+      <div
+        className={`more-sheet-overlay ${moreSheetOpen ? "open" : ""}`}
+        onClick={() => setMoreSheetOpen(false)}
+      />
+      <div className={`more-sheet ${moreSheetOpen ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Más opciones">
+        <div className="cat-sheet-handle" />
+        <div className="cat-sheet-title">Más</div>
+        <div className="more-sheet-grid">
+          <button type="button" className="more-sheet-item" onClick={() => { setMoreSheetOpen(false); nav("/nosotros"); }}>
+            <span>Nosotros</span>
+          </button>
+          <button type="button" className="more-sheet-item" onClick={() => { setMoreSheetOpen(false); nav("/contacto"); }}>
+            <span>Contacto</span>
+          </button>
+        </div>
       </div>
     </nav>
   );

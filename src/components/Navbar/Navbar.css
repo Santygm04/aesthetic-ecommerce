@@ -305,6 +305,38 @@ body.nav-open{ overflow:hidden; }
   font-weight:900; border-radius:12px; padding:.6rem .8rem; cursor:pointer;
 }
 
+/* ===== Bottom Sheet “Más” (Nosotros / Contacto) ===== */
+.more-sheet-overlay{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .22s, visibility .22s;
+  z-index: 240;
+}
+.more-sheet-overlay.open{ opacity:1; visibility:visible; pointer-events:auto; }
+
+.more-sheet{
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background:#fff;
+  border-top-left-radius: 18px; border-top-right-radius: 18px;
+  box-shadow: 0 -18px 38px rgba(0,0,0,.18);
+  transform: translateY(102%);
+  transition: transform .28s ease;
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+  z-index: 241;
+}
+.more-sheet.open{ transform: translateY(0); }
+
+.more-sheet-grid{
+  display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px;
+}
+.more-sheet-item{
+  display:flex; align-items:center; justify-content:center;
+  border:1px dashed #f3c9e2; border-radius:12px; padding:.8rem;
+  background:#fff; color:#333; font-weight:900; cursor:pointer;
+}
+.more-sheet-item:hover{ background:#fff7fb; border-color:#efb9db; }
+
 /* Empujar el FAB de WhatsApp para que no tape la tabbar */
 .wsp-fab,
 .whatsapp-float,
