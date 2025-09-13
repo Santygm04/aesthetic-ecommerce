@@ -26,7 +26,10 @@ export default function Navbar() {
   const [isLenOpen, setIsLenOpen] = useState(false);
   const ddRef = useRef(null);
 
-  // 🔎 para el botón "Buscar" de la tab bar inferior
+  // sheet de categorías (para la tabbar móvil)
+  const [catSheetOpen, setCatSheetOpen] = useState(false);
+
+  // para el botón "Buscar" de la tab bar inferior
   const mobileSearchRef = useRef(null);
   const nav = useNavigate();
 
@@ -42,7 +45,10 @@ export default function Navbar() {
       if (ddRef.current && !ddRef.current.contains(e.target)) closeAll();
     };
     const handleKey = (e) => {
-      if (e.key === "Escape") closeAll();
+      if (e.key === "Escape") {
+        closeAll();
+        setCatSheetOpen(false);
+      }
     };
     document.addEventListener("click", handleDocClick);
     document.addEventListener("keydown", handleKey);
@@ -52,29 +58,37 @@ export default function Navbar() {
     };
   }, []);
 
-  // === helpers tabbar móvil ===
+  // helpers tabbar móvil
   const focusMobileSearch = () => {
-    // aseguramos estar arriba y dar foco
-    try {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {}
-    setTimeout(() => {
-      mobileSearchRef.current?.focus?.();
-    }, 150);
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
+    setTimeout(() => mobileSearchRef.current?.focus?.(), 150);
   };
 
-  const openCategoriesDrawer = () => {
-    // abre el drawer y muestra categorías
-    const toggle = document.getElementById("nav-toggle");
-    if (toggle) toggle.checked = true;
-    setIsCatOpen(true);
+  // items para el sheet rápido
+  const CAT_ITEMS = [
+    { name: "Skincare", slug: "skincare", icon: skincare },
+    { name: "Bodycare", slug: "bodycare", icon: bodycare },
+    { name: "Maquillaje", slug: "maquillaje", icon: maquillaje },
+    { name: "Uñas", slug: "uñas", icon: unas },
+    { name: "Pestañas", slug: "pestañas", icon: pestanas },
+    { name: "Peluquería", slug: "peluquería", icon: peluqueria },
+    { name: "Bijouterie", slug: "bijouteria", icon: bijouteria },
+    { name: "Marroquinería", slug: "marroquineria", icon: carteras },
+    { name: "Lencería", slug: "lenceria", icon: lenceria },
+    { name: "Nuevos ingresos", slug: "nuevos-ingresos", icon: nuevosIngresos },
+  ];
+
+  const goCat = (slug) => {
+    setCatSheetOpen(false);
+    nav(`/category/${encodeURIComponent(slug)}`);
   };
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo brand-script">AESTHETIC</div>
+      {/* logo que navega al inicio */}
+      <NavLink to="/" className="navbar-logo brand-script">AESTHETIC</NavLink>
 
-      {/* === Toggle + Hamburguesa + Overlay (no rompe rutas/JS) === */}
+      {/* Toggle + Hamburguesa + Overlay */}
       <input id="nav-toggle" className="nav-toggle" type="checkbox" aria-hidden="true" />
       <label htmlFor="nav-toggle" className="hamb" aria-label="Abrir menú" aria-controls="main-menu" />
       <label htmlFor="nav-toggle" className="nav-overlay" aria-hidden="true" />
@@ -90,7 +104,7 @@ export default function Navbar() {
           <label htmlFor="nav-toggle" className="nav-close-btn" title="Cerrar">✕</label>
         </li>
 
-        {/* buscador dentro del drawer / desktop como estaba */}
+        {/* buscador dentro del drawer / en desktop queda igual */}
         <li className="nav-search">
           <NavbarSearch />
         </li>
@@ -111,19 +125,14 @@ export default function Navbar() {
           </NavLink>
         </li>
 
+        {/* Dropdown de categorías (header / desktop) */}
         <li className={`dropdown ${isCatOpen ? "open" : ""}`} ref={ddRef}>
           <button
             type="button"
             className="dropdown-title"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleCats();
-            }}
+            onClick={(e) => { e.stopPropagation(); toggleCats(); }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                toggleCats();
-              }
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCats(); }
             }}
             aria-haspopup="true"
             aria-expanded={isCatOpen}
@@ -179,10 +188,7 @@ export default function Navbar() {
               <button
                 type="button"
                 className="section-head"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleLen();
-                }}
+                onClick={(e) => { e.stopPropagation(); toggleLen(); }}
               >
                 <img src={lenceria} className="img-icon" alt="" />
                 <span>Lencería / Ropa interior</span>
@@ -240,7 +246,12 @@ export default function Navbar() {
           <span>Buscar</span>
         </button>
 
-        <button type="button" className="tab-btn" onClick={openCategoriesDrawer}>
+        {/* Categorías: abre bottom-sheet (no el drawer) */}
+        <button
+          type="button"
+          className="tab-btn"
+          onClick={() => setCatSheetOpen(true)}
+        >
           <FaThLarge />
           <span>Categorías</span>
         </button>
@@ -257,6 +268,27 @@ export default function Navbar() {
           </span>
           <span>Carrito</span>
         </NavLink>
+      </div>
+
+      {/* ==== Bottom Sheet de categorías (móvil) ==== */}
+      <div
+        className={`cat-sheet-overlay ${catSheetOpen ? "open" : ""}`}
+        onClick={() => setCatSheetOpen(false)}
+      />
+      <div className={`cat-sheet ${catSheetOpen ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Elegí una categoría">
+        <div className="cat-sheet-handle" />
+        <div className="cat-sheet-title">Categorías</div>
+        <div className="cat-sheet-grid">
+          {CAT_ITEMS.map(c => (
+            <button key={c.slug} type="button" className="cat-sheet-item" onClick={() => goCat(c.slug)}>
+              <img src={c.icon} alt="" />
+              <span>{c.name}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" className="cat-sheet-all" onClick={() => { setCatSheetOpen(false); nav("/category"); }}>
+          Ver todas las categorías
+        </button>
       </div>
     </nav>
   );

@@ -542,9 +542,9 @@
   }
 }
 
-/* …(tu archivo tal cual)… */
+/* …tu CSS existente… */
 
-/* === Ajuste del buscador en el header móvil (para que quede lindo y centrado) === */
+/* === Ajuste del buscador en el header móvil (limpio y centrado) === */
 @media (max-width:768px){
   .mobile-top .search-wrap{ width:100% !important; }
   .mobile-top .search-input{

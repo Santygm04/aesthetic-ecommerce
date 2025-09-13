@@ -23,15 +23,13 @@
   color:var(--brand);
   letter-spacing:1px;
   text-shadow:0 2px 10px rgba(255,46,166,.08);
-  text-decoration:none;               /* el logo es un <a> ahora */
+  text-decoration:none;
 }
 
-/* Header fijo para móvil (para que la búsqueda quede arriba) */
 @media (max-width: 768px){
   .navbar{ position: sticky; top: 0; z-index: 200; }
 }
 
-/* Bloqueo de scroll cuando el drawer está abierto */
 body.nav-open{ overflow:hidden; }
 
 /* ========= Toggle / Hamburguesa / Overlay ========= */
@@ -156,8 +154,6 @@ body.nav-open{ overflow:hidden; }
   width: clamp(260px, 60%, 640px);
   position:relative; left:0;
 }
-
-/* buscador visible en header móvil */
 .nav-search.mobile-top{ display:none; width:100%; padding: .4rem 0 .8rem; }
 @media (max-width:768px){
   .nav-search.mobile-top{ display:flex; }
@@ -248,15 +244,68 @@ body.nav-open{ overflow:hidden; }
     box-shadow:0 6px 16px rgba(255,46,166,.18);
   }
 
-  /* badge del carrito dentro de la tab */
   .mobile-tabbar .cart .cart-icon-wrapper{ position:relative; display:inline-flex; align-items:center; justify-content:center; }
   .mobile-tabbar .cart-badge{ position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; }
 
-  /* espacio al contenido para que no quede tapado */
   body{ padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 
-/* Empujar el FAB de WhatsApp para que no tape la tabbar (intentamos cubrir las clases comunes) */
+/* ===== Bottom Sheet de categorías (móvil) ===== */
+.cat-sheet-overlay{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .22s, visibility .22s;
+  z-index: 240;
+}
+.cat-sheet-overlay.open{ opacity:1; visibility:visible; pointer-events:auto; }
+
+.cat-sheet{
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background:#fff;
+  border-top-left-radius: 18px; border-top-right-radius: 18px;
+  box-shadow: 0 -18px 38px rgba(0,0,0,.18);
+  transform: translateY(102%);
+  transition: transform .28s ease;
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  z-index: 241;
+}
+.cat-sheet.open{ transform: translateY(0); }
+
+.cat-sheet-handle{
+  width: 42px; height: 4px; border-radius: 999px;
+  background:#e9d0e4; margin: 4px auto 10px;
+}
+.cat-sheet-title{
+  text-align:center; font-weight: 900; color: var(--brand);
+  margin-bottom: 8px;
+}
+
+.cat-sheet-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+}
+@media (min-width:480px){
+  .cat-sheet-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
+.cat-sheet-item{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  border:1px dashed #f3c9e2; background:#fff; color:#333;
+  border-radius:12px; padding:.7rem .6rem;
+  font-weight:800; cursor:pointer;
+}
+.cat-sheet-item img{ width:36px; height:36px; object-fit:contain; }
+.cat-sheet-item:hover{ background:#fff7fb; border-color:#efb9db; }
+
+.cat-sheet-all{
+  margin-top:10px; width:100%;
+  border:1px dashed #f3c9e2; background:#fff; color:var(--brand);
+  font-weight:900; border-radius:12px; padding:.6rem .8rem; cursor:pointer;
+}
+
+/* Empujar el FAB de WhatsApp para que no tape la tabbar */
 .wsp-fab,
 .whatsapp-float,
 .whatsapp-button,
