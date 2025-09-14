@@ -611,7 +611,7 @@
 @media (min-width: 300px) and (max-width: 361px) {
   .nav-search .search-btn{
     position: absolute;
-    left: 83% !important;
+    left: 113% !important;
     top: auto !important;
     bottom: 41.7% !important;
   }
@@ -731,4 +731,5 @@
   display:grid !important;
   place-items:center !important;
 }
+
 
