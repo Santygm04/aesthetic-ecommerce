@@ -1,4 +1,3 @@
-// src/components/Navbar/Navbar.jsx
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../components/Navbar/Navbar.css";
@@ -30,8 +29,11 @@ export default function Navbar() {
   const [catSheetOpen, setCatSheetOpen] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
-  // para el botón "Buscar" de la tab bar inferior
+  // abrir drawer sólo con buscador
+  const [searchOnlyOpen, setSearchOnlyOpen] = useState(false);
+  const navToggleRef = useRef(null);
   const mobileSearchRef = useRef(null);
+
   const nav = useNavigate();
 
   const toggleCats = () => setIsCatOpen((v) => !v);
@@ -50,6 +52,9 @@ export default function Navbar() {
         closeAll();
         setCatSheetOpen(false);
         setMoreSheetOpen(false);
+        // al cerrar con ESC también reseteo el modo "search-only"
+        setSearchOnlyOpen(false);
+        if (navToggleRef.current) navToggleRef.current.checked = false;
       }
     };
     document.addEventListener("click", handleDocClick);
@@ -60,10 +65,12 @@ export default function Navbar() {
     };
   }, []);
 
-  // helpers tabbar móvil
-  const focusMobileSearch = () => {
+  // abrir drawer y enfocar input del buscador (móvil)
+  const openSearchDrawer = () => {
+    setSearchOnlyOpen(true);
     try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
-    setTimeout(() => mobileSearchRef.current?.focus?.(), 150);
+    if (navToggleRef.current) navToggleRef.current.checked = true;
+    setTimeout(() => mobileSearchRef.current?.focus?.(), 160);
   };
 
   // items para el sheet rápido de categorías
@@ -91,26 +98,48 @@ export default function Navbar() {
       <NavLink to="/" className="navbar-logo brand-script">AESTHETIC</NavLink>
 
       {/* Toggle + Hamburguesa + Overlay */}
-      <input id="nav-toggle" className="nav-toggle" type="checkbox" aria-hidden="true" />
-      <label htmlFor="nav-toggle" className="hamb" aria-label="Abrir menú" aria-controls="main-menu" />
-      <label htmlFor="nav-toggle" className="nav-overlay" aria-hidden="true" />
+      <input
+        id="nav-toggle"
+        ref={navToggleRef}
+        className="nav-toggle"
+        type="checkbox"
+        aria-hidden="true"
+        onChange={(e)=>{ if(!e.target.checked) setSearchOnlyOpen(false); }}
+      />
+      <label
+        htmlFor="nav-toggle"
+        className="hamb"
+        aria-label="Abrir menú"
+        aria-controls="main-menu"
+        onClick={()=> setSearchOnlyOpen(false)}   // abrir menú normal
+      />
+      <label
+        htmlFor="nav-toggle"
+        className="nav-overlay"
+        aria-hidden="true"
+        onClick={()=> setSearchOnlyOpen(false)}   // cerrar y resetear modo search
+      />
 
-      {/* 🔎 Buscador visible en el header del móvil */}
-      <div className="nav-search mobile-top">
-        <NavbarSearch inputRef={mobileSearchRef} />
-      </div>
+      {/* (Quitamos el buscador "mobile-top" del header para no duplicar)
+          El buscador vive dentro del drawer también en móvil. */}
 
-      <ul className="navbar-links" id="main-menu">
+      <ul className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`} id="main-menu">
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
         <li className="nav-close-li">
-          <label htmlFor="nav-toggle" className="nav-close-btn" title="Cerrar">✕</label>
+          <label
+            htmlFor="nav-toggle"
+            className="nav-close-btn"
+            title="Cerrar"
+            onClick={()=> setSearchOnlyOpen(false)}
+          >✕</label>
         </li>
 
         {/* buscador dentro del drawer / en desktop queda igual */}
         <li className="nav-search">
-          <NavbarSearch />
+          <NavbarSearch inputRef={mobileSearchRef} />
         </li>
 
+        {/* resto del menú (se ocultan automáticamente en móvil si search-only) */}
         <li>
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
             Inicio
@@ -243,12 +272,13 @@ export default function Navbar() {
           <span>Inicio</span>
         </NavLink>
 
-        <button type="button" className="tab-btn" onClick={focusMobileSearch}>
+        {/* Buscar: abre el drawer sólo con el buscador y enfoca el input */}
+        <button type="button" className="tab-btn" onClick={openSearchDrawer}>
           <FaSearch />
           <span>Buscar</span>
         </button>
 
-        {/* Categorías: bottom-sheet (no el drawer) */}
+        {/* Categorías: bottom-sheet */}
         <button type="button" className="tab-btn" onClick={() => setCatSheetOpen(true)}>
           <FaThLarge />
           <span>Categorías</span>

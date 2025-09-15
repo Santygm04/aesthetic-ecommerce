@@ -351,3 +351,23 @@ body.nav-open{ overflow:hidden; }
 
 /*Tavlet/Escritorio: puntero */
 @media (min-width: 980px){ .dropdown-title{ cursor:pointer; } }
+
+/* ...tu CSS existente sin cambios arriba... */
+
+/* ========= Drawer (≤ 1024px) ========= */
+@media (max-width:1024px){
+  /* cuando abrimos el drawer en modo "sólo búsqueda",
+     ocultamos todos los <li> excepto el cerrar y el buscador */
+  .navbar-links.search-only > li:not(.nav-close-li):not(.nav-search){
+    display: none !important;
+  }
+  .navbar-links.search-only{
+    gap: .4rem;
+    padding-top: .4rem;
+  }
+}
+
+/* (Opcional) si dejaste estilos de .nav-search.mobile-top, no pasa nada.
+   Como ya no se renderiza ese bloque en JSX, no se verá en móvil. */
+
+/* ...resto de tu CSS existente permanece igual... */
