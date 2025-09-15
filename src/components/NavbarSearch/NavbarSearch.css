@@ -718,17 +718,16 @@
   }
 }
 
-/* ===== FIX DEFINITIVO LUPA CENTRADA (pisa cualquier override) ===== */
+/* ===== Lupa siempre dentro del input (todas las vistas) ===== */
 .search-wrap > .search-btn{
   position:absolute !important;
+  top:50% !important;
   right:6px !important;
-  left: 118% !important;
-  bottom: -20% !important;
+  left:auto !important;
+  bottom:auto !important;
   transform:translateY(-50%) !important;
   width:36px !important;
   height:36px !important;
   display:grid !important;
   place-items:center !important;
 }
-
-

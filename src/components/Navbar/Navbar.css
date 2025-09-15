@@ -371,3 +371,20 @@ body.nav-open{ overflow:hidden; }
    Como ya no se renderiza ese bloque en JSX, no se verá en móvil. */
 
 /* ...resto de tu CSS existente permanece igual... */
+
+/* ===== Drawer solo-búsqueda (móvil/tablet) ===== */
+@media (max-width:1024px){
+  /* oculta TODOS los li */
+  .navbar-links.search-only > li{
+    display:none !important;
+  }
+  /* deja visibles: cerrar y buscador */
+  .navbar-links.search-only > li.nav-close-li,
+  .navbar-links.search-only > li.nav-search{
+    display:block !important;
+  }
+  .navbar-links.search-only{
+    gap:.4rem;
+    padding-top:.4rem;
+  }
+}
