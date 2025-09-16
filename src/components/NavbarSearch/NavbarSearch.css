@@ -210,9 +210,25 @@
 }
 @media (min-width: 980px){ .dropdown-title{ cursor:pointer; } }
 
+/*Mi noteboock*/
 @media (min-width: 1450px) and (max-width: 1478px) {
   .nav-search {
     display: flex;
     justify-content: center;
   }
+
+  .nav-search .search-btn{
+    position: absolute;
+    left: 50% !important;
+  }
 }
+
+/*Escritorio 1920*/
+@media (min-width: 1500px) and (max-width: 1921px) {
+  .nav-search {
+    display: flex;
+    justify-content: center;
+  }
+
+}
+
