@@ -128,11 +128,13 @@
   }
     
 
- .promos-sub{
-    width: 103%;
-    position: relative;
-    left: 5% !important;
-  }
+ .promos-sub {
+  margin: 0 0 14px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 100%;
+}
+
 
 }
 

@@ -153,15 +153,16 @@ export default function Navbar() {
         id="main-menu"
       >
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
-        <li className="nav-close-li">
-          <label
-            htmlFor="nav-toggle"
-            className="nav-close-btn"
-            title="Cerrar"
-            onMouseDown={(e)=> e.preventDefault() /* <- evita que el label togglee el checkbox */}
-            onClick={closeSearchDrawer}
-          >✕</label>
-        </li>
+       <li className="nav-close-li">
+        <button
+          type="button"
+          className="nav-close-btn"
+          title="Cerrar"
+          onClick={closeSearchDrawer}
+          >
+          ✕
+        </button>
+      </li>
 
         {/* buscador dentro del drawer / en desktop queda igual */}
         <li className="nav-search">
