@@ -64,7 +64,12 @@
 
 /* Mobile: un poquito más chico y sin tooltip */
 @media (max-width: 520px){
-  .wa-float{ width: 52px; height: 52px; bottom: 30px; right: 14px; }
+  .wa-float{ width: 52px; height: 52px; bottom: 14px; right: 14px; }
+  .wa-tooltip{ display: none; }
+}
+
+@media (max-width: 769px){
+  .wa-float{ width: 52px; height: 52px; bottom: 35px !important; right: 14px; }
   .wa-tooltip{ display: none; }
 }
 
