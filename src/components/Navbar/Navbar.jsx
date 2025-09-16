@@ -160,7 +160,7 @@ export default function Navbar() {
           title="Cerrar"
           onClick={closeSearchDrawer}
           >
-          X
+          ✕
         </button>
       </li>
 

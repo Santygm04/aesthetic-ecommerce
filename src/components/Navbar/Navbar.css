@@ -208,6 +208,7 @@ body.nav-open{ overflow:hidden; }
     width:42px; height:42px; border-radius:12px; margin:.2rem .2rem .6rem .2rem;
     border:1px solid #f3c9e2; background:#fff; color:#d63384; font-weight:900; cursor:pointer;
     box-shadow:0 6px 16px rgba(214,51,132,.10);
+    font-size:1.6rem;
   }
 }
 
@@ -225,29 +226,47 @@ body.nav-open{ overflow:hidden; }
     left: 0; right: 0; bottom: 0;
     height: 64px;
     padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
-    background:#fff;
-    border-top:1px solid #f3c9e2;
+    /* Fondo degradado en tonos rosas */
+    background: linear-gradient(180deg, #fff0f8 0%, #ffe6f4 100%);
+    border-top:1px solid #f5c2e7;
     box-shadow: 0 -6px 18px rgba(214,51,132,.12);
     display:flex; align-items:center; justify-content:space-around;
     z-index: 210;
   }
+
   .mobile-tabbar .tab-btn{
     display:flex; flex-direction:column; align-items:center; gap:4px;
     text-decoration:none; background:transparent; border:0;
-    color:#333; font-weight:800; font-size:12px; border-radius:12px; padding:6px 10px;
-  }
-  .mobile-tabbar .tab-btn svg{ font-size:18px; }
-  .mobile-tabbar .tab-btn.is-active,
-  .mobile-tabbar .tab-btn:hover{
-    color:#fff; background:var(--brand);
-    box-shadow:0 6px 16px rgba(255,46,166,.18);
+    color:#555; font-weight:700; font-size:12px; border-radius:12px; padding:6px 10px;
+    transition: all .2s ease;
   }
 
-  .mobile-tabbar .cart .cart-icon-wrapper{ position:relative; display:inline-flex; align-items:center; justify-content:center; }
-  .mobile-tabbar .cart-badge{ position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; }
+  .mobile-tabbar .tab-btn svg{ font-size:18px; }
+
+  /* Hover */
+  .mobile-tabbar .tab-btn:hover{
+    color: var(--brand);
+    background: var(--brand-50);
+  }
+
+  /* Activo */
+  .mobile-tabbar .tab-btn.is-active{
+    color:#fff;
+    background: var(--brand);
+    box-shadow: 0 6px 16px rgba(255,46,166,.28);
+  }
+
+  .mobile-tabbar .cart .cart-icon-wrapper{ 
+    position:relative; display:inline-flex; align-items:center; justify-content:center; 
+  }
+
+  .mobile-tabbar .cart-badge{ 
+    position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; 
+  }
 
   body{ padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
+
 
 /* ===== Bottom Sheet de categorías (móvil) ===== */
 .cat-sheet-overlay{
