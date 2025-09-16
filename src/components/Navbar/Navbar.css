@@ -240,7 +240,7 @@ body.nav-open{ overflow:hidden; }
     transition: all .2s ease;
   }
 
-  .mobile-tabbar .tab-btn svg{ font-size:18px; }
+  .mobile-tabbar .tab-btn svg{ font-size:18px; color: white; }
 
   /* Hover */
   .mobile-tabbar .tab-btn:hover{
