@@ -367,3 +367,11 @@ body.nav-open{ overflow:hidden; }
     padding-top:.4rem;
   }
 }
+
+/* --- Overrides para asegurar cierre tocando fuera en móvil --- */
+@media (max-width:1024px){
+  /* Asegura que el overlay quede POR ENCIMA del header y POR DEBAJO del drawer */
+  .nav-overlay{ z-index: 240 !important; }
+  .navbar-links{ z-index: 241 !important; }
+  /* El header en móvil ya usa z-index:200, así el overlay lo tapa correctamente */
+}

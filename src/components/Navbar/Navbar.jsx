@@ -33,6 +33,7 @@ export default function Navbar() {
   const [searchOnlyOpen, setSearchOnlyOpen] = useState(false);
   const navToggleRef = useRef(null);
   const mobileSearchRef = useRef(null);
+  const drawerRef = useRef(null); // <- NUEVO: referencia al drawer para detectar click fuera
 
   const nav = useNavigate();
 
@@ -47,6 +48,7 @@ export default function Navbar() {
     const handleDocClick = (e) => {
       if (ddRef.current && !ddRef.current.contains(e.target)) closeAll();
     };
+
     const handleKey = (e) => {
       if (e.key === "Escape") {
         closeAll();
@@ -56,11 +58,24 @@ export default function Navbar() {
         if (navToggleRef.current) navToggleRef.current.checked = false;
       }
     };
+
+    // <- NUEVO: cerrar el drawer si se hace tap/click FUERA del drawer
+    const closeSearchIfOutside = (e) => {
+      const isOpen = !!navToggleRef.current?.checked;
+      if (!isOpen) return;
+      if (drawerRef.current?.contains(e.target)) return; // dentro del drawer, no cierro
+      setSearchOnlyOpen(false);
+      if (navToggleRef.current) navToggleRef.current.checked = false;
+    };
+
     document.addEventListener("click", handleDocClick);
     document.addEventListener("keydown", handleKey);
+    document.addEventListener("pointerdown", closeSearchIfOutside); // escucha global en móvil/desktop
+
     return () => {
       document.removeEventListener("click", handleDocClick);
       document.removeEventListener("keydown", handleKey);
+      document.removeEventListener("pointerdown", closeSearchIfOutside);
     };
   }, []);
 
@@ -106,14 +121,14 @@ export default function Navbar() {
         onChange={(e)=>{ if(!e.target.checked) setSearchOnlyOpen(false); }}
       />
 
-      {/* HAMBURGUESA INACTIVA: no abre nada (querés abrir solo con el botón "Buscar") */}
+      {/* HAMBURGUESA INACTIVA (abrís sólo con el botón Buscar) */}
       <label
         htmlFor="nav-toggle"
         className="hamb"
         aria-label="Menú"
         aria-controls="main-menu"
-        onMouseDown={(e)=> e.preventDefault()}   // evita toggle del checkbox en iOS/Android
-        onClick={(e)=> { e.preventDefault(); e.stopPropagation(); }} // no abrir
+        onMouseDown={(e)=> e.preventDefault()}
+        onClick={(e)=> { e.preventDefault(); e.stopPropagation(); }}
         onKeyDown={(e)=> { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); } }}
         title="Usá el botón Buscar para abrir la búsqueda"
       />
@@ -129,7 +144,11 @@ export default function Navbar() {
         }}
       />
 
-      <ul className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`} id="main-menu">
+      <ul
+        ref={drawerRef} // <- NUEVO: referencio el drawer
+        className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`}
+        id="main-menu"
+      >
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
         <li className="nav-close-li">
           <label
@@ -282,7 +301,11 @@ export default function Navbar() {
         </NavLink>
 
         {/* Buscar: abre el drawer sólo con el buscador y enfoca el input */}
-        <button type="button" className="tab-btn" onClick={openSearchDrawer}>
+        <button
+          type="button"
+          className="tab-btn"
+          onClick={(e)=>{ e.stopPropagation(); openSearchDrawer(); }} // <- evita que el click global cierre inmediatamente
+        >
           <FaSearch />
           <span>Buscar</span>
         </button>
