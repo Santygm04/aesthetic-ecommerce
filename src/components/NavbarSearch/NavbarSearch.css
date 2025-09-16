@@ -215,8 +215,6 @@
   .nav-search {
     display: flex;
     justify-content: center;
-    position: relative;
-    left: 40%;
   }
 
   .nav-search .search-btn{

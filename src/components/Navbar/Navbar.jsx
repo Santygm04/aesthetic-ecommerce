@@ -33,7 +33,7 @@ export default function Navbar() {
   const [searchOnlyOpen, setSearchOnlyOpen] = useState(false);
   const navToggleRef = useRef(null);
   const mobileSearchRef = useRef(null);
-  const drawerRef = useRef(null); // <- NUEVO: referencia al drawer para detectar click fuera
+  const drawerRef = useRef(null); // referencia al drawer para detectar click fuera
 
   const nav = useNavigate();
 
@@ -42,6 +42,13 @@ export default function Navbar() {
   const closeAll = () => {
     setIsCatOpen(false);
     setIsLenOpen(false);
+  };
+
+  // helper: cerrar por completo el drawer de búsqueda
+  const closeSearchDrawer = () => {
+    setSearchOnlyOpen(false);
+    if (navToggleRef.current) navToggleRef.current.checked = false;
+    closeAll();
   };
 
   useEffect(() => {
@@ -59,18 +66,17 @@ export default function Navbar() {
       }
     };
 
-    // <- NUEVO: cerrar el drawer si se hace tap/click FUERA del drawer
+    // cerrar el drawer si se hace tap/click FUERA del drawer
     const closeSearchIfOutside = (e) => {
       const isOpen = !!navToggleRef.current?.checked;
       if (!isOpen) return;
       if (drawerRef.current?.contains(e.target)) return; // dentro del drawer, no cierro
-      setSearchOnlyOpen(false);
-      if (navToggleRef.current) navToggleRef.current.checked = false;
+      closeSearchDrawer();
     };
 
     document.addEventListener("click", handleDocClick);
     document.addEventListener("keydown", handleKey);
-    document.addEventListener("pointerdown", closeSearchIfOutside); // escucha global en móvil/desktop
+    document.addEventListener("pointerdown", closeSearchIfOutside);
 
     return () => {
       document.removeEventListener("click", handleDocClick);
@@ -138,14 +144,11 @@ export default function Navbar() {
         htmlFor="nav-toggle"
         className="nav-overlay"
         aria-hidden="true"
-        onClick={()=>{
-          setSearchOnlyOpen(false);
-          if (navToggleRef.current) navToggleRef.current.checked = false;
-        }}
+        onClick={closeSearchDrawer}
       />
 
       <ul
-        ref={drawerRef} // <- NUEVO: referencio el drawer
+        ref={drawerRef}
         className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`}
         id="main-menu"
       >
@@ -155,10 +158,8 @@ export default function Navbar() {
             htmlFor="nav-toggle"
             className="nav-close-btn"
             title="Cerrar"
-            onClick={()=>{
-              setSearchOnlyOpen(false);
-              if (navToggleRef.current) navToggleRef.current.checked = false;
-            }}
+            onMouseDown={(e)=> e.preventDefault() /* <- evita que el label togglee el checkbox */}
+            onClick={closeSearchDrawer}
           >✕</label>
         </li>
 
@@ -304,7 +305,7 @@ export default function Navbar() {
         <button
           type="button"
           className="tab-btn"
-          onClick={(e)=>{ e.stopPropagation(); openSearchDrawer(); }} // <- evita que el click global cierre inmediatamente
+          onClick={(e)=>{ e.stopPropagation(); openSearchDrawer(); }}
         >
           <FaSearch />
           <span>Buscar</span>
