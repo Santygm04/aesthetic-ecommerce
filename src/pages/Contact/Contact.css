@@ -59,8 +59,7 @@
 .strong{ font-weight:800; }
 .muted{ 
   color:var(--muted);
-  position: relative;
-  left: 4.75% !important; 
+  word-break: break-word; /* evita que el email/whatsapp se corte */
 }
 .small{ font-size:.85rem; }
 
@@ -104,98 +103,32 @@
 }
 
 /* Social + Hours */
-.social-card{ margin-top:14px; display:flex; justify-content:space-between; align-items:center; }
+.social-card{ margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
 .social-actions{ display:flex; gap:10px; }
 
 .hours-card{ margin-top:14px; }
 .hours-list{ margin:0; padding-left:18px; line-height:1.6; }
 
-
-.card-head {
-  position: relative;
-  left: -4% !important;
+/* Fix de alineaciones que cortaban en mobile */
+.card-head{
+  position: static !important;
+}
+.muted{
+  position: static !important;
 }
 
 /*Tablet 769px*/
 @media (min-width: 540px) and (max-width: 769px){
-  .card-head{
-   position: relative;
-   left: 0.1% !important;
-  }
-
   .hours-list{
     display: flex;
     flex-wrap: wrap;
     justify-content: start;
-    position: relative;
-    left: 2.5%;
-    width: 300px;
-  }
-
-  .muted{
-    display: flex;
-    justify-content: start;
-    position: relative;
-    bottom: 3% !important;
-    left: 5% !important;
+    width: 100%;
   }
 }
 
-/*Noteboock */
-@media (min-width: 900px) and (max-width: 1281px) {
-  .card-head{
-    display: flex;
-    justify-content: start;
-    position: relative;
-    left: -0.2% !important;
-  }
-
-  .muted{
-    position: relative;
-    left: 1.5% !important;
-  }
-}
- 
-/*Escritorio 1*/
-@media (min-width: 1300px) and (max-width: 1441px) {
-  .card-head{
-    display: flex;
-    justify-content: start;
-    position: relative;
-    left: -0.2% !important;
-  }
-
-  .muted{
-    position: relative;
-    left: 1.5% !important;
-  }
-}
-
-@media (min-width: 1450px) and (max-width: 1478px) {
-  .card-head{
-    display: flex;
-    justify-content: start;
-    position: relative;
-    left: -0.2% !important;
-  }
-
-  .muted{
-    position: relative;
-    left: 1.5% !important;
-  }
-}
-
-/*Escritorio 2*/
-@media (min-width: 1500px) and (max-width: 1921px) {
-  .card-head{
-    display: flex;
-    justify-content: start;
-    position: relative;
-    left: -0.2% !important;
-  }
-
-  .muted{
-    position: relative;
-    left: 1.5% !important;
-  }
+/* Notebook y Escritorio grandes */
+@media (min-width: 900px){
+  .card-head{ position: relative; left: 0; }
+  .muted{ position: relative; left: 0; }
 }
