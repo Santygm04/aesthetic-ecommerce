@@ -731,3 +731,78 @@
   display:grid !important;
   place-items:center !important;
 }
+
+/* ===== Desktop: centra barra y el dropdown de categorías ===== */
+@media (min-width:1025px){
+  /* el wrapper es el ancla y va centrado */
+  .nav-search .search-wrap{
+    position:relative !important;
+    width:clamp(520px, 48vw, 760px) !important;
+    margin:0 auto !important;
+    left:0 !important;
+  }
+  .nav-search .search-input{ padding-right:44px !important; }
+
+  /* la lupa siempre pegada a la derecha del input */
+  .nav-search .search-btn{
+    position:absolute !important;
+    top:50% !important;
+    right:6px !important;
+    left:auto !important;
+    bottom:auto !important;
+    transform:translateY(-50%) !important;
+  }
+
+  /* el panel cuelga CENTRADO bajo la barra, mismo ancho */
+  .nav-search .search-quick{
+    position:absolute !important;
+    top:calc(100% + 10px) !important;
+    left:50% !important;
+    right:auto !important;
+    transform:translateX(-50%) !important;
+    margin:0 !important;
+    width:min(100%, clamp(520px, 48vw, 760px)) !important;
+    max-width:clamp(520px, 48vw, 760px) !important;
+    z-index:120 !important;
+  }
+
+  /* grid prolijo (quita offsets raros) */
+  .nav-search .sq-grid{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+    gap:12px !important;
+    justify-content:stretch !important;
+  }
+  .nav-search .sq-item{
+    left:0 !important;   /* elimina el -6.6% */
+    width:auto !important;
+  }
+}
+
+/* === OVERRIDES FINALES === */
+.search-wrap{ position:relative; }
+.search-input{ padding-right:44px !important; }
+
+.search-btn{
+  position:absolute !important;
+  top:50% !important; right:6px !important;
+  left:auto !important; bottom:auto !important;
+  transform:translateY(-50%) !important;
+}
+
+.search-quick{
+  top:calc(100% + 8px) !important;
+  left:50% !important; transform:translateX(-50%) !important;
+  width:min(100%, 720px) !important; max-width:720px !important;
+}
+
+.sq-grid{ display:grid !important; grid-template-columns:repeat(4, minmax(0,1fr)) !important; gap:12px !important; }
+.sq-item{ left:0 !important; }
+
+/* Mobile */
+@media (max-width:768px){
+  .nav-search .search-quick{
+    left:0 !important; right:0 !important;
+    transform:none !important; width:100% !important;
+  }
+}
