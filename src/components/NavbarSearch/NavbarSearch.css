@@ -223,6 +223,37 @@
   }
 }
 
+/*Escritorio 1440*/
+@media (min-width: 540px) and (max-width: 769px) {
+  .nav-search .searck-quick{
+    position: relative;
+    bottom: 50% !important;
+  }
+
+
+}
+
+
+/*Escritorio 1280*/
+@media (min-width: 900px) and (max-width: 1280px) {
+  .nav-search {
+    display: flex;
+    justify-content: center;
+  }
+
+}
+
+
+/*Escritorio 1440*/
+@media (min-width: 1400px) and (max-width: 1440px) {
+  .nav-search {
+    display: flex;
+    justify-content: center;
+  }
+
+}
+
+
 /*Escritorio 1920*/
 @media (min-width: 1500px) and (max-width: 1921px) {
   .nav-search {
