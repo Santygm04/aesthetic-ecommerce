@@ -247,13 +247,6 @@ body.nav-open{ overflow:hidden; }
   .mobile-tabbar .cart-badge{ position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; }
 
   body{ padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
-
-  .nav-close-btn{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:42px; height:42px; border-radius:12px; margin:.2rem .2rem .6rem .2rem;
-    border:1px solid #f3c9e2; background:#fff; color:#d63384; font-weight:900; cursor:pointer;
-    box-shadow:0 6px 16px rgba(214,51,132,.10);
-  }
 }
 
 /* ===== Bottom Sheet de categorías (móvil) ===== */
