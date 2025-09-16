@@ -52,7 +52,6 @@ export default function Navbar() {
         closeAll();
         setCatSheetOpen(false);
         setMoreSheetOpen(false);
-        // al cerrar con ESC también reseteo el modo "search-only"
         setSearchOnlyOpen(false);
         if (navToggleRef.current) navToggleRef.current.checked = false;
       }
@@ -106,22 +105,27 @@ export default function Navbar() {
         aria-hidden="true"
         onChange={(e)=>{ if(!e.target.checked) setSearchOnlyOpen(false); }}
       />
+
+      {/* ⬇️ CAMBIO: la hamburguesa ya no abre el menú completo; abre SOLO el buscador */}
       <label
         htmlFor="nav-toggle"
         className="hamb"
-        aria-label="Abrir menú"
+        aria-label="Abrir búsqueda"
         aria-controls="main-menu"
-        onClick={()=> setSearchOnlyOpen(false)}   // abrir menú normal
+        onClick={(e)=>{ e.preventDefault(); openSearchDrawer(); }}
+        onKeyDown={(e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openSearchDrawer(); } }}
       />
+
+      {/* overlay: cierra y desmarca el checkbox */}
       <label
         htmlFor="nav-toggle"
         className="nav-overlay"
         aria-hidden="true"
-        onClick={()=> setSearchOnlyOpen(false)}   // cerrar y resetear modo search
+        onClick={()=>{
+          setSearchOnlyOpen(false);
+          if (navToggleRef.current) navToggleRef.current.checked = false;
+        }}
       />
-
-      {/* (Quitamos el buscador "mobile-top" del header para no duplicar)
-          El buscador vive dentro del drawer también en móvil. */}
 
       <ul className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`} id="main-menu">
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
@@ -130,7 +134,10 @@ export default function Navbar() {
             htmlFor="nav-toggle"
             className="nav-close-btn"
             title="Cerrar"
-            onClick={()=> setSearchOnlyOpen(false)}
+            onClick={()=>{
+              setSearchOnlyOpen(false);
+              if (navToggleRef.current) navToggleRef.current.checked = false;
+            }}
           >✕</label>
         </li>
 

@@ -227,10 +227,8 @@
 @media (min-width: 540px) and (max-width: 769px) {
   .nav-search .searck-quick{
     position: relative;
-    bottom: 50% !important;
+    bottom: 80% !important;
   }
-
-
 }
 
 
@@ -263,3 +261,96 @@
 
 }
 
+:root{
+  --brand:#ff2ea6;
+  --brand-600:#e11a8a;
+  --brand-50:#fff0f8;
+  --shadow-brand:0 10px 25px rgba(255,46,166,.25);
+}
+
+/* Contenedor del buscador */
+.search-wrap{
+  position:relative; width:min(520px, 48vw);
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Input */
+.search-input{
+  flex:1; padding:.55rem .9rem; border:1.5px solid #f3c9e2; border-radius:12px;
+  background:#fff; color:#333; font-size:1rem; outline:none; padding-right:44px; /* espacio para la lupa */
+}
+.search-input:focus{ border-color:#d63384; box-shadow:0 8px 26px rgba(214,51,132,.12); }
+
+/* Botón lupa */
+.search-btn{
+  position:absolute; top:50%; right:6px; transform:translateY(-50%);
+  width:36px; height:36px; border:0; border-radius:10px; display:grid; place-items:center;
+  background:#d63384; color:#fff; cursor:pointer; box-shadow:0 6px 18px rgba(214,51,132,.12);
+}
+.search-btn:hover{ filter:brightness(1.05); }
+
+/* Autocomplete por texto */
+.suggest{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:#fff; border:1px solid #f3c9e2; border-radius:12px; box-shadow:0 14px 36px rgba(214,51,132,.12);
+  list-style:none; padding:.35rem; margin:0; max-height:320px; overflow:auto; z-index:60;
+}
+.suggest li + li { margin-top:2px; }
+.suggest button{
+  width:100%; text-align:left; border:none; background:transparent; padding:.55rem .6rem; border-radius:8px; cursor:pointer; color:#333;
+}
+.suggest button:hover{ background:#fff7fb; color:#d63384; }
+
+/* Panel “Explorar categorías” */
+.search-quick{
+  position:absolute; top:calc(100% + 10px); left:50%; transform:translateX(-50%);
+  width:min(100%, 720px); max-width:720px;
+  background:#fff; border:1px solid #f3c9e2; border-radius:16px; box-shadow:0 22px 50px rgba(214,51,132,.15);
+  padding:.8rem; z-index:55;
+}
+.sq-head{ font-weight:900; color:#d63384; margin:.2rem .3rem .6rem; }
+.sq-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+@media (min-width:1025px){ .sq-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+@media (max-width:900px){ .sq-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
+@media (max-width:520px){ .sq-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+
+.sq-item{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  border:1px dashed #f3c9e2; border-radius:14px; padding:.7rem .6rem; background:#fff; cursor:pointer;
+  transition: box-shadow .15s, border-color .15s, transform .08s; min-height:102px;
+}
+.sq-item:hover{ box-shadow:0 10px 26px rgba(214,51,132,.10); border-color:#efb9db; transform:translateY(-1px); }
+.sq-item.is-active{ border-style:solid; border-color:#d63384; }
+.sq-item img{ width:44px; height:44px; object-fit:contain; }
+.sq-name{ text-align:center; font-weight:800; color:#333; line-height:1.1; }
+
+.sq-subcats{ border-top:1px dashed #f3c9e2; margin-top:.8rem; padding-top:.6rem; }
+.sq-subhead{ font-weight:900; color:#d63384; margin:0 .3rem .35rem; }
+.sq-subgrid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+@media (min-width:720px){ .sq-subgrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.sq-subitem{
+  background:#fff; border:1px solid #f3c9e2; color:#333; font-weight:700;
+  border-radius:10px; padding:.5rem .6rem; text-align:left; cursor:pointer;
+}
+.sq-subitem:hover{ background:#fff0f7; color:#d63384; border-color:#efb9db; }
+.sq-subitem.all{ background:#fff7fb; border-style:dashed; }
+
+/* Ver todo */
+.sq-all{
+  width:100%; margin-top:.8rem; background:#fff; color:#d63384; font-weight:900;
+  border:1px dashed #f3c9e2; border-radius:12px; padding:.6rem .8rem; cursor:pointer;
+}
+.sq-all:hover{ background:#fff0f7; }
+
+/* Mobile / Tablet */
+@media (max-width:1024px){
+  .search-wrap{ width:100%; }
+  .search-quick{
+    left:0; right:0; transform:none; width:100%;
+  }
+}
+
+/* Ajustes opcionales de tus breakpoints personalizados (sin cambios funcionales) */
+@media (min-width: 1450px) and (max-width: 1478px) {
+  .search-btn{ right:6px; } /* mantiene alineada la lupa */
+}
