@@ -69,7 +69,7 @@
 }
 
 @media (max-width: 769px){
-  .wa-float{ width: 52px; height: 52px; bottom: 35px !important; right: 14px; }
+  .wa-float{ width: 52px; height: 52px; bottom: 60px !important; right: 14px; }
   .wa-tooltip{ display: none; }
 }
 
