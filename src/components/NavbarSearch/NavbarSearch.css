@@ -209,3 +209,10 @@
   position: fixed !important; right: 16px !important; bottom: calc(88px + env(safe-area-inset-bottom)) !important; z-index: 220 !important;
 }
 @media (min-width: 980px){ .dropdown-title{ cursor:pointer; } }
+
+@media (min-width: 1450px) and (max-width: 1478px) {
+  .nav-search {
+    display: flex;
+    justify-content: center;
+  }
+}
