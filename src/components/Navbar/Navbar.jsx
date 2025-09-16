@@ -64,7 +64,7 @@ export default function Navbar() {
     };
   }, []);
 
-  // abrir drawer y enfocar input del buscador (móvil)
+  // abrir drawer y enfocar input del buscador (móvil) SOLO desde el botón "Buscar"
   const openSearchDrawer = () => {
     setSearchOnlyOpen(true);
     try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
@@ -106,17 +106,19 @@ export default function Navbar() {
         onChange={(e)=>{ if(!e.target.checked) setSearchOnlyOpen(false); }}
       />
 
-      {/* ⬇️ CAMBIO: la hamburguesa ya no abre el menú completo; abre SOLO el buscador */}
+      {/* HAMBURGUESA INACTIVA: no abre nada (querés abrir solo con el botón "Buscar") */}
       <label
         htmlFor="nav-toggle"
         className="hamb"
-        aria-label="Abrir búsqueda"
+        aria-label="Menú"
         aria-controls="main-menu"
-        onClick={(e)=>{ e.preventDefault(); openSearchDrawer(); }}
-        onKeyDown={(e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openSearchDrawer(); } }}
+        onMouseDown={(e)=> e.preventDefault()}   // evita toggle del checkbox en iOS/Android
+        onClick={(e)=> { e.preventDefault(); e.stopPropagation(); }} // no abrir
+        onKeyDown={(e)=> { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); } }}
+        title="Usá el botón Buscar para abrir la búsqueda"
       />
 
-      {/* overlay: cierra y desmarca el checkbox */}
+      {/* overlay: cierra al tocar fuera */}
       <label
         htmlFor="nav-toggle"
         className="nav-overlay"
