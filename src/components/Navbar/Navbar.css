@@ -222,17 +222,16 @@ body.nav-open{ overflow:hidden; }
 .mobile-tabbar{ display:none; }
 @media (max-width:768px){
   .mobile-tabbar{
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 64px;
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
-    /* Fondo degradado en tonos rosas */
-    background: linear-gradient(180deg, #fff0f8 0%, #ffe6f4 100%);
-    border-top:1px solid #f5c2e7;
-    box-shadow: 0 -6px 18px rgba(214,51,132,.12);
-    display:flex; align-items:center; justify-content:space-around;
-    z-index: 210;
-  }
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 64px;
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, #fff0f8 0%, #ffe6f4 100%); /* degradado rosa */
+  border-top:2px solid #f5c2e7;
+  box-shadow: 0 -6px 18px rgba(214,51,132,.12);
+  display:flex; align-items:center; justify-content:space-around;
+  z-index: 210;
+}
 
   .mobile-tabbar .tab-btn{
     display:flex; flex-direction:column; align-items:center; gap:4px;
