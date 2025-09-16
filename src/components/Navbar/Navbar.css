@@ -226,7 +226,7 @@ body.nav-open{ overflow:hidden; }
   left: 0; right: 0; bottom: 0;
   height: 64px;
   padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, #fff0f8 0%, #ffe6f4 100%); /* degradado rosa */
+  background: linear-gradient(180deg, #d5b5c6 0%, #dea4c5 100%); /* degradado rosa */
   border-top:2px solid #f5c2e7;
   box-shadow: 0 -6px 18px rgba(214,51,132,.12);
   display:flex; align-items:center; justify-content:space-around;
