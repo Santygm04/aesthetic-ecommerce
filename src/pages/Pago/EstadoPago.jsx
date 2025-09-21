@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../Pago/EstadoPago.css";
+import { addOrderRef } from "../../utils/ordersLocal"; // 👈 NUEVO
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const SELLER_WA = (import.meta.env.VITE_SELLER_PHONE || "").replace(/\D/g, "");
@@ -65,6 +66,12 @@ export default function EstadoPago() {
       try {
         const res = await fetch(`${API_URL}/api/payments/order/${orderId}`);
         const data = await res.json();
+
+        // 👉 GUARDO referencia local para "Mis pedidos"
+        try {
+          const code = data?.shippingTicket || (data?.orderNumber ? `#${data.orderNumber}` : null);
+          addOrderRef({ _id: orderId, code, createdAt: data?.createdAt || Date.now() });
+        } catch {}
 
         // Si venís de MP y no está pago, intentá refrescar con payment_id (opcional)
         if (
@@ -153,7 +160,6 @@ export default function EstadoPago() {
     }
   }, [info, waHref]);
 
-  // UI según estado real (incluye RECHAZADO en transferencia)
   const ui = useMemo(() => {
     if (!info) return { titulo: "Procesando…", color: "#f59e0b", rejected: false };
 
@@ -171,7 +177,6 @@ export default function EstadoPago() {
       if (info.status === "paid") {
         return { titulo: "¡Comprobante verificado!", color: "#22c55e", rejected: false };
       }
-      // 👇 nuevo: rechazado por admin / webhook
       if (info.status === "cancelled" || info.status === "rejected") {
         return { titulo: "Comprobante rechazado", color: "#ef4444", rejected: true };
       }
@@ -186,7 +191,6 @@ export default function EstadoPago() {
       <div className="card" style={{ borderColor: ui.color }}>
         <h2 className="title" style={{ color: ui.color }}>{ui.titulo}</h2>
 
-        {/* Mensaje de ayuda cuando está rechazado */}
         {ui.rejected && (
           <p className="muted" style={{ color: "#7a3d3d" }}>
             No pudimos validar el pago. Revisá monto, alias/CBU y reenviá el comprobante.
@@ -206,55 +210,29 @@ export default function EstadoPago() {
             <div className="block">
               <h3 className="h3">Resumen</h3>
               <ul className="ul">
-                <li>
-                  <b>Pedido:</b> {prettyOrder(info)}
-                </li>
-                <li>
-                  <b>ID:</b> {info.id}
-                </li>
-                <li>
-                  <b>Estado:</b> {info.status}
-                </li>
-                <li>
-                  <b>Método:</b> {info.paymentMethod}
-                </li>
-                <li>
-                  <b>Total:</b> ${niceMoney(info.total)}
-                </li>
+                <li><b>Pedido:</b> {prettyOrder(info)}</li>
+                <li><b>ID:</b> {info.id}</li>
+                <li><b>Estado:</b> {info.status}</li>
+                <li><b>Método:</b> {info.paymentMethod}</li>
+                <li><b>Total:</b> ${niceMoney(info.total)}</li>
               </ul>
             </div>
 
             <div className="block">
               <h3 className="h3">Envío</h3>
-
               {info?.shipping?.method === "envio" ? (
                 <>
                   <p className="p">
                     <b>Ticket de envío:</b> {info.shippingTicket}{" "}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigator.clipboard.writeText(info.shippingTicket || "")
-                      }
-                      className="copyBtn"
-                    >
-                      Copiar
-                    </button>
+                    <button type="button" onClick={() => navigator.clipboard.writeText(info.shippingTicket || "")} className="copyBtn">Copiar</button>
                   </p>
-                  <p className="p">
-                    <b>Dirección:</b>{" "}
-                    {buildAddress(info?.shipping?.address) || "—"}
-                  </p>
+                  <p className="p"><b>Dirección:</b> {buildAddress(info?.shipping?.address) || "—"}</p>
                 </>
               ) : (
-                <p className="muted">
-                  Seleccionaste <b>Retiro en local</b>. Te vamos a contactar por
-                  WhatsApp para coordinar.
-                </p>
+                <p className="muted">Seleccionaste <b>Retiro en local</b>. Te vamos a contactar por WhatsApp para coordinar.</p>
               )}
             </div>
 
-            {/* CTA WhatsApp (si hay teléfono de la tienda configurado) */}
             {SELLER_WA && (
               <div className="actions">
                 <a href={waHref || "#"} target="_blank" rel="noreferrer" className="waBtn">
@@ -264,15 +242,14 @@ export default function EstadoPago() {
             )}
 
             <div className="actions">
-              {/* Si está rechazado, damos opción de re-subir comprobante */}
               {ui.rejected && (
                 <a href={`/pago?o=${encodeURIComponent(orderId)}`} className="outlineBtn">
                   Subir nuevo comprobante
                 </a>
               )}
-              <a href="/" className="homeBtn">
-                Volver al inicio
-              </a>
+              <a href="/" className="homeBtn">Volver al inicio</a>
+              {/* 👇 NUEVO atajo */}
+              <a href="/pedidos" className="homeBtn" style={{ background:"#fff", color:"#ff2ea6", border:"1px solid #ffd3ea" }}>Ver mis pedidos</a>
             </div>
           </>
         )}

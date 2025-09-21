@@ -19,6 +19,7 @@ const SearchResults  = lazy(() => import("./pages/SearchResults/SearchResults"))
 const Pagos          = lazy(() => import("./pages/Pagos/Pagos")); // 👈 NUEVO
 const EstadoPago     = lazy(() => import("./pages/Pago/EstadoPago"));
 const WAFloat    = lazy(() => import("./components/WAFloat/WAFloat"));
+const Orders    = lazy(() => import("./pages/Orders/Orders"));
 function App() {
   return (
     <>
@@ -26,6 +27,7 @@ function App() {
         <WAFloat />
       <Suspense fallback={<div style={{ padding: "2rem" }}>Cargando…</div>}>
         <Routes>
+          <Route path="/pedidos" element={<Orders/>} />
           <Route path="/buscar" element={<SearchResults />} />
           <Route path="/" element={<Home />} />
           <Route path="/carrito" element={<Carrito />} />
