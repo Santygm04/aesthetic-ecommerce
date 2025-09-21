@@ -1,5 +1,6 @@
 // src/pages/PagoExito.jsx
 import { useEffect, useState } from "react";
+import { addOrderRef } from "../utils/ordersLocal.js";
 
 export default function PagoExito() {
   const params = new URLSearchParams(window.location.search);
