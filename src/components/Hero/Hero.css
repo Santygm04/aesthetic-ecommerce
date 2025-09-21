@@ -10,10 +10,12 @@
   justify-content:space-between;
   align-items:center;
   background: linear-gradient(120deg, #ffe0f0 60%, #fff0f5 100%);
-  padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(1.2rem, 4vw, 3rem);
+  /* ↑ más alto y con más aire */
+  padding: clamp(2.6rem, 6.8vw, 6rem) clamp(1rem, 4vw, 2.2rem) clamp(1.8rem, 4.5vw, 3.4rem);
   font-family:'Segoe UI', sans-serif;
   overflow:hidden;
-  min-height: clamp(360px, 52vw, 520px);
+  /* ↑ subo el alto mínimo */
+  min-height: clamp(420px, 60vw, 640px);
   position:relative;
 }
 
@@ -21,36 +23,38 @@
   flex:1 1 50%;
   z-index:2;
   text-align:left;
-  max-width:min(680px, 90vw);
+  max-width:min(720px, 92vw);
   animation:fadeInLeft 1.1s;
 }
 
 .hero-content h1{
-  font-size: clamp(1.8rem, 6.2vw, 3.4rem);
+  /* ↑ tamaño de título más grande */
+  font-size: clamp(2rem, 6.8vw, 3.9rem);
   color: var(--brand);
-  line-height:1.15;
-  margin-bottom: clamp(.7rem, 2vw, 1.1rem);
+  line-height:1.12;
+  margin-bottom: clamp(.8rem, 2.2vw, 1.2rem);
   font-weight:900;
 }
 
 .highlight-aesthetic{
   background: linear-gradient(95deg, #ff2ea6 60%, #ff6fb5 100%);
   color:#fff; padding:.12em 1.15em; border-radius:14px; font-weight:900;
-  font-size: clamp(1.05rem, 4.2vw, 1.25rem);
+  font-size: clamp(1.12rem, 4.4vw, 1.3rem);
   box-shadow:0 2px 15px rgba(255,46,166,.35);
   display:inline-block; line-height:1.1; letter-spacing:2px; margin-left:.1em;
 }
 
 .hero-content p{
   color:#4a3355;
-  font-size: clamp(1rem, 2.8vw, 1.2rem);
-  margin-bottom: clamp(1rem, 3vw, 2.2rem);
+  /* ↑ un toque más grande */
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  margin-bottom: clamp(1.1rem, 3.2vw, 2.4rem);
   animation:fadeInUp 1.2s;
 }
 
 .hero-btn{
-  display:inline-flex; align-items:center; justify-content:center; min-height:46px;
-  padding:.9rem 2rem; background-color: var(--brand); color:#fff; font-size:1.05rem;
+  display:inline-flex; align-items:center; justify-content:center; min-height:48px;
+  padding:1rem 2.1rem; background-color: var(--brand); color:#fff; font-size:1.08rem;
   font-weight:700; border-radius:30px; border:none; text-decoration:none;
   box-shadow:0 4px 14px rgba(255,46,166,.20); transition: background .3s, transform .17s; letter-spacing:1px;
 }
@@ -59,17 +63,22 @@
 /* === Banner deslizante (reemplazo de la imagen) === */
 .hero-slider{
   flex:1 1 45%;
-  display:flex; flex-direction:column; align-items:stretch; gap:10px;
-  min-width:270px; max-width:460px; z-index:1; animation:fadeInRight 1.2s;
+  display:flex; flex-direction:column; align-items:stretch; gap:12px;
+  min-width:300px;
+  /* ↑ más ancho para que se note como “banner” */
+  max-width:620px;
+  z-index:1; animation:fadeInRight 1.2s;
 }
 
 .hs-card{
   display:none;
   background:#fff;
   border:2px solid #f6c7df;
-  border-radius:20px;
-  padding:16px 16px 14px;
-  box-shadow:0 12px 34px rgba(214,51,132,.12);
+  border-radius:22px;
+  /* ↑ tarjeta más grande y alta */
+  padding:20px 20px 16px;
+  min-height: clamp(260px, 34vw, 340px);
+  box-shadow:0 16px 40px rgba(214,51,132,.12);
   background-image:
     radial-gradient(1200px 300px at -10% -10%, #fff0f8 0%, transparent 60%),
     radial-gradient(1000px 260px at 110% 120%, #ffe9f5 0%, transparent 60%);
@@ -78,61 +87,63 @@
 .hs-card.is-active{ display:block; }
 
 .hs-title{
-  margin:0 0 6px;
+  margin:0 0 8px;
   color:#d63384;
   font-weight:900;
   letter-spacing:.3px;
-  font-size: clamp(1.06rem, 2.6vw, 1.28rem);
+  /* ↑ título del slide más grande */
+  font-size: clamp(1.25rem, 3.2vw, 1.7rem);
 }
 
 .hs-sub{
   display:inline-block;
   background:#fff0f8; border:1px solid #f6c7df; color:#a3206c;
-  font-weight:800; border-radius:999px; padding:.28rem .7rem; margin-bottom:.4rem;
-  font-size:.95rem;
+  font-weight:800; border-radius:999px; padding:.36rem .9rem; margin-bottom:.55rem;
+  font-size:1.02rem;
 }
 
 .hs-list{
-  margin:.2rem 0 .7rem; padding-left:1.1rem; color:#444; line-height:1.48;
+  margin:.25rem 0 .9rem; padding-left:1.2rem; color:#444; line-height:1.58;
+  font-size:1.02rem;
 }
 .hs-list li{
-  list-style:none; position:relative; margin:.32rem 0;
+  list-style:none; position:relative; margin:.36rem 0;
 }
 .hs-list li::before{
-  content:"•"; position:absolute; left:-.9rem; top:0; color:#d63384; font-weight:900;
+  content:"•"; position:absolute; left:-1rem; top:0; color:#d63384; font-weight:900;
 }
 
 .hs-cta{
   align-self:flex-start;
   text-decoration:none;
   background:var(--brand); color:#fff; font-weight:900;
-  padding:.5rem 1rem; border-radius:999px;
-  box-shadow:0 6px 18px rgba(255,46,166,.18);
+  padding:.62rem 1.2rem; border-radius:999px;
+  box-shadow:0 8px 22px rgba(255,46,166,.20);
   transition: transform .15s, background .2s;
 }
 .hs-cta:hover{ background:var(--brand-600); transform: translateY(-1px); }
 
 /* Dots */
-.hs-dots{ display:flex; justify-content:center; gap:8px; }
+.hs-dots{ display:flex; justify-content:center; gap:10px; }
 .dot{
-  width:9px; height:9px; border-radius:999px; border:0;
+  width:10px; height:10px; border-radius:999px; border:0;
   background:#f0cde3; cursor:pointer;
   transition: transform .2s, background .2s, box-shadow .2s;
 }
 .dot.active{
   background:var(--brand);
-  transform:scale(1.25);
+  transform:scale(1.3);
   box-shadow:0 6px 12px rgba(255,46,166,.28);
 }
 
 /* decor */
 .hero-decor1{
-  width:140px; height:140px; left:65%; top:60px; position:absolute; border-radius:50%;
+  width:160px; height:160px; left:65%; top:60px; position:absolute; border-radius:50%;
   background: radial-gradient(circle at 60% 40%, rgba(255,46,166,.35) 0%, rgba(255,46,166,.06) 100%);
   filter: blur(2px); opacity:.45;
 }
 .hero-decor2{
-  width:80px; height:80px; left:30%; bottom:40px; position:absolute; border-radius:50%;
+  width:90px; height:90px; left:30%; bottom:40px; position:absolute; border-radius:50%;
   background: radial-gradient(circle at 40% 50%, rgba(255,46,166,.6) 0%, rgba(255,46,166,.06) 100%);
   filter: blur(4px); opacity:.20;
 }
@@ -145,7 +156,7 @@
 
 /* <= 950: columna */
 @media (max-width: 950px){
-  .hero{ flex-direction:column; text-align:center; }
-  .hero-content{ text-align:center; margin-bottom:1.4rem; max-width:100%; }
-  .hero-slider{ width:100%; max-width:520px; margin-top:.6rem; }
+  .hero{ flex-direction:column; text-align:center; min-height:unset; }
+  .hero-content{ text-align:center; margin-bottom:1.6rem; max-width:100%; }
+  .hero-slider{ width:100%; max-width:640px; margin-top:.6rem; }
 }

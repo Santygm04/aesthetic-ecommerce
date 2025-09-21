@@ -1,6 +1,6 @@
 // src/pages/Orders/Orders.jsx
 import "./Orders.css";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSavedOrderRefs, addOrderRef, removeOrderRef } from "../../utils/ordersLocal.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
@@ -18,6 +18,38 @@ export default function Orders(){
   const [loading, setLoading] = useState(false);
   const [lookup, setLookup] = useState({ code:"", emailOrPhone:"" });
 
+  // ---- NUEVO: notificaciones en vivo ----
+  const esMapRef = useRef(new Map());        // id -> EventSource
+  const lastStatusRef = useRef(new Map());   // id -> last status
+  const askedNotifRef = useRef(false);       // pedir permiso una vez
+
+  function askNotificationPermissionOnce(){
+    if (askedNotifRef.current) return;
+    askedNotifRef.current = true;
+    try{
+      if ("Notification" in window && Notification.permission === "default"){
+        Notification.requestPermission().catch(()=>{});
+      }
+    }catch{}
+  }
+
+  function notifyBrowser(title, body){
+    try{
+      if (!("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+      // Ícono opcional: usa tu favicon si existe
+      new Notification(title, { body });
+    }catch{}
+  }
+
+  function pushToast(text, type="info"){
+    const id = Math.random().toString(36).slice(2);
+    setToasts(t=>[...t, { id, text, type }]);
+    setTimeout(()=> setToasts(t=> t.filter(x=>x.id!==id)), 4200);
+  }
+
+  const [toasts, setToasts] = useState([]);
+
   async function fetchOrders(){
     if(!ids.length && !codes.length){ setOrders([]); return; }
     setLoading(true);
@@ -28,27 +60,79 @@ export default function Orders(){
       const r = await fetch(`${API_URL}/api/payments/orders/public/by-ids?${params.toString()}`);
       const data = await r.json();
       setOrders(Array.isArray(data)? data : []);
+      // actualizo mapa de último estado para no duplicar toasts
+      (Array.isArray(data)? data : []).forEach(o=>{
+        if(o?._id && o?.status) lastStatusRef.current.set(o._id, o.status);
+      });
     }catch{ /* ignore */ } finally{ setLoading(false); }
   }
 
-  useEffect(()=>{ fetchOrders(); const t=setInterval(fetchOrders,20000); return ()=>clearInterval(t); }, [refs.length]);
+  useEffect(()=>{
+    fetchOrders();
+    const t=setInterval(fetchOrders,20000);
+    return ()=>clearInterval(t);
+  }, [refs.length]);
 
-  // 👇 normaliza email/teléfono: si tiene ≥6 dígitos, se envían solo los dígitos
-  const normalizeContact = (v)=>{
-    const t = (v || "").trim();
-    const digits = t.replace(/\D/g, "");
-    return digits.length >= 6 ? digits : t.toLowerCase();
-  };
+  // 👉 NUEVO: enganchar SSE por cada ID para recibir cambios de estado
+  useEffect(()=>{
+    // cerrar los que ya no existen
+    for (const [id, es] of esMapRef.current.entries()){
+      if (!ids.includes(id)){
+        try{ es.close(); }catch{}
+        esMapRef.current.delete(id);
+        lastStatusRef.current.delete(id);
+      }
+    }
+    // abrir nuevos
+    ids.forEach(id=>{
+      if (esMapRef.current.has(id)) return;
+      try{
+        const es = new EventSource(`${API_URL}/api/payments/order/${id}/stream`);
+        es.addEventListener("update", (ev)=>{
+          try{
+            const msg = JSON.parse(ev.data||"{}"); // {status: "..."}
+            if (!msg?.status) return;
+            setOrders(prev=>{
+              const next = prev.map(o => o._id===id ? {...o, status: msg.status} : o);
+              return next;
+            });
+            const prevStatus = lastStatusRef.current.get(id);
+            if (prevStatus && prevStatus !== msg.status){
+              const code = shortCode({ _id:id, shippingTicket: orders.find(o=>o._id===id)?.shippingTicket, orderNumber: orders.find(o=>o._id===id)?.orderNumber });
+              const nice =
+                msg.status==="paid"||msg.status==="approved" ? "¡Pago aprobado!"
+                : msg.status==="pending" ? "Pago pendiente"
+                : msg.status==="cancelled"||msg.status==="rejected" ? "Pago rechazado"
+                : `Estado: ${msg.status}`;
+              pushToast(`Pedido ${code}: ${nice}`, msg.status==="paid"||msg.status==="approved" ? "success"
+                : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info"));
+              if (document.hidden) notifyBrowser(`Pedido ${code}`, nice);
+            }
+            lastStatusRef.current.set(id, msg.status);
+          }catch{}
+        });
+        es.onerror = ()=>{ /* si falla, dejamos polling ya existente */ };
+        esMapRef.current.set(id, es);
+        askNotificationPermissionOnce();
+      }catch{}
+    });
+
+    return ()=>{
+      // cleanup al desmontar o cambio grande
+      for (const es of esMapRef.current.values()){
+        try{ es.close(); }catch{}
+      }
+      esMapRef.current.clear();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ids.join(",")]); // reengancha cuando cambia la lista de ids
 
   async function onLookup(e){
     e.preventDefault();
     if(!lookup.code.trim()) return;
     try{
       setLoading(true);
-      const p = new URLSearchParams({
-        code: lookup.code.trim(),
-        emailOrPhone: normalizeContact(lookup.emailOrPhone)
-      });
+      const p = new URLSearchParams({ code: lookup.code.trim(), emailOrPhone: lookup.emailOrPhone.trim() });
       const r = await fetch(`${API_URL}/api/payments/orders/public/lookup?${p.toString()}`);
       const o = await r.json();
       if(o && o._id){ addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt }); setRefs(getSavedOrderRefs()); }
@@ -118,6 +202,15 @@ export default function Orders(){
               <button type="button" className="btn btn--ghost" onClick={()=>remove(o._id || shortCode(o))}>Quitar</button>
             </footer>
           </article>
+        ))}
+      </div>
+
+      {/* Toasters */}
+      <div className="toast-wrap" aria-live="polite" aria-atomic="true">
+        {toasts.map(t=>(
+          <div key={t.id} className={`toast ${t.type||"info"}`}>
+            {t.text}
+          </div>
         ))}
       </div>
     </section>
