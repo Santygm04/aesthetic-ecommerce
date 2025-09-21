@@ -153,16 +153,16 @@ export default function Navbar() {
         id="main-menu"
       >
         {/* Cerrar dentro del drawer (solo móvil/tablet) */}
-       <li className="nav-close-li">
-        <button
-          type="button"
-          className="nav-close-btn"
-          title="Cerrar"
-          onClick={closeSearchDrawer}
+        <li className="nav-close-li">
+          <button
+            type="button"
+            className="nav-close-btn"
+            title="Cerrar"
+            onClick={closeSearchDrawer}
           >
-          ✕
-        </button>
-      </li>
+            ✕
+          </button>
+        </li>
 
         {/* buscador dentro del drawer / en desktop queda igual */}
         <li className="nav-search">
@@ -302,7 +302,6 @@ export default function Navbar() {
           <span>Inicio</span>
         </NavLink>
 
-        {/* Buscar: abre el drawer sólo con el buscador y enfoca el input */}
         <button
           type="button"
           className="tab-btn"
@@ -312,23 +311,7 @@ export default function Navbar() {
           <span>Buscar</span>
         </button>
 
-        {/* Categorías: bottom-sheet */}
-        <button type="button" className="tab-btn" onClick={() => setCatSheetOpen(true)}>
-          <FaThLarge />
-          <span>Categorías</span>
-        </button>
-
-        <NavLink to="/promos" className={({isActive}) => "tab-btn" + (isActive ? " is-active" : "")}>
-          <FaTags />
-          <span>Promos</span>
-        </NavLink>
-
-        {/* Más: Nosotros / Contacto */}
-        <button type="button" className="tab-btn" onClick={() => setMoreSheetOpen(true)}>
-          <FaEllipsisH />
-          <span>Más</span>
-        </button>
-
+        {/* === Carrito AL MEDIO === */}
         <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
           <span className="cart-icon-wrapper">
             <FaShoppingCart />
@@ -336,6 +319,25 @@ export default function Navbar() {
           </span>
           <span>Carrito</span>
         </NavLink>
+        {/* ===================== */}
+
+        {/* Categorías */}
+        <button type="button" className="tab-btn" onClick={() => setCatSheetOpen(true)}>
+          <FaThLarge />
+          <span>Categorías</span>
+        </button>
+
+        {/* Promos */}
+        <NavLink to="/promos" className={({isActive}) => "tab-btn" + (isActive ? " is-active" : "")}>
+          <FaTags />
+          <span>Promos</span>
+        </NavLink>
+
+        {/* Más */}
+        <button type="button" className="tab-btn" onClick={() => setMoreSheetOpen(true)}>
+          <FaEllipsisH />
+          <span>Más</span>
+        </button>
       </div>
 
       {/* ==== Bottom Sheet de categorías (móvil) ==== */}
