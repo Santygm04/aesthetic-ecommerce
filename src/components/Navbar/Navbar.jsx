@@ -186,6 +186,13 @@ export default function Navbar() {
           </NavLink>
         </li>
 
+        {/* === Mis pedidos (desktop & drawer) === */}
+        <li>
+          <NavLink to="/pedidos" className={({ isActive }) => (isActive ? "active" : "")}>
+            Mis pedidos
+          </NavLink>
+        </li>
+
         {/* Dropdown de categorías (header / desktop) */}
         <li className={`dropdown ${isCatOpen ? "open" : ""}`} ref={ddRef}>
           <button
@@ -361,7 +368,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* ==== Bottom Sheet “Más” (Nosotros / Contacto) ==== */}
+      {/* ==== Bottom Sheet “Más” (Nosotros / Contacto / Mis pedidos) ==== */}
       <div
         className={`more-sheet-overlay ${moreSheetOpen ? "open" : ""}`}
         onClick={() => setMoreSheetOpen(false)}
@@ -375,6 +382,9 @@ export default function Navbar() {
           </button>
           <button type="button" className="more-sheet-item" onClick={() => { setMoreSheetOpen(false); nav("/contacto"); }}>
             <span>Contacto</span>
+          </button>
+          <button type="button" className="more-sheet-item" onClick={() => { setMoreSheetOpen(false); nav("/pedidos"); }}>
+            <span>Mis pedidos</span>
           </button>
         </div>
       </div>

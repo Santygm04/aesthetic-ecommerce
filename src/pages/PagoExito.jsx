@@ -25,6 +25,13 @@ export default function PagoExito() {
 
         if (data.status === "paid") {
           setStatus("paid");
+
+          // 👉 Guardar referencia local para "Mis pedidos"
+          try {
+            const code = data?.shippingTicket || (data?.orderNumber ? `#${data.orderNumber}` : null);
+            addOrderRef({ _id: data?.id || orderId, code, createdAt: data?.createdAt || Date.now() });
+          } catch {}
+
           return;
         }
         if (data.status === "cancelled" || data.mp?.status === "rejected") {

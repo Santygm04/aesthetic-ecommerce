@@ -1,7 +1,7 @@
 // src/pages/Orders/Orders.jsx
 import "./Orders.css";
 import { useEffect, useMemo, useState } from "react";
-import { getSavedOrderRefs, addOrderRef, removeOrderRef } from "../../utils/ordersLocal";
+import { getSavedOrderRefs, addOrderRef, removeOrderRef } from "../../utils/ordersLocal.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
