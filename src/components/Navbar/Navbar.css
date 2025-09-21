@@ -73,7 +73,7 @@ body.nav-open{ overflow:hidden; }
   box-shadow:0 6px 16px rgba(255,46,166,.18);
 }
 
-/* ========= Carrito (header) ========= */
+/* ========= Carrito ========= */
 .cart-link{ position:relative; display:inline-block; }
 .cart-icon-wrapper{ position:relative; display:inline-flex; align-items:center; }
 .cart-badge{
@@ -222,16 +222,16 @@ body.nav-open{ overflow:hidden; }
 .mobile-tabbar{ display:none; }
 @media (max-width:768px){
   .mobile-tabbar{
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 64px;
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
-    background: linear-gradient(180deg, #fff0f8 0%, #f5c2df 100%) !important; /* degradado rosa */
-    border-top:2px solid #f5c2e7;
-    box-shadow: 0 -6px 18px rgba(214,51,132,.12);
-    display:flex; align-items:center; justify-content:space-around;
-    z-index: 210;
-  }
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 64px;
+  padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, #fff0f8 0%, #f5c2df 100%) !important; /* degradado rosa */
+  border-top:2px solid #f5c2e7;
+  box-shadow: 0 -6px 18px rgba(214,51,132,.12);
+  display:flex; align-items:center; justify-content:space-around;
+  z-index: 210;
+}
 
   .mobile-tabbar .tab-btn{
     display:flex; flex-direction:column; align-items:center; gap:4px;
@@ -239,64 +239,33 @@ body.nav-open{ overflow:hidden; }
     color:#555; font-weight:700; font-size:12px; border-radius:12px; padding:6px 10px;
     transition: all .2s ease;
   }
+
   .mobile-tabbar .tab-btn svg{ font-size:18px; }
 
-  /* Hover común */
+  /* Hover */
   .mobile-tabbar .tab-btn:hover{
     color: var(--brand);
     background: var(--brand-50);
   }
 
-  /* Activo común (excepto carrito) */
+  /* Activo */
   .mobile-tabbar .tab-btn.is-active{
     color:#fff;
     background: var(--brand);
     box-shadow: 0 6px 16px rgba(255,46,166,.28);
   }
 
-  /* ===== Carrito centrado tipo FAB ===== */
-  .mobile-tabbar .tab-btn.cart{
-    transform: translateY(-14px);          /* lo “eleva” */
-    background: transparent !important;    /* no usar el fondo común */
-    box-shadow: none !important;
-  }
-  .mobile-tabbar .tab-btn.cart .cart-icon-wrapper{
-    width:58px; height:58px;
-    display:flex; align-items:center; justify-content:center;
-    border-radius:999px;
-    background:#fff;
-    border:2px solid #f7cbe6;
-    box-shadow: 0 10px 26px rgba(214,51,132,.18), 0 4px 10px rgba(0,0,0,.06);
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
-  }
-  .mobile-tabbar .tab-btn.cart svg{ font-size:24px; }
-  .mobile-tabbar .tab-btn.cart:hover .cart-icon-wrapper{
-    transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 12px 28px rgba(214,51,132,.24), 0 6px 12px rgba(0,0,0,.08);
-  }
-  /* badge ajustado al círculo */
-  .mobile-tabbar .tab-btn.cart .cart-badge{
-    top:-4px; right:-4px; font-size:10px; padding:1px 6px;
-  }
-  /* estado activo del carrito (cambia sólo el “círculo”) */
-  .mobile-tabbar .tab-btn.cart.is-active{
-    background: transparent !important;
-    box-shadow: none !important;
-    color: var(--brand); /* color del texto "Carrito" */
-  }
-  .mobile-tabbar .tab-btn.cart.is-active .cart-icon-wrapper{
-    background: var(--brand);
-    color:#fff;
-    border-color: var(--brand);
-    box-shadow: 0 12px 28px rgba(255,46,166,.35);
-  }
-
   .mobile-tabbar .cart .cart-icon-wrapper{ 
     position:relative; display:inline-flex; align-items:center; justify-content:center; 
   }
 
+  .mobile-tabbar .cart-badge{ 
+    position:absolute; top:-8px; right:-10px; font-size:10px; padding:1px 6px; 
+  }
+
   body{ padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
+
 
 /* ===== Bottom Sheet de categorías (móvil) ===== */
 .cat-sheet-overlay{

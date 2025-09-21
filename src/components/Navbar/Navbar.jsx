@@ -311,7 +311,7 @@ export default function Navbar() {
           <span>Buscar</span>
         </button>
 
-        {/* === Carrito AL MEDIO (FAB) === */}
+        {/* === Carrito AL MEDIO === */}
         <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
           <span className="cart-icon-wrapper">
             <FaShoppingCart />
@@ -319,18 +319,21 @@ export default function Navbar() {
           </span>
           <span>Carrito</span>
         </NavLink>
-        {/* ============================= */}
+        {/* ===================== */}
 
+        {/* Categorías */}
         <button type="button" className="tab-btn" onClick={() => setCatSheetOpen(true)}>
           <FaThLarge />
           <span>Categorías</span>
         </button>
 
+        {/* Promos */}
         <NavLink to="/promos" className={({isActive}) => "tab-btn" + (isActive ? " is-active" : "")}>
           <FaTags />
           <span>Promos</span>
         </NavLink>
 
+        {/* Más */}
         <button type="button" className="tab-btn" onClick={() => setMoreSheetOpen(true)}>
           <FaEllipsisH />
           <span>Más</span>
