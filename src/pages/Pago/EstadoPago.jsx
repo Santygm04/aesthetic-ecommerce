@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../Pago/EstadoPago.css";
-import { addOrderRef } from "../../utils/orderLocal"; // 👈 NUEVO
+import { addOrderRef } from "../../utils/ordersLocal"; // 👈 NUEVO
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const SELLER_WA = (import.meta.env.VITE_SELLER_PHONE || "").replace(/\D/g, "");
