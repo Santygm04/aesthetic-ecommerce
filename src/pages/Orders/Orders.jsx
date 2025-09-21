@@ -33,12 +33,22 @@ export default function Orders(){
 
   useEffect(()=>{ fetchOrders(); const t=setInterval(fetchOrders,20000); return ()=>clearInterval(t); }, [refs.length]);
 
+  // 👇 normaliza email/teléfono: si tiene ≥6 dígitos, se envían solo los dígitos
+  const normalizeContact = (v)=>{
+    const t = (v || "").trim();
+    const digits = t.replace(/\D/g, "");
+    return digits.length >= 6 ? digits : t.toLowerCase();
+  };
+
   async function onLookup(e){
     e.preventDefault();
     if(!lookup.code.trim()) return;
     try{
       setLoading(true);
-      const p = new URLSearchParams({ code: lookup.code.trim(), emailOrPhone: lookup.emailOrPhone.trim() });
+      const p = new URLSearchParams({
+        code: lookup.code.trim(),
+        emailOrPhone: normalizeContact(lookup.emailOrPhone)
+      });
       const r = await fetch(`${API_URL}/api/payments/orders/public/lookup?${p.toString()}`);
       const o = await r.json();
       if(o && o._id){ addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt }); setRefs(getSavedOrderRefs()); }

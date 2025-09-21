@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../Pago/EstadoPago.css";
-import { addOrderRef } from "../../utils/ordersLocal"; // 👈 NUEVO
+import { addOrderRef } from "../../utils/ordersLocal.js"; // 👈 extensión .js
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const SELLER_WA = (import.meta.env.VITE_SELLER_PHONE || "").replace(/\D/g, "");
@@ -14,6 +14,7 @@ export default function EstadoPago() {
   const params = new URLSearchParams(search);
   const orderId = params.get("o") || "";
   const paymentId = params.get("payment_id") || params.get("collection_id") || "";
+  const canAutoOpen = params.get("fresh") === "1"; // 👈 solo auto-abrir si viene marcado como "reciente"
 
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -148,9 +149,9 @@ export default function EstadoPago() {
     };
   }, [orderId, paymentId]);
 
-  // Auto-open WA cuando pasa a paid (opcional)
+  // Auto-open WA cuando pasa a paid (solo si viene "fresco")
   useEffect(() => {
-    if (!AUTO_OPEN_WA || !SELLER_WA || !info) return;
+    if (!AUTO_OPEN_WA || !SELLER_WA || !info || !canAutoOpen) return; // 👈 guardia clave
     if (autoOpenedRef.current) return;
     if (info.paymentMethod === "transfer" && info.status === "paid") {
       autoOpenedRef.current = true;
@@ -158,7 +159,7 @@ export default function EstadoPago() {
         if (waHref) window.location.href = waHref;
       }, 400);
     }
-  }, [info, waHref]);
+  }, [info, waHref, canAutoOpen]);
 
   const ui = useMemo(() => {
     if (!info) return { titulo: "Procesando…", color: "#f59e0b", rejected: false };
@@ -248,7 +249,7 @@ export default function EstadoPago() {
                 </a>
               )}
               <a href="/" className="homeBtn">Volver al inicio</a>
-              {/* 👇 NUEVO atajo */}
+              {/* 👇 atajo a Mis pedidos */}
               <a href="/pedidos" className="homeBtn" style={{ background:"#fff", color:"#ff2ea6", border:"1px solid #ffd3ea" }}>Ver mis pedidos</a>
             </div>
           </>
