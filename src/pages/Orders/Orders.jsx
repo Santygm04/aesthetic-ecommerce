@@ -18,9 +18,10 @@ export default function Orders(){
   const [loading, setLoading] = useState(false);
   const [lookup, setLookup] = useState({ code:"", emailOrPhone:"" });
 
-  // ---- NUEVO: notificaciones en vivo ----
+  // ---- Notificaciones en vivo (SSE) ----
   const esMapRef = useRef(new Map());        // id -> EventSource
   const lastStatusRef = useRef(new Map());   // id -> last status
+  const codeMapRef = useRef(new Map());      // id -> {shippingTicket, orderNumber}
   const askedNotifRef = useRef(false);       // pedir permiso una vez
 
   function askNotificationPermissionOnce(){
@@ -37,8 +38,7 @@ export default function Orders(){
     try{
       if (!("Notification" in window)) return;
       if (Notification.permission !== "granted") return;
-      // Ícono opcional: usa tu favicon si existe
-      new Notification(title, { body });
+      new Notification(title, { body, icon: "/favicon.ico" });
     }catch{}
   }
 
@@ -50,6 +50,13 @@ export default function Orders(){
 
   const [toasts, setToasts] = useState([]);
 
+  const labelStatus = (s)=>(
+    s==="paid"||s==="approved" ? "¡Pago aprobado!"
+    : s==="pending" ? "Pago pendiente"
+    : (s==="cancelled"||s==="rejected") ? "Pago rechazado"
+    : `Estado: ${s}`
+  );
+
   async function fetchOrders(){
     if(!ids.length && !codes.length){ setOrders([]); return; }
     setLoading(true);
@@ -59,11 +66,17 @@ export default function Orders(){
       if(codes.length) params.set("codes", codes.join(","));
       const r = await fetch(`${API_URL}/api/payments/orders/public/by-ids?${params.toString()}`);
       const data = await r.json();
-      setOrders(Array.isArray(data)? data : []);
-      // actualizo mapa de último estado para no duplicar toasts
-      (Array.isArray(data)? data : []).forEach(o=>{
-        if(o?._id && o?.status) lastStatusRef.current.set(o._id, o.status);
+      const arr = Array.isArray(data) ? data : [];
+
+      // Actualizo mapas auxiliares
+      arr.forEach(o=>{
+        if(o?._id){
+          if (o?.status) lastStatusRef.current.set(o._id, o.status);
+          codeMapRef.current.set(o._id, { shippingTicket: o.shippingTicket, orderNumber: o.orderNumber });
+        }
       });
+
+      setOrders(arr);
     }catch{ /* ignore */ } finally{ setLoading(false); }
   }
 
@@ -73,7 +86,7 @@ export default function Orders(){
     return ()=>clearInterval(t);
   }, [refs.length]);
 
-  // 👉 NUEVO: enganchar SSE por cada ID para recibir cambios de estado
+  // Enganchar SSE por cada ID para recibir cambios de estado
   useEffect(()=>{
     // cerrar los que ya no existen
     for (const [id, es] of esMapRef.current.entries()){
@@ -81,6 +94,7 @@ export default function Orders(){
         try{ es.close(); }catch{}
         esMapRef.current.delete(id);
         lastStatusRef.current.delete(id);
+        codeMapRef.current.delete(id);
       }
     }
     // abrir nuevos
@@ -92,40 +106,40 @@ export default function Orders(){
           try{
             const msg = JSON.parse(ev.data||"{}"); // {status: "..."}
             if (!msg?.status) return;
-            setOrders(prev=>{
-              const next = prev.map(o => o._id===id ? {...o, status: msg.status} : o);
-              return next;
-            });
+
+            // actualizar estado en la lista
+            setOrders(prev => prev.map(o => o._id===id ? {...o, status: msg.status} : o));
+
             const prevStatus = lastStatusRef.current.get(id);
             if (prevStatus && prevStatus !== msg.status){
-              const code = shortCode({ _id:id, shippingTicket: orders.find(o=>o._id===id)?.shippingTicket, orderNumber: orders.find(o=>o._id===id)?.orderNumber });
-              const nice =
-                msg.status==="paid"||msg.status==="approved" ? "¡Pago aprobado!"
-                : msg.status==="pending" ? "Pago pendiente"
-                : msg.status==="cancelled"||msg.status==="rejected" ? "Pago rechazado"
-                : `Estado: ${msg.status}`;
-              pushToast(`Pedido ${code}: ${nice}`, msg.status==="paid"||msg.status==="approved" ? "success"
-                : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info"));
+              const meta = codeMapRef.current.get(id) || {};
+              const code = meta.shippingTicket || (meta.orderNumber ? `#${meta.orderNumber}` : id);
+              const nice = labelStatus(msg.status);
+
+              pushToast(`Pedido ${code}: ${nice}`,
+                msg.status==="paid"||msg.status==="approved" ? "success"
+                : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info")
+              );
+
               if (document.hidden) notifyBrowser(`Pedido ${code}`, nice);
             }
             lastStatusRef.current.set(id, msg.status);
           }catch{}
         });
-        es.onerror = ()=>{ /* si falla, dejamos polling ya existente */ };
+        es.onerror = ()=>{ /* si falla, queda el polling */ };
         esMapRef.current.set(id, es);
         askNotificationPermissionOnce();
       }catch{}
     });
 
     return ()=>{
-      // cleanup al desmontar o cambio grande
       for (const es of esMapRef.current.values()){
         try{ es.close(); }catch{}
       }
       esMapRef.current.clear();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ids.join(",")]); // reengancha cuando cambia la lista de ids
+  }, [ids.join(",")]);
 
   async function onLookup(e){
     e.preventDefault();
@@ -135,9 +149,17 @@ export default function Orders(){
       const p = new URLSearchParams({ code: lookup.code.trim(), emailOrPhone: lookup.emailOrPhone.trim() });
       const r = await fetch(`${API_URL}/api/payments/orders/public/lookup?${p.toString()}`);
       const o = await r.json();
-      if(o && o._id){ addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt }); setRefs(getSavedOrderRefs()); }
-      else alert("No pudimos encontrar ese pedido.");
-    }catch{ alert("No pudimos buscar ese pedido."); } finally{ setLoading(false); setLookup({code:"",emailOrPhone:""}); }
+      if(o && o._id){
+        addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt });
+        setRefs(getSavedOrderRefs());
+      }else{
+        alert("No pudimos encontrar ese pedido.");
+      }
+    }catch{
+      alert("No pudimos buscar ese pedido.");
+    } finally{
+      setLoading(false); setLookup({code:"",emailOrPhone:""});
+    }
   }
 
   const remove = (idOrCode)=> setRefs(removeOrderRef(idOrCode));

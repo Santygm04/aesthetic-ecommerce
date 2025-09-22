@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 
 export default function Hero() {
-  // Slides del banner (pagos / envíos)
+  // Slides del banner (como “imagen” con ilustración CSS)
   const slides = [
     {
       id: "pagos",
+      theme: "theme-pagos",
       title: "Pagos mayoristas",
-      subtitle: "Solo transferencia — sin recargo",
+      subtitle: "Transferencia bancaria — sin recargo",
       bullets: [
         "Compra mínima $120.000",
         "Factura A o B según corresponda",
@@ -18,6 +19,7 @@ export default function Hero() {
     },
     {
       id: "envios",
+      theme: "theme-envios",
       title: "Envíos a todo el país",
       subtitle: "Despacho en 24 h hábiles",
       bullets: [
@@ -31,7 +33,7 @@ export default function Hero() {
 
   const [idx, setIdx] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 4500);
+    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 4800);
     return () => clearInterval(t);
   }, [slides.length]);
 
@@ -49,34 +51,50 @@ export default function Hero() {
           </span>
         </h1>
         <p>Moda, belleza y elegancia en un solo lugar.</p>
-        <a href="/category" className="hero-btn">
-          Ver Productos
-        </a>
+        <a href="/category" className="hero-btn">Ver Productos</a>
       </div>
 
-      {/* === Banner deslizante (reemplaza la imagen) === */}
+      {/* === Banner deslizante tipo imagen === */}
       <div
         className="hero-slider reveal fade-right"
-        style={{ "--reveal-delay": "180ms" }}
+        style={{ "--reveal-delay": "160ms" }}
         role="region"
         aria-label="Información de pagos y envíos"
       >
         {slides.map((s, i) => (
           <article
             key={s.id}
-            className={`hs-card${idx === i ? " is-active" : ""}`}
+            className={`hs-card ${s.theme}${idx === i ? " is-active" : ""}`}
             aria-hidden={idx !== i}
           >
-            <h3 className="hs-title">{s.title}</h3>
-            <div className="hs-sub">{s.subtitle}</div>
-            <ul className="hs-list">
-              {s.bullets.map((b, j) => (
-                <li key={j}>{b}</li>
-              ))}
-            </ul>
-            <a className="hs-cta" href={s.cta.href}>
-              {s.cta.label}
-            </a>
+            <div className="hs-grid">
+              {/* Copy */}
+              <div className="hs-copy">
+                <h3 className="hs-title">{s.title}</h3>
+                <div className="hs-sub">{s.subtitle}</div>
+                <ul className="hs-list">
+                  {s.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                </ul>
+                <a className="hs-cta" href={s.cta.href}>{s.cta.label}</a>
+              </div>
+
+              {/* Ilustración tipo imagen (CSS) */}
+              <div className={`hs-visual ${s.id}`} aria-hidden>
+                <div className="phone">
+                  <div className="notch" />
+                  <div className="wa-circle">⌾</div>
+                  <div className="wa-badge">WhatsApp</div>
+                </div>
+
+                {/* burbujas “chat” */}
+                <div className="bubble b1">Pedido confirmado</div>
+                <div className="bubble b2">CBU / Alias enviado</div>
+                <div className="bubble b3">Despachado en 24 h</div>
+
+                {/* ícono de camión (envíos) */}
+                <div className="truck" />
+              </div>
+            </div>
           </article>
         ))}
 
