@@ -2,6 +2,10 @@
 import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 
+const RAW_WA = (import.meta.env.VITE_SELLER_PHONE || "+5493854112412");
+const SELLER_WA = RAW_WA.replace(/\D/g, "");
+const CONTACT_MAIL = import.meta.env.VITE_CONTACT_EMAIL || "Paulagonzaleslazaro@gmail.com";
+
 export default function Hero() {
   // Slides del banner (como “imagen” con ilustración CSS)
   const slides = [
@@ -28,6 +32,18 @@ export default function Hero() {
         "Interior: $10.000 / $16.000 (referencia)",
       ],
       cta: { href: "/envios", label: "Ver envíos" },
+    },
+    {
+      id: "contacto",
+      theme: "theme-contacto",
+      title: "¿Necesitás ayuda?",
+      subtitle: "Respondemos rápido",
+      bullets: [
+        `WhatsApp: +${SELLER_WA}`,
+        `Email: ${CONTACT_MAIL}`,
+        "Instagram & Facebook disponibles",
+      ],
+      cta: { href: "/contacto", label: "Ver contactos" },
     },
   ];
 
@@ -59,7 +75,7 @@ export default function Hero() {
         className="hero-slider reveal fade-right"
         style={{ "--reveal-delay": "160ms" }}
         role="region"
-        aria-label="Información de pagos y envíos"
+        aria-label="Información destacada"
       >
         {slides.map((s, i) => (
           <article
@@ -91,8 +107,15 @@ export default function Hero() {
                 <div className="bubble b2">CBU / Alias enviado</div>
                 <div className="bubble b3">Despachado en 24 h</div>
 
-                {/* ícono de camión (envíos) */}
+                {/* ícono de camión (solo envíos) */}
                 <div className="truck" />
+
+                {/* insignias redes (solo contacto) */}
+                <div className="socials">
+                  <span className="soc ig">IG</span>
+                  <span className="soc fb">FB</span>
+                  <span className="soc mail">✉</span>
+                </div>
               </div>
             </div>
           </article>

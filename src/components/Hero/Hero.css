@@ -76,7 +76,7 @@
 }
 .hs-card.is-active{ display:block; }
 
-/* fondos del “banner imagen” por tema */
+/* fondos por tema */
 .hs-card.theme-pagos{
   background: radial-gradient(1100px 400px at -10% -10%, #fff0f8 0%, transparent 65%),
               radial-gradient(1200px 360px at 110% 110%, #ffe4f2 0%, transparent 60%),
@@ -86,6 +86,11 @@
   background: radial-gradient(1100px 400px at -10% -10%, #fff0f2 0%, transparent 65%),
               radial-gradient(1200px 360px at 110% 110%, #e9f9ff 0%, transparent 60%),
               linear-gradient(135deg,#ffd9ef 0%, #ffeef8 35%, #f5f9ff 100%);
+}
+.hs-card.theme-contacto{
+  background: radial-gradient(1100px 400px at -10% -10%, #fff3fb 0%, transparent 65%),
+              radial-gradient(1200px 360px at 110% 110%, #fff1f7 0%, transparent 60%),
+              linear-gradient(135deg,#ffe2f2 0%, #fff4fa 35%, #f6f2ff 100%);
 }
 
 /* layout interno */
@@ -103,7 +108,7 @@
   margin:0 0 8px; color:#c91d7d; font-weight:900; letter-spacing:.3px;
   font-size: clamp(1.35rem, 3.2vw, 1.9rem);
 }
-.theme-envios .hs-title{ color:#d63384; }
+.theme-envios .hs-title, .theme-contacto .hs-title{ color:#d63384; }
 
 .hs-sub{
   display:inline-block;
@@ -136,7 +141,7 @@
   position:absolute; top:64px; left:50%; transform:translateX(-50%); width:120px; height:120px;
   border-radius:999px; background: radial-gradient(circle at 30% 30%, #fff 0%, #ffe7f3 45%, #ffd1ec 100%);
   box-shadow: inset 0 0 0 10px #ffe1f1, 0 12px 22px rgba(214,51,132,.18);
-  display:grid; place-items:center; font-size:0; /* decorativo */
+  display:grid; place-items:center; font-size:0;
 }
 .wa-badge{
   position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
@@ -156,18 +161,25 @@
 
 .theme-envios .bubble{ background:#ffffff; color:#5a4166; }
 
-/* camión (envíos) */
+/* camión (solo en envíos) */
 .truck{
   position:absolute; left:16px; bottom:18px; width:110px; height:58px;
   border-radius:10px; background:linear-gradient(180deg,#fff,#ffe7f3);
   border:2px solid #efd7e6; box-shadow:0 10px 22px rgba(214,51,132,.12);
 }
-.truck::before, .truck::after{
-  content:""; position:absolute; bottom:-10px; width:22px; height:22px; border-radius:999px; background:#4441;
-  box-shadow: inset 0 0 0 4px #d9c2d0; background:#fff;
+.hs-visual:not(.envios) .truck{ display:none; }
+
+/* insignias redes (solo en contacto) */
+.socials{ display:none; }
+.contacto .socials{ display:block; position:absolute; top:14px; right:14px; display:flex; gap:8px; }
+.soc{
+  width:34px; height:34px; border-radius:999px; display:grid; place-items:center;
+  background:#fff; color:#d63384; font-weight:900; border:1px solid #f3c9e2;
+  box-shadow:0 8px 16px rgba(214,51,132,.12);
 }
-.truck::before{ left:12px; }
-.truck::after{ right:12px; }
+.soc.ig{ background:linear-gradient(135deg,#fdf497,#fd5949,#d6249f,#285AEB); color:#fff; border-color:#ffd3ea; }
+.soc.fb{ background:#1877f2; color:#fff; border-color:#cfe0ff; }
+.soc.mail{ background:#fff; color:#d63384; }
 
 /* dots */
 .hs-dots{ display:flex; justify-content:center; gap:10px; }
