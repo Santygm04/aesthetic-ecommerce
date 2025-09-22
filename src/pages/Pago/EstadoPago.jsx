@@ -1,7 +1,9 @@
+// src/pages/Pago/EstadoPago.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../Pago/EstadoPago.css";
 import { addOrderRef } from "../../utils/ordersLocal.js"; // 👈 extensión .js
+import { noteOrderUpdate } from "../../utils/ordersBadge.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const SELLER_WA = (import.meta.env.VITE_SELLER_PHONE || "").replace(/\D/g, "");
@@ -21,6 +23,7 @@ export default function EstadoPago() {
   const esRef = useRef(null);
   const pollRef = useRef(null);
   const autoOpenedRef = useRef(false);
+  const lastStatusRef = useRef(null); // 👈 NUEVO: recordar último estado para disparar badge solo en cambios
 
   const niceMoney = (n) =>
     typeof n === "number" ? n.toLocaleString("es-AR") : String(n || "");
@@ -160,6 +163,15 @@ export default function EstadoPago() {
       }, 400);
     }
   }, [info, waHref, canAutoOpen]);
+
+  // 👇 NUEVO: cuando cambia el estado, avisamos al Navbar (badge "Mis pedidos")
+  useEffect(() => {
+    if (!info?.status) return;
+    if (lastStatusRef.current && lastStatusRef.current !== info.status) {
+      noteOrderUpdate({ id: info.id || orderId, status: info.status });
+    }
+    lastStatusRef.current = info.status;
+  }, [info?.status, orderId]);
 
   const ui = useMemo(() => {
     if (!info) return { titulo: "Procesando…", color: "#f59e0b", rejected: false };

@@ -4,6 +4,10 @@ import "../../components/Navbar/Navbar.css";
 import { useCart } from "../Carrito/CartContext";
 import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch, FaEllipsisH } from "react-icons/fa";
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
+import OrdersNavLink from "./OrdersNavLink.jsx";
+// ...
+<li><OrdersNavLink/></li>
+
 
 // ICONOS
 import skincare from "../../../assets/iconos/skincare.png";

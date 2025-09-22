@@ -2,6 +2,7 @@
 import "./Orders.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSavedOrderRefs, addOrderRef, removeOrderRef } from "../../utils/ordersLocal.js";
+import { clearOrdersBadge, noteOrderUpdate, rememberOrderStatuses } from "../../utils/ordersBadge.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -18,11 +19,14 @@ export default function Orders(){
   const [loading, setLoading] = useState(false);
   const [lookup, setLookup] = useState({ code:"", emailOrPhone:"" });
 
-  // ---- Notificaciones en vivo (SSE) ----
-  const esMapRef = useRef(new Map());        // id -> EventSource
-  const lastStatusRef = useRef(new Map());   // id -> last status
-  const codeMapRef = useRef(new Map());      // id -> {shippingTicket, orderNumber}
-  const askedNotifRef = useRef(false);       // pedir permiso una vez
+  // ---- NOTIFICACIONES EN VIVO ----
+  const esMapRef = useRef(new Map());
+  const lastStatusRef = useRef(new Map());
+  const askedNotifRef = useRef(false);
+  const [toasts, setToasts] = useState([]);
+
+  // limpiar badge al abrir "Mis pedidos"
+  useEffect(()=> { clearOrdersBadge(); }, []);
 
   function askNotificationPermissionOnce(){
     if (askedNotifRef.current) return;
@@ -33,29 +37,18 @@ export default function Orders(){
       }
     }catch{}
   }
-
   function notifyBrowser(title, body){
     try{
       if (!("Notification" in window)) return;
       if (Notification.permission !== "granted") return;
-      new Notification(title, { body, icon: "/favicon.ico" });
+      new Notification(title, { body });
     }catch{}
   }
-
   function pushToast(text, type="info"){
     const id = Math.random().toString(36).slice(2);
     setToasts(t=>[...t, { id, text, type }]);
     setTimeout(()=> setToasts(t=> t.filter(x=>x.id!==id)), 4200);
   }
-
-  const [toasts, setToasts] = useState([]);
-
-  const labelStatus = (s)=>(
-    s==="paid"||s==="approved" ? "¡Pago aprobado!"
-    : s==="pending" ? "Pago pendiente"
-    : (s==="cancelled"||s==="rejected") ? "Pago rechazado"
-    : `Estado: ${s}`
-  );
 
   async function fetchOrders(){
     if(!ids.length && !codes.length){ setOrders([]); return; }
@@ -66,36 +59,27 @@ export default function Orders(){
       if(codes.length) params.set("codes", codes.join(","));
       const r = await fetch(`${API_URL}/api/payments/orders/public/by-ids?${params.toString()}`);
       const data = await r.json();
-      const arr = Array.isArray(data) ? data : [];
-
-      // Actualizo mapas auxiliares
+      const arr = Array.isArray(data)? data : [];
+      setOrders(arr);
+      // snapshot de estados para el watcher global del navbar
+      const map = {};
       arr.forEach(o=>{
-        if(o?._id){
-          if (o?.status) lastStatusRef.current.set(o._id, o.status);
-          codeMapRef.current.set(o._id, { shippingTicket: o.shippingTicket, orderNumber: o.orderNumber });
+        if(o?._id && o?.status){
+          lastStatusRef.current.set(o._id, o.status);
+          map[o._id] = o.status;
         }
       });
-
-      setOrders(arr);
+      rememberOrderStatuses(map);
     }catch{ /* ignore */ } finally{ setLoading(false); }
   }
 
-  useEffect(()=>{
-    fetchOrders();
-    const t=setInterval(fetchOrders,20000);
-    return ()=>clearInterval(t);
-  }, [refs.length]);
+  useEffect(()=>{ fetchOrders(); const t=setInterval(fetchOrders,20000); return ()=>clearInterval(t); }, [refs.length]);
 
-  // Enganchar SSE por cada ID para recibir cambios de estado
+  // SSE por cada ID
   useEffect(()=>{
-    // cerrar los que ya no existen
+    // cerrar desuscritos
     for (const [id, es] of esMapRef.current.entries()){
-      if (!ids.includes(id)){
-        try{ es.close(); }catch{}
-        esMapRef.current.delete(id);
-        lastStatusRef.current.delete(id);
-        codeMapRef.current.delete(id);
-      }
+      if (!ids.includes(id)){ try{ es.close(); }catch{} esMapRef.current.delete(id); lastStatusRef.current.delete(id); }
     }
     // abrir nuevos
     ids.forEach(id=>{
@@ -104,38 +88,38 @@ export default function Orders(){
         const es = new EventSource(`${API_URL}/api/payments/order/${id}/stream`);
         es.addEventListener("update", (ev)=>{
           try{
-            const msg = JSON.parse(ev.data||"{}"); // {status: "..."}
+            const msg = JSON.parse(ev.data||"{}");
             if (!msg?.status) return;
 
-            // actualizar estado en la lista
             setOrders(prev => prev.map(o => o._id===id ? {...o, status: msg.status} : o));
-
             const prevStatus = lastStatusRef.current.get(id);
             if (prevStatus && prevStatus !== msg.status){
-              const meta = codeMapRef.current.get(id) || {};
-              const code = meta.shippingTicket || (meta.orderNumber ? `#${meta.orderNumber}` : id);
-              const nice = labelStatus(msg.status);
+              const o = orders.find(x=>x._id===id) || {};
+              const code = shortCode(o);
+              const nice =
+                msg.status==="paid"||msg.status==="approved" ? "¡Pago aprobado!"
+                : msg.status==="pending" ? "Pago pendiente"
+                : msg.status==="cancelled"||msg.status==="rejected" ? "Pago rechazado"
+                : `Estado: ${msg.status}`;
 
-              pushToast(`Pedido ${code}: ${nice}`,
-                msg.status==="paid"||msg.status==="approved" ? "success"
-                : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info")
-              );
-
+              // toasts + notificación del navegador
+              pushToast(`Pedido ${code}: ${nice}`, msg.status==="paid"||msg.status==="approved" ? "success" : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info"));
               if (document.hidden) notifyBrowser(`Pedido ${code}`, nice);
+
+              // 👇 avisar al navbar (badge)
+              noteOrderUpdate({ id, status: msg.status });
             }
             lastStatusRef.current.set(id, msg.status);
           }catch{}
         });
-        es.onerror = ()=>{ /* si falla, queda el polling */ };
+        es.onerror = ()=>{};
         esMapRef.current.set(id, es);
         askNotificationPermissionOnce();
       }catch{}
     });
 
     return ()=>{
-      for (const es of esMapRef.current.values()){
-        try{ es.close(); }catch{}
-      }
+      for (const es of esMapRef.current.values()){ try{ es.close(); }catch{} }
       esMapRef.current.clear();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,25 +133,13 @@ export default function Orders(){
       const p = new URLSearchParams({ code: lookup.code.trim(), emailOrPhone: lookup.emailOrPhone.trim() });
       const r = await fetch(`${API_URL}/api/payments/orders/public/lookup?${p.toString()}`);
       const o = await r.json();
-      if(o && o._id){
-        addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt });
-        setRefs(getSavedOrderRefs());
-      }else{
-        alert("No pudimos encontrar ese pedido.");
-      }
-    }catch{
-      alert("No pudimos buscar ese pedido.");
-    } finally{
-      setLoading(false); setLookup({code:"",emailOrPhone:""});
-    }
+      if(o && o._id){ addOrderRef({ _id:o._id, code: shortCode(o), createdAt: o.createdAt }); setRefs(getSavedOrderRefs()); }
+      else alert("No pudimos encontrar ese pedido.");
+    }catch{ alert("No pudimos buscar ese pedido."); } finally{ setLoading(false); setLookup({code:"",emailOrPhone:""}); }
   }
 
   const remove = (idOrCode)=> setRefs(removeOrderRef(idOrCode));
-
-  const statusBadge = (s)=>{
-    const map={ paid:"st-paid", approved:"st-paid", pending:"st-pending", cancelled:"st-cancelled", rejected:"st-cancelled" };
-    return map[s]||"";
-  };
+  const statusBadge = (s)=>({ paid:"st-paid", approved:"st-paid", pending:"st-pending", cancelled:"st-cancelled", rejected:"st-cancelled" }[s]||"");
 
   return (
     <section className="orders-wrap">
@@ -204,7 +176,7 @@ export default function Orders(){
                 {(o.items||[]).slice(0,6).map((it,i)=>(
                   <li key={i}>
                     <span className="name">{it.nombre}</span>
-                    { (it?.variant?.size || it?.variant?.color) && (
+                    {(it?.variant?.size || it?.variant?.color) && (
                       <span className="muted"> ({[it?.variant?.size,it?.variant?.color].filter(Boolean).join(" / ")})</span>
                     )}
                     <span className="muted"> x{it.cantidad}</span>
@@ -220,7 +192,7 @@ export default function Orders(){
             </div>
 
             <footer className="order-actions">
-              <a className="btn btn--ghost" href={`/pago/estado?o=${encodeURIComponent(o._id)}`} >Ver detalle</a>
+              <a className="btn btn--ghost" href={`/pago/estado?o=${encodeURIComponent(o._id)}`}>Ver detalle</a>
               <button type="button" className="btn btn--ghost" onClick={()=>remove(o._id || shortCode(o))}>Quitar</button>
             </footer>
           </article>
@@ -230,9 +202,7 @@ export default function Orders(){
       {/* Toasters */}
       <div className="toast-wrap" aria-live="polite" aria-atomic="true">
         {toasts.map(t=>(
-          <div key={t.id} className={`toast ${t.type||"info"}`}>
-            {t.text}
-          </div>
+          <div key={t.id} className={`toast ${t.type||"info"}`}>{t.text}</div>
         ))}
       </div>
     </section>

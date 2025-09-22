@@ -393,3 +393,18 @@ body.nav-open{ overflow:hidden; }
   .navbar-links{ z-index: 241 !important; }
   /* El header en móvil ya usa z-index:200, así el overlay lo tapa correctamente */
 }
+
+/* badge para "Mis pedidos" */
+.nav-link--orders{ position:relative; display:inline-flex; align-items:center; }
+.nav-orders-badge{
+  position:absolute; top:-8px; right:-14px;
+  min-width:18px; height:18px; padding:0 6px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ff2ea6,#ff6fb5);
+  color:#fff; font-weight:900; font-size:.72rem; line-height:18px;
+  display:inline-grid; place-items:center;
+  border:1px solid #fff; box-shadow:0 6px 18px rgba(255,46,166,.35);
+}
+@media (max-width:720px){
+  .nav-orders-badge{ top:-6px; right:-10px; }
+}
