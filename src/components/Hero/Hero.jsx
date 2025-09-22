@@ -2,9 +2,11 @@
 import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 
-const RAW_WA = (import.meta.env.VITE_SELLER_PHONE || "+5493854112412");
+const RAW_WA   = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
 const SELLER_WA = RAW_WA.replace(/\D/g, "");
 const CONTACT_MAIL = import.meta.env.VITE_CONTACT_EMAIL || "Paulagonzaleslazaro@gmail.com";
+const IG_URL = import.meta.env.VITE_IG_URL || "https://instagram.com/";
+const FB_URL = import.meta.env.VITE_FB_URL || "https://facebook.com/";
 
 export default function Hero() {
   // Slides del banner (como “imagen” con ilustración CSS)
@@ -95,11 +97,20 @@ export default function Hero() {
               </div>
 
               {/* Ilustración tipo imagen (CSS) */}
-              <div className={`hs-visual ${s.id}`} aria-hidden>
+              <div className={`hs-visual ${s.id}`} aria-hidden={false}>
                 <div className="phone">
                   <div className="notch" />
-                  <div className="wa-circle">⌾</div>
-                  <div className="wa-badge">WhatsApp</div>
+                  <div className="wa-circle" />
+                  {/* BOTÓN real de WhatsApp */}
+                  <a
+                    className="wa-badge"
+                    href={`https://wa.me/${SELLER_WA}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="WhatsApp"
+                  >
+                    WhatsApp
+                  </a>
                 </div>
 
                 {/* burbujas “chat” */}
@@ -107,14 +118,14 @@ export default function Hero() {
                 <div className="bubble b2">CBU / Alias enviado</div>
                 <div className="bubble b3">Despachado en 24 h</div>
 
-                {/* ícono de camión (solo envíos) */}
+                {/* camión solo en envíos */}
                 <div className="truck" />
 
                 {/* insignias redes (solo contacto) */}
                 <div className="socials">
-                  <span className="soc ig">IG</span>
-                  <span className="soc fb">FB</span>
-                  <span className="soc mail">✉</span>
+                  <a className="soc ig"   href={IG_URL} target="_blank" rel="noreferrer" aria-label="Instagram">IG</a>
+                  <a className="soc fb"   href={FB_URL} target="_blank" rel="noreferrer" aria-label="Facebook">FB</a>
+                  <a className="soc mail" href={`mailto:${CONTACT_MAIL}`} aria-label="Email">✉</a>
                 </div>
               </div>
             </div>
