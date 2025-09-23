@@ -51,7 +51,7 @@ export default function Hero() {
 
   const [idx, setIdx] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 4800);
+    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5200);
     return () => clearInterval(t);
   }, [slides.length]);
 
@@ -118,7 +118,7 @@ export default function Hero() {
                 <div className="bubble b2">CBU / Alias enviado</div>
                 <div className="bubble b3">Despachado en 24 h</div>
 
-                {/* camión solo en envíos */}
+                {/* camión (solo en envíos) */}
                 <div className="truck" />
 
                 {/* insignias redes (solo contacto) */}
