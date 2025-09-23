@@ -46,7 +46,7 @@
   margin:.4rem 0 1.8rem;
 }
 
-/* CTA con efecto glow estilo Uiverse */
+/* CTA con efecto glow (estilo Uiverse) */
 .glow{
   position:relative; isolation:isolate;
   border:none; text-decoration:none;
@@ -105,7 +105,7 @@
   .hs-grid{ grid-template-columns: 1fr; gap: 12px; }
 }
 
-/* Texto derecha/izquierda */
+/* Texto */
 .hs-copy{ z-index:2; color:#3c2a45; }
 .hs-title{
   margin:0 0 8px; color:#c91d7d; font-weight:900; letter-spacing:.3px;
@@ -165,10 +165,10 @@
   box-shadow:0 12px 24px rgba(37,211,102,.25);
 }
 
-/* Burbujas glass */
+/* Burbujas glass (3 posiciones fijas) */
 .bubble{
   position:absolute; z-index:2;
-  left: -18px; /* a la izquierda del teléfono para simetría */
+  left: -18px;
   width: max-content;
   background: rgba(255,255,255,.82);
   backdrop-filter: blur(8px);
@@ -180,9 +180,8 @@
 .b1{ top: 30px; }
 .b2{ top: 96px; }
 .b3{ top: 162px; }
-.b3.emoji{ padding:.55rem 1rem; }
 
-/* Redes sólo en “Contacto” */
+/* Redes (solo contacto) */
 .socials{
   position:absolute; top:14px; right:-14px; display:flex; gap:10px; z-index:3;
 }
@@ -224,7 +223,7 @@
 @keyframes fadeInRight{ from{opacity:0; transform:translateX(40px)} to{opacity:1; transform:translateX(0)} }
 @keyframes slideFade{ from{opacity:.2; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
-/* ===== Responsive ===== */
+/* Responsive */
 @media (max-width: 950px){
   .hero{ flex-direction:column; text-align:center; min-height:unset; }
   .hero-content{ text-align:center; margin-bottom:1.6rem; max-width:100%; }

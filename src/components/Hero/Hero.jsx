@@ -8,7 +8,7 @@ const IG_URL = import.meta.env.VITE_IG_URL || "https://instagram.com/";
 const FB_URL = import.meta.env.VITE_FB_URL || "https://facebook.com/";
 
 export default function Hero() {
-  // Slides (copy/CTA) – visual se arma con CSS
+  // Slides con chips/burbujas claras por flujo
   const slides = [
     {
       id: "pagos",
@@ -20,6 +20,7 @@ export default function Hero() {
         "Factura A o B según corresponda",
         "Coordinación por WhatsApp al cerrar el pedido",
       ],
+      bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
       cta: { href: "/pagos", label: "Ver pagos" },
     },
     {
@@ -32,6 +33,7 @@ export default function Hero() {
         "Costo según destino y transportista",
         "Interior: $10.000 / $16.000 (referencia)",
       ],
+      bubbles: ["💳 Pago acreditado", "📦 Preparación", "🚚 Despacho en 24 h"],
       cta: { href: "/envios", label: "Ver envíos" },
     },
     {
@@ -39,11 +41,8 @@ export default function Hero() {
       theme: "theme-contacto",
       title: "¿Necesitás ayuda?",
       subtitle: "Respondemos rápido",
-      bullets: [
-        `WhatsApp: +${SELLER_WA}`,
-        `Email: ${CONTACT_MAIL}`,
-        "Instagram & Facebook disponibles",
-      ],
+      bullets: [`WhatsApp: +${SELLER_WA}`, `Email: ${CONTACT_MAIL}`, "Instagram & Facebook disponibles"],
+      bubbles: ["💬 WhatsApp directo", "✉ Email de soporte", "⚡ Respuesta rápida"],
       cta: { href: "/contacto", label: "Ver contactos" },
     },
   ];
@@ -56,7 +55,7 @@ export default function Hero() {
 
   return (
     <section className="hero" aria-label="Portada">
-      {/* Texto principal izquierdo */}
+      {/* Texto principal */}
       <div className="hero-content reveal fade-up" style={{ "--reveal-delay": "80ms" }}>
         <h1>
           <span className="hero-fade">Descubrí tu estilo</span><br />
@@ -66,7 +65,7 @@ export default function Hero() {
         <a href="/category" className="hero-btn glow">Ver Productos</a>
       </div>
 
-      {/* Banner deslizante / lado derecho */}
+      {/* Banner deslizante */}
       <div
         className="hero-slider reveal fade-right"
         style={{ "--reveal-delay": "160ms" }}
@@ -91,7 +90,7 @@ export default function Hero() {
                 <a className="hs-cta glow" href={s.cta.href}>{s.cta.label}</a>
               </div>
 
-              {/* Visual “imagen” con teléfono + burbujas */}
+              {/* Visual tipo “imagen” */}
               <div className={`hs-visual ${s.id}`} aria-hidden>
                 <div className="mock">
                   <div className="blob blob1" />
@@ -110,15 +109,12 @@ export default function Hero() {
                     </a>
                   </div>
 
-                  {/* Burbujas (texto + emoji) */}
-                  <div className="bubble b1">Pedido confirmado</div>
-                  <div className="bubble b2">CBU / Alias enviado</div>
-                  {/* En envíos mostramos 🚚; en los demás, texto normal */}
-                  <div className={`bubble b3 ${s.id === "envios" ? "emoji" : ""}`}>
-                    {s.id === "envios" ? "🚚 Despacho en 24 h" : "¡Atención personalizada!"}
-                  </div>
+                  {/* Burbujas dinámicas y ordenadas */}
+                  {(s.bubbles || []).slice(0,3).map((txt, j) => (
+                    <div key={j} className={`bubble b${j+1}`}>{txt}</div>
+                  ))}
 
-                  {/* Redes solo en contacto */}
+                  {/* Redes solo en “Contacto” */}
                   {s.id === "contacto" && (
                     <div className="socials">
                       <a className="soc ig" href={IG_URL} target="_blank" rel="noreferrer" title="Instagram">IG</a>
