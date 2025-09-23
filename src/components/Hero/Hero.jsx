@@ -1,21 +1,20 @@
-// src/components/Hero/Hero.jsx
 import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 
-const RAW_WA   = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
-const SELLER_WA = RAW_WA.replace(/\D/g, "");
+const RAW_WA = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
+const SELLER_WA = String(RAW_WA).replace(/\D/g, "");
 const CONTACT_MAIL = import.meta.env.VITE_CONTACT_EMAIL || "Paulagonzaleslazaro@gmail.com";
 const IG_URL = import.meta.env.VITE_IG_URL || "https://instagram.com/";
 const FB_URL = import.meta.env.VITE_FB_URL || "https://facebook.com/";
 
 export default function Hero() {
-  // Slides del banner (como “imagen” con ilustración CSS)
+  // Slides (copy/CTA) – visual se arma con CSS
   const slides = [
     {
       id: "pagos",
       theme: "theme-pagos",
       title: "Pagos mayoristas",
-      subtitle: "Transferencia bancaria — sin recargo",
+      subtitle: "Transferencia — sin recargo",
       bullets: [
         "Compra mínima $120.000",
         "Factura A o B según corresponda",
@@ -57,22 +56,17 @@ export default function Hero() {
 
   return (
     <section className="hero" aria-label="Portada">
-      <div
-        className="hero-content reveal fade-up"
-        style={{ "--reveal-delay": "80ms" }}
-      >
+      {/* Texto principal izquierdo */}
+      <div className="hero-content reveal fade-up" style={{ "--reveal-delay": "80ms" }}>
         <h1>
-          <span className="hero-fade">Descubrí tu estilo</span>
-          <br />
-          <span className="highlight-aesthetic">
-            con <b>AESTHETIC</b>
-          </span>
+          <span className="hero-fade">Descubrí tu estilo</span><br />
+          <span className="highlight-aesthetic">con <b>AESTHETIC</b></span>
         </h1>
         <p>Moda, belleza y elegancia en un solo lugar.</p>
-        <a href="/category" className="hero-btn">Ver Productos</a>
+        <a href="/category" className="hero-btn glow">Ver Productos</a>
       </div>
 
-      {/* === Banner deslizante tipo imagen === */}
+      {/* Banner deslizante / lado derecho */}
       <div
         className="hero-slider reveal fade-right"
         style={{ "--reveal-delay": "160ms" }}
@@ -85,53 +79,60 @@ export default function Hero() {
             className={`hs-card ${s.theme}${idx === i ? " is-active" : ""}`}
             aria-hidden={idx !== i}
           >
+            <div className="hs-card-border" aria-hidden />
             <div className="hs-grid">
               {/* Copy */}
               <div className="hs-copy">
                 <h3 className="hs-title">{s.title}</h3>
                 <div className="hs-sub">{s.subtitle}</div>
                 <ul className="hs-list">
-                  {s.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                  {s.bullets.map((b, j) => (<li key={j}>{b}</li>))}
                 </ul>
-                <a className="hs-cta" href={s.cta.href}>{s.cta.label}</a>
+                <a className="hs-cta glow" href={s.cta.href}>{s.cta.label}</a>
               </div>
 
-              {/* Ilustración tipo imagen (CSS) */}
-              <div className={`hs-visual ${s.id}`} aria-hidden={false}>
-                <div className="phone">
-                  <div className="notch" />
-                  <div className="wa-circle" />
-                  {/* BOTÓN real de WhatsApp */}
-                  <a
-                    className="wa-badge"
-                    href={`https://wa.me/${SELLER_WA}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="WhatsApp"
-                  >
-                    WhatsApp
-                  </a>
-                </div>
+              {/* Visual “imagen” con teléfono + burbujas */}
+              <div className={`hs-visual ${s.id}`} aria-hidden>
+                <div className="mock">
+                  <div className="blob blob1" />
+                  <div className="blob blob2" />
+                  <div className="phone">
+                    <div className="notch" />
+                    <div className="wa-circle" />
+                    <a
+                      className="wa-badge"
+                      href={`https://wa.me/${SELLER_WA}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="Abrir WhatsApp"
+                    >
+                      WhatsApp
+                    </a>
+                  </div>
 
-                {/* burbujas “chat” */}
-                <div className="bubble b1">Pedido confirmado</div>
-                <div className="bubble b2">CBU / Alias enviado</div>
-                <div className="bubble b3">Despachado en 24 h</div>
+                  {/* Burbujas (texto + emoji) */}
+                  <div className="bubble b1">Pedido confirmado</div>
+                  <div className="bubble b2">CBU / Alias enviado</div>
+                  {/* En envíos mostramos 🚚; en los demás, texto normal */}
+                  <div className={`bubble b3 ${s.id === "envios" ? "emoji" : ""}`}>
+                    {s.id === "envios" ? "🚚 Despacho en 24 h" : "¡Atención personalizada!"}
+                  </div>
 
-                {/* camión (solo en envíos) */}
-                <div className="truck" />
-
-                {/* insignias redes (solo contacto) */}
-                <div className="socials">
-                  <a className="soc ig"   href={IG_URL} target="_blank" rel="noreferrer" aria-label="Instagram">IG</a>
-                  <a className="soc fb"   href={FB_URL} target="_blank" rel="noreferrer" aria-label="Facebook">FB</a>
-                  <a className="soc mail" href={`mailto:${CONTACT_MAIL}`} aria-label="Email">✉</a>
+                  {/* Redes solo en contacto */}
+                  {s.id === "contacto" && (
+                    <div className="socials">
+                      <a className="soc ig" href={IG_URL} target="_blank" rel="noreferrer" title="Instagram">IG</a>
+                      <a className="soc fb" href={FB_URL} target="_blank" rel="noreferrer" title="Facebook">FB</a>
+                      <a className="soc mail" href={`mailto:${CONTACT_MAIL}`} title="Email">✉</a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </article>
         ))}
 
+        {/* Dots */}
         <div className="hs-dots" aria-label="Cambiar banner">
           {slides.map((s, i) => (
             <button
