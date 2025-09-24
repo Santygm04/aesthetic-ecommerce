@@ -88,6 +88,7 @@ export default function Orders(){
           try{
             const msg = JSON.parse(ev.data||"{}");
             if (!msg?.status) return;
+            // sólo status para toasts; el resto (shipping, etc.) no se usa en este listado
             setOrders(prev=> prev.map(o => o._id===id ? {...o, status: msg.status} : o));
             const prevStatus = lastStatusRef.current.get(id);
             if (prevStatus && prevStatus !== msg.status){
