@@ -5,7 +5,6 @@ import { useCart } from "../Carrito/CartContext";
 import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch, FaEllipsisH } from "react-icons/fa";
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
 import OrdersNavLink from "./OrdersNavLink.jsx";
-// ...
 
 
 // ICONOS
@@ -192,10 +191,12 @@ export default function Navbar() {
         {/* === Mis pedidos (desktop & drawer) === */}
         <li>
           <NavLink to="/pedidos" className={({ isActive }) => (isActive ? "active" : "")}>
-          <OrdersNavLink/>
             Mis pedidos
-          <OrdersNavLink/>
           </NavLink>
+        </li>
+
+         <li>
+          <OrdersNavLink />
         </li>
 
         {/* Dropdown de categorías (header / desktop) */}
