@@ -191,14 +191,14 @@ export default function Navbar() {
         {/* === Mis pedidos (desktop & drawer) === */}
         <li>
           <NavLink to="/pedidos" className={({ isActive }) => (isActive ? "active" : "")}>
-            Mis pedidos
-          </NavLink>
-        </li>
-
-         <li>
+            <li>
           <OrdersNavLink />
         </li>
 
+          </NavLink>
+        </li>
+
+        
         {/* Dropdown de categorías (header / desktop) */}
         <li className={`dropdown ${isCatOpen ? "open" : ""}`} ref={ddRef}>
           <button
