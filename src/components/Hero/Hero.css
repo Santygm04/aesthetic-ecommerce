@@ -167,7 +167,7 @@
 
 /* Burbujas glass (3 posiciones fijas) */
 .bubble{
-  position:absolute; z-index:2;
+  position:relative; z-index:2;
   bottom: 20px !important;
   left: -18px;
   width: max-content;
