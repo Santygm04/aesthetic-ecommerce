@@ -26,10 +26,10 @@ export default function Hero() {
     {
       id: "envios",
       theme: "theme-envios",
-      title: "Envíos a todo el país",
-      subtitle: "Despacho en 24 h hábiles",
+      title: "Envíos a todo el país, dependiendo de cada empresa",
+      subtitle: "Despacho dependiendo la empresa",
       bullets: [
-        "Seguimiento por email",
+        "Seguimiento por wsp",
         "Costo según destino y transportista",
         "Interior: $10.000 / $16.000 (referencia)",
       ],

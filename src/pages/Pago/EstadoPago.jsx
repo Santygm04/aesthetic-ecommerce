@@ -2,8 +2,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "../Pago/EstadoPago.css";
-import { addOrderRef } from "../../utils/ordersLocal.js"; // 👈 extensión .js
+import { addOrderRef } from "../../utils/ordersLocal.js";
 import { noteOrderUpdate } from "../../utils/ordersBadge.js";
+import OrderTimeline from "../../components/OrderTimeline/OrderTimeline.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const SELLER_WA = (import.meta.env.VITE_SELLER_PHONE || "").replace(/\D/g, "");
@@ -16,17 +17,15 @@ export default function EstadoPago() {
   const params = new URLSearchParams(search);
   const orderId = params.get("o") || "";
   const paymentId = params.get("payment_id") || params.get("collection_id") || "";
-  const canAutoOpen = params.get("fresh") === "1"; // 👈 solo auto-abrir si viene marcado como "reciente"
+  const canAutoOpen = params.get("fresh") === "1"; // solo auto-abrir si viene marcado como "reciente"
 
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const esRef = useRef(null);
   const pollRef = useRef(null);
   const autoOpenedRef = useRef(false);
-  const lastStatusRef = useRef(null); // 👈 NUEVO: recordar último estado para disparar badge solo en cambios
 
-  const niceMoney = (n) =>
-    typeof n === "number" ? n.toLocaleString("es-AR") : String(n || "");
+  const niceMoney = (n) => (typeof n === "number" ? n.toLocaleString("es-AR") : String(n || ""));
   const shortId = (id) => (id ? String(id).slice(-6).toUpperCase() : "");
   const prettyOrder = (o) => o?.shippingTicket || `AE-${shortId(o?.id || "")}`;
 
@@ -71,13 +70,12 @@ export default function EstadoPago() {
         const res = await fetch(`${API_URL}/api/payments/order/${orderId}`);
         const data = await res.json();
 
-        // 👉 GUARDO referencia local para "Mis pedidos"
+        // 👉 Guarda referencia local para "Mis pedidos"
         try {
           const code = data?.shippingTicket || (data?.orderNumber ? `#${data.orderNumber}` : null);
           addOrderRef({ _id: orderId, code, createdAt: data?.createdAt || Date.now() });
         } catch {}
 
-        // Si venís de MP y no está pago, intentá refrescar con payment_id (opcional)
         if (
           alive &&
           paymentId &&
@@ -85,18 +83,23 @@ export default function EstadoPago() {
           data?.status !== "paid"
         ) {
           try {
-            const r = await fetch(
-              `${API_URL}/api/payments/mp/refresh?o=${orderId}&p=${paymentId}`
-            );
+            const r = await fetch(`${API_URL}/api/payments/mp/refresh?o=${orderId}&p=${paymentId}`);
             const upd = await r.json();
             setInfo(upd?.id ? upd : data);
+            // memoriza estado inicial
+            if (!esRef.current) esRef.current = {};
+            esRef.current._lastStatus = (upd?.id ? upd : data)?.status;
           } catch {
             setInfo(data);
+            if (!esRef.current) esRef.current = {};
+            esRef.current._lastStatus = data?.status;
           } finally {
             setLoading(false);
           }
         } else {
           if (alive) setInfo(data);
+          if (!esRef.current) esRef.current = {};
+          esRef.current._lastStatus = data?.status;
           setLoading(false);
         }
       } catch {
@@ -116,9 +119,12 @@ export default function EstadoPago() {
       esRef.current = es;
       es.addEventListener("update", (ev) => {
         try {
-          const msg = JSON.parse(ev.data || "{}");
+          const msg = JSON.parse(ev.data || "{}"); // { status }
           if (msg?.status && alive) {
             setInfo((prev) => (prev ? { ...prev, status: msg.status } : prev));
+            const prevSt = esRef.current?._lastStatus || null;
+            noteOrderUpdate({ orderId, prevStatus: prevSt, newStatus: msg.status });
+            esRef.current._lastStatus = msg.status;
           }
         } catch {}
       });
@@ -130,6 +136,8 @@ export default function EstadoPago() {
               const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
               const d = await r.json();
               setInfo(d);
+              noteOrderUpdate({ orderId, prevStatus: esRef.current?._lastStatus, newStatus: d?.status });
+              if (esRef.current) esRef.current._lastStatus = d?.status;
             } catch {}
           }, 8000);
         }
@@ -141,20 +149,22 @@ export default function EstadoPago() {
           const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
           const d = await r.json();
           setInfo(d);
+          noteOrderUpdate({ orderId, prevStatus: esRef.current?._lastStatus, newStatus: d?.status });
+          if (esRef.current) esRef.current._lastStatus = d?.status;
         } catch {}
       }, 8000);
     }
 
     return () => {
       alive = false;
-      if (esRef.current) esRef.current.close();
+      if (esRef.current?.close) esRef.current.close();
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [orderId, paymentId]);
 
   // Auto-open WA cuando pasa a paid (solo si viene "fresco")
   useEffect(() => {
-    if (!AUTO_OPEN_WA || !SELLER_WA || !info || !canAutoOpen) return; // 👈 guardia clave
+    if (!AUTO_OPEN_WA || !SELLER_WA || !info || !canAutoOpen) return;
     if (autoOpenedRef.current) return;
     if (info.paymentMethod === "transfer" && info.status === "paid") {
       autoOpenedRef.current = true;
@@ -163,15 +173,6 @@ export default function EstadoPago() {
       }, 400);
     }
   }, [info, waHref, canAutoOpen]);
-
-  // 👇 NUEVO: cuando cambia el estado, avisamos al Navbar (badge "Mis pedidos")
-  useEffect(() => {
-    if (!info?.status) return;
-    if (lastStatusRef.current && lastStatusRef.current !== info.status) {
-      noteOrderUpdate({ id: info.id || orderId, status: info.status });
-    }
-    lastStatusRef.current = info.status;
-  }, [info?.status, orderId]);
 
   const ui = useMemo(() => {
     if (!info) return { titulo: "Procesando…", color: "#f59e0b", rejected: false };
@@ -237,13 +238,25 @@ export default function EstadoPago() {
                 <>
                   <p className="p">
                     <b>Ticket de envío:</b> {info.shippingTicket}{" "}
-                    <button type="button" onClick={() => navigator.clipboard.writeText(info.shippingTicket || "")} className="copyBtn">Copiar</button>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(info.shippingTicket || "")}
+                      className="copyBtn"
+                    >
+                      Copiar
+                    </button>
                   </p>
                   <p className="p"><b>Dirección:</b> {buildAddress(info?.shipping?.address) || "—"}</p>
                 </>
               ) : (
                 <p className="muted">Seleccionaste <b>Retiro en local</b>. Te vamos a contactar por WhatsApp para coordinar.</p>
               )}
+            </div>
+
+            {/* Seguimiento propio */}
+            <div className="block">
+              <h3 className="h3">Seguimiento</h3>
+              <OrderTimeline order={info} />
             </div>
 
             {SELLER_WA && (
@@ -261,7 +274,6 @@ export default function EstadoPago() {
                 </a>
               )}
               <a href="/" className="homeBtn">Volver al inicio</a>
-              {/* 👇 atajo a Mis pedidos */}
               <a href="/pedidos" className="homeBtn" style={{ background:"#fff", color:"#ff2ea6", border:"1px solid #ffd3ea" }}>Ver mis pedidos</a>
             </div>
           </>

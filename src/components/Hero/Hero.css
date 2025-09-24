@@ -180,7 +180,7 @@
 }
 .b1{ top: 30px; }     /* arriba del círculo */
 .b2{ top: 170px; }    /* entre círculo y botón */
-.b3{ top: 260px; margin-top: 10px; }    /* más abajo */
+.b3{ top: 230px; }    /* más abajo */
 
 /* Redes (solo contacto) */
 .socials{

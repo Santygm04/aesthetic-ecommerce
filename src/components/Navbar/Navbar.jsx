@@ -6,7 +6,6 @@ import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch, FaEllipsisH } from
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
 import OrdersNavLink from "./OrdersNavLink.jsx";
 // ...
-<li><OrdersNavLink/></li>
 
 
 // ICONOS
@@ -193,7 +192,9 @@ export default function Navbar() {
         {/* === Mis pedidos (desktop & drawer) === */}
         <li>
           <NavLink to="/pedidos" className={({ isActive }) => (isActive ? "active" : "")}>
+          <OrdersNavLink/>
             Mis pedidos
+          <OrdersNavLink/>
           </NavLink>
         </li>
 

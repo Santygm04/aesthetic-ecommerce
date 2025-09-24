@@ -2,7 +2,7 @@
 import "./Orders.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSavedOrderRefs, addOrderRef, removeOrderRef } from "../../utils/ordersLocal.js";
-import { clearOrdersBadge, noteOrderUpdate, rememberOrderStatuses } from "../../utils/ordersBadge.js";
+import { noteOrderUpdate, resetOrdersUnseen } from "../../utils/ordersBadge.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -19,14 +19,13 @@ export default function Orders(){
   const [loading, setLoading] = useState(false);
   const [lookup, setLookup] = useState({ code:"", emailOrPhone:"" });
 
-  // ---- NOTIFICACIONES EN VIVO ----
-  const esMapRef = useRef(new Map());
-  const lastStatusRef = useRef(new Map());
-  const askedNotifRef = useRef(false);
+  // ---- Notificaciones en vivo ----
+  const esMapRef = useRef(new Map());        // id -> EventSource
+  const lastStatusRef = useRef(new Map());   // id -> last status
+  const askedNotifRef = useRef(false);       // pedir permiso una vez
   const [toasts, setToasts] = useState([]);
 
-  // limpiar badge al abrir "Mis pedidos"
-  useEffect(()=> { clearOrdersBadge(); }, []);
+  useEffect(()=>{ resetOrdersUnseen(); }, []); // al abrir "Mis pedidos" limpialo
 
   function askNotificationPermissionOnce(){
     if (askedNotifRef.current) return;
@@ -37,6 +36,7 @@ export default function Orders(){
       }
     }catch{}
   }
+
   function notifyBrowser(title, body){
     try{
       if (!("Notification" in window)) return;
@@ -44,6 +44,7 @@ export default function Orders(){
       new Notification(title, { body });
     }catch{}
   }
+
   function pushToast(text, type="info"){
     const id = Math.random().toString(36).slice(2);
     setToasts(t=>[...t, { id, text, type }]);
@@ -59,27 +60,24 @@ export default function Orders(){
       if(codes.length) params.set("codes", codes.join(","));
       const r = await fetch(`${API_URL}/api/payments/orders/public/by-ids?${params.toString()}`);
       const data = await r.json();
-      const arr = Array.isArray(data)? data : [];
-      setOrders(arr);
-      // snapshot de estados para el watcher global del navbar
-      const map = {};
-      arr.forEach(o=>{
-        if(o?._id && o?.status){
-          lastStatusRef.current.set(o._id, o.status);
-          map[o._id] = o.status;
-        }
+      setOrders(Array.isArray(data)? data : []);
+      (Array.isArray(data)? data : []).forEach(o=>{
+        if(o?._id && o?.status) lastStatusRef.current.set(o._id, o.status);
       });
-      rememberOrderStatuses(map);
     }catch{ /* ignore */ } finally{ setLoading(false); }
   }
 
   useEffect(()=>{ fetchOrders(); const t=setInterval(fetchOrders,20000); return ()=>clearInterval(t); }, [refs.length]);
 
-  // SSE por cada ID
+  // 👉 SSE por cada ID
   useEffect(()=>{
-    // cerrar desuscritos
+    // cerrar removidos
     for (const [id, es] of esMapRef.current.entries()){
-      if (!ids.includes(id)){ try{ es.close(); }catch{} esMapRef.current.delete(id); lastStatusRef.current.delete(id); }
+      if (!ids.includes(id)){
+        try{ es.close(); }catch{}
+        esMapRef.current.delete(id);
+        lastStatusRef.current.delete(id);
+      }
     }
     // abrir nuevos
     ids.forEach(id=>{
@@ -90,40 +88,40 @@ export default function Orders(){
           try{
             const msg = JSON.parse(ev.data||"{}");
             if (!msg?.status) return;
-
-            setOrders(prev => prev.map(o => o._id===id ? {...o, status: msg.status} : o));
+            setOrders(prev=> prev.map(o => o._id===id ? {...o, status: msg.status} : o));
             const prevStatus = lastStatusRef.current.get(id);
             if (prevStatus && prevStatus !== msg.status){
-              const o = orders.find(x=>x._id===id) || {};
-              const code = shortCode(o);
+              const ord = orders.find(o=>o._id===id);
+              const code = shortCode(ord || { _id:id });
               const nice =
                 msg.status==="paid"||msg.status==="approved" ? "¡Pago aprobado!"
                 : msg.status==="pending" ? "Pago pendiente"
                 : msg.status==="cancelled"||msg.status==="rejected" ? "Pago rechazado"
                 : `Estado: ${msg.status}`;
-
-              // toasts + notificación del navegador
-              pushToast(`Pedido ${code}: ${nice}`, msg.status==="paid"||msg.status==="approved" ? "success" : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info"));
+              pushToast(`Pedido ${code}: ${nice}`, msg.status==="paid"||msg.status==="approved" ? "success"
+                : (msg.status==="cancelled"||msg.status==="rejected" ? "error" : "info"));
               if (document.hidden) notifyBrowser(`Pedido ${code}`, nice);
 
-              // 👇 avisar al navbar (badge)
-              noteOrderUpdate({ id, status: msg.status });
+              // 🔔 Badge global
+              noteOrderUpdate({ orderId: id, prevStatus, newStatus: msg.status });
             }
             lastStatusRef.current.set(id, msg.status);
           }catch{}
         });
-        es.onerror = ()=>{};
+        es.onerror = ()=>{ /* fallback de polling ya existe */ };
         esMapRef.current.set(id, es);
         askNotificationPermissionOnce();
       }catch{}
     });
 
     return ()=>{
-      for (const es of esMapRef.current.values()){ try{ es.close(); }catch{} }
+      for (const es of esMapRef.current.values()){
+        try{ es.close(); }catch{}
+      }
       esMapRef.current.clear();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ids.join(",")]);
+  }, [ids.join(",")]); // reengancha cuando cambia la lista
 
   async function onLookup(e){
     e.preventDefault();
@@ -139,7 +137,11 @@ export default function Orders(){
   }
 
   const remove = (idOrCode)=> setRefs(removeOrderRef(idOrCode));
-  const statusBadge = (s)=>({ paid:"st-paid", approved:"st-paid", pending:"st-pending", cancelled:"st-cancelled", rejected:"st-cancelled" }[s]||"");
+
+  const statusBadge = (s)=>{
+    const map={ paid:"st-paid", approved:"st-paid", pending:"st-pending", cancelled:"st-cancelled", rejected:"st-cancelled" };
+    return map[s]||"";
+  };
 
   return (
     <section className="orders-wrap">
@@ -192,7 +194,7 @@ export default function Orders(){
             </div>
 
             <footer className="order-actions">
-              <a className="btn btn--ghost" href={`/pago/estado?o=${encodeURIComponent(o._id)}`}>Ver detalle</a>
+              <a className="btn btn--ghost" href={`/pago/estado?o=${encodeURIComponent(o._id)}`} >Ver detalle</a>
               <button type="button" className="btn btn--ghost" onClick={()=>remove(o._id || shortCode(o))}>Quitar</button>
             </footer>
           </article>
@@ -202,7 +204,9 @@ export default function Orders(){
       {/* Toasters */}
       <div className="toast-wrap" aria-live="polite" aria-atomic="true">
         {toasts.map(t=>(
-          <div key={t.id} className={`toast ${t.type||"info"}`}>{t.text}</div>
+          <div key={t.id} className={`toast ${t.type||"info"}`}>
+            {t.text}
+          </div>
         ))}
       </div>
     </section>
