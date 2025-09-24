@@ -6,7 +6,6 @@ import { FaShoppingCart, FaHome, FaThLarge, FaTags, FaSearch, FaEllipsisH } from
 import NavbarSearch from "../../components/NavbarSearch/NavbarSearch";
 import OrdersNavLink from "./OrdersNavLink.jsx";
 
-
 // ICONOS
 import skincare from "../../../assets/iconos/skincare.png";
 import bodycare from "../../../assets/iconos/bodycare.png";
@@ -190,15 +189,9 @@ export default function Navbar() {
 
         {/* === Mis pedidos (desktop & drawer) === */}
         <li>
-          <NavLink to="/pedidos" className={({ isActive }) => (isActive ? "active" : "")}>
-            <li>
           <OrdersNavLink />
         </li>
 
-          </NavLink>
-        </li>
-
-        
         {/* Dropdown de categorías (header / desktop) */}
         <li className={`dropdown ${isCatOpen ? "open" : ""}`} ref={ddRef}>
           <button
