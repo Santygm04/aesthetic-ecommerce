@@ -95,9 +95,18 @@ export default function Hero() {
                 <div className="mock">
                   <div className="blob blob1" />
                   <div className="blob blob2" />
+
+                  {/* Teléfono */}
                   <div className="phone">
                     <div className="notch" />
                     <div className="wa-circle" />
+
+                    {/* Burbujas centradas DENTRO del teléfono */}
+                    {(s.bubbles || []).slice(0, 3).map((txt, j) => (
+                      <div key={j} className={`bubble b${j + 1}`}>{txt}</div>
+                    ))}
+
+                    {/* Botón WA real */}
                     <a
                       className="wa-badge"
                       href={`https://wa.me/${SELLER_WA}`}
@@ -108,11 +117,6 @@ export default function Hero() {
                       WhatsApp
                     </a>
                   </div>
-
-                  {/* Burbujas dinámicas y ordenadas */}
-                  {(s.bubbles || []).slice(0,3).map((txt, j) => (
-                    <div key={j} className={`bubble b${j+1}`}>{txt}</div>
-                  ))}
 
                   {/* Redes solo en “Contacto” */}
                   {s.id === "contacto" && (

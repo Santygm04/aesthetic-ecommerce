@@ -46,7 +46,7 @@
   margin:.4rem 0 1.8rem;
 }
 
-/* CTA con efecto glow (estilo Uiverse) */
+/* CTA con efecto glow */
 .glow{
   position:relative; isolation:isolate;
   border:none; text-decoration:none;
@@ -81,7 +81,7 @@
 }
 .hs-card.is-active{ display:block; }
 
-/* Borde animado (look Uiverse) */
+/* Borde animado */
 .hs-card-border{
   position:absolute; inset:-1px; border-radius:30px; pointer-events:none;
   background: conic-gradient(from 180deg at 50% 50%, #ffd2ea, #fff, #ffd2ea);
@@ -91,7 +91,7 @@
   padding:1.2px; opacity:.9;
 }
 
-/* Temas de fondo */
+/* Temas */
 .hs-card.theme-pagos{ background: linear-gradient(180deg, #fff9fd 0%, #ffeff8 100%); }
 .hs-card.theme-envios{ background: linear-gradient(180deg, #fffaff 0%, #f6f9ff 100%); }
 .hs-card.theme-contacto{ background: linear-gradient(180deg, #fff9ff 0%, #fbf7ff 100%); }
@@ -142,7 +142,7 @@
 
 /* Teléfono centrado – nunca se corta */
 .phone{
-  position:absolute; inset:0; margin:auto;
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width: clamp(200px, 30vw, 280px); height: clamp(360px, 50vw, 460px);
   background:#fff; border-radius:32px; border:2px solid #efd7e6;
   box-shadow: 0 24px 50px rgba(214,51,132,.20);
@@ -153,7 +153,7 @@
   width:44%; height:12px; border-radius:12px; background:#eee;
 }
 .wa-circle{
-  position:absolute; top:74px; left:50%; transform:translateX(-50%);
+  position:absolute; top:88px; left:50%; transform:translateX(-50%);
   width:130px; height:130px; border-radius:50%;
   background: radial-gradient(circle at 30% 30%, #fff, #ffe7f3 55%, #ffd1ec 100%);
   box-shadow: inset 0 0 0 10px #ffe1f1, 0 12px 22px rgba(214,51,132,.18);
@@ -165,11 +165,12 @@
   box-shadow:0 12px 24px rgba(37,211,102,.25);
 }
 
-/* Burbujas glass (3 posiciones fijas) */
+/* Burbujas GLASS centradas dentro del teléfono */
 .bubble{
-  position:relative; z-index:2;
-  left: -18px;
-  width: max-content;
+  position:absolute;
+  left:50%; transform:translateX(-50%);
+  width: calc(100% - 64px); /* deja 32px de margen por lado */
+  text-align:center;
   background: rgba(255,255,255,.82);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -177,9 +178,9 @@
   border:1px solid #f3c9e2; border-radius:14px; padding:.55rem .9rem; font-weight:800;
   box-shadow:0 14px 26px rgba(214,51,132,.12);
 }
-.b1{ top: 30px; }
-.b2{ top: 96px; }
-.b3{ top: 162px; }
+.b1{ top: 30px; }     /* arriba del círculo */
+.b2{ top: 170px; }    /* entre círculo y botón */
+.b3{ top: 230px; }    /* más abajo */
 
 /* Redes (solo contacto) */
 .socials{
@@ -231,6 +232,4 @@
   .hs-grid{ grid-template-columns:1fr; }
   .hs-copy{ order:2; }
   .hs-visual{ order:1; }
-  .bubble{ left: -6px; }
-  .socials{ right: 0; }
 }
