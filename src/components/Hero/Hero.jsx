@@ -17,8 +17,8 @@ export default function Hero() {
       title: "Pagos mayoristas",
       subtitle: "Transferencia — sin recargo",
       bullets: [
-        "Compra mínima $120.000",
-        "Factura A o B según corresponda",
+        "Compras mayoristas",
+        "Factura corresponda",
         "Coordinación por WhatsApp al cerrar el pedido",
       ],
       bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
