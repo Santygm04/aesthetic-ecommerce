@@ -148,7 +148,7 @@ export default function EstadoPago() {
         try {
           const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
           const d = await r.json();
-          setInfo(d);
+        setInfo(d);
           noteOrderUpdate({ orderId, prevStatus: esRef.current?._lastStatus, newStatus: d?.status });
           if (esRef.current) esRef.current._lastStatus = d?.status;
         } catch {}
@@ -198,6 +198,16 @@ export default function EstadoPago() {
     }
 
     return { titulo: "Estado del pedido", color: "#111827", rejected: false };
+  }, [info]);
+
+  // === NUEVO: derivar estados de preparación/ despacho / entrega (sin tocar nada más) ===
+  const prepShipDeliver = useMemo(() => {
+    const st = String(info?.status || "pending");
+    const isPaid = st === "paid" || st === "approved";
+    const isRetiro = info?.shipping?.method === "retiro";
+    const isDespachado = Boolean(info?.shipping?.trackingNumber) || (isRetiro && isPaid);
+    const deliveredAt = info?.shipping?.deliveredAt ? new Date(info.shipping.deliveredAt) : null;
+    return { isPaid, isRetiro, isDespachado, deliveredAt };
   }, [info]);
 
   return (
@@ -258,6 +268,36 @@ export default function EstadoPago() {
               <h3 className="h3">Seguimiento</h3>
               <OrderTimeline order={info} />
             </div>
+
+            {/* === NUEVO: Avances de preparación / despacho / entrega === */}
+            <div className="block">
+              <h3 className="h3">Avances</h3>
+              <ul className="ul">
+                <li>
+                  <b>Preparación:</b>{" "}
+                  {prepShipDeliver.isPaid ? "Completada" : "Pendiente"}
+                </li>
+                <li>
+                  <b>{prepShipDeliver.isRetiro ? "Listo para retirar" : "Despacho"}:</b>{" "}
+                  {prepShipDeliver.isDespachado ? "Hecho" : "Pendiente"}
+                  {info?.shipping?.trackingNumber ? (
+                    <>
+                      {" "}- Tracking: <span className="mono">{info.shipping.trackingNumber}</span>
+                      {info?.shipping?.company ? ` (${info.shipping.company})` : ""}
+                    </>
+                  ) : null}
+                </li>
+                <li>
+                  <b>Entrega transportista:</b>{" "}
+                  {prepShipDeliver.deliveredAt
+                    ? `Entregado ${prepShipDeliver.deliveredAt.toLocaleString()}`
+                    : (prepShipDeliver.isDespachado
+                        ? (prepShipDeliver.isRetiro ? "Listo para retirar" : "En camino")
+                        : "Pendiente")}
+                </li>
+              </ul>
+            </div>
+            {/* === FIN NUEVO === */}
 
             {SELLER_WA && (
               <div className="actions">

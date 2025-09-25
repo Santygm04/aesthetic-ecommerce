@@ -8,6 +8,7 @@ export default function OrderTimeline({ order }) {
   const isPaid = status === "paid" || status === "approved";
   const isRejected = status === "rejected" || status === "cancelled";
   const isDespachado = Boolean(order?.shipping?.trackingNumber);
+  const isDelivered = Boolean(order?.shipping?.deliveredAt); // 👈 NUEVO
   const isRetiro = order?.shipping?.method === "retiro";
 
   const steps = [
@@ -15,7 +16,7 @@ export default function OrderTimeline({ order }) {
     { key:"pago",     label:isRejected ? "Pago rechazado" : "Pago acreditado", done:isPaid, error:isRejected },
     { key:"prep",     label:"Preparación",                done:isPaid && (isDespachado || isRetiro), doing:isPaid && !isDespachado },
     { key:"envio",    label:isRetiro ? "Listo para retirar" : "Despachado",    done:isDespachado || (isRetiro && isPaid) },
-    { key:"entrega",  label:"Entrega (transportista)",    done:false, upcoming:true },
+    { key:"entrega",  label:"Entrega (transportista)",    done:isDelivered, upcoming:!isDelivered },
   ];
 
   return (
