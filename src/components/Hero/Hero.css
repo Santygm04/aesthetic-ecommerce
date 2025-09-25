@@ -304,22 +304,15 @@
   .soc{ left: 0 !important; }
 }
 
-@media (max-width: 768px) {
-  
-  .bubble b1 {
-    position:absolute;
-    left:50%; transform:translateX(-50%);
-    width: calc(100% - 64px); /* deja 32px de margen por lado */
-    text-align:center;
-    background: rgba(255,255,255,.82);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color:#6d3e63;
-    border:1px solid #f3c9e2; border-radius:14px; padding:.55rem .9rem; font-weight:800;
-    box-shadow:0 14px 26px rgba(214,51,132,.12);
+@media (max-width: 590px) {
+    .bubble{
+    width: calc(100% - 40px);
+    padding: .5rem .75rem;
+    font-size: .9rem;
     margin: 20px !important;
   }
-  .b1{ top: 30px; }     /* arriba del círculo */
-  .b2{ top: 170px; }    /* entre círculo y botón */
-  .b3{ top: 230px; } 
+  .b1{ top: 22px; }
+  .b2{ top: 150px; }
+  .b3{ top: 206px; }
+
 }
