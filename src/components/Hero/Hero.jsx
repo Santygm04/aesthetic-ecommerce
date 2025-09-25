@@ -1,3 +1,4 @@
+// src/components/Hero/Hero.jsx
 import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 
@@ -33,7 +34,7 @@ export default function Hero() {
         "Costo según destino y transportista",
         "Interior: $10.000 / $16.000 (referencia)",
       ],
-      bubbles: ["💳 Pago acreditado", "📦 Preparación", "🚚 Despacho en 24 h"],
+      bubbles: ["💳 Pago acreditado", "📦 Preparación coordinada ", "🚚 Despachos coordinados por wsp"],
       cta: { href: "/envios", label: "Ver envíos" },
     },
     {

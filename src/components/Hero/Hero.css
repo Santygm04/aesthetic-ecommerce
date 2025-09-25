@@ -1,3 +1,4 @@
+/* src/components/Hero/Hero.css */
 :root{
   --brand:#ff2ea6;
   --brand-600:#e11a8a;
@@ -226,7 +227,7 @@
 @keyframes fadeInRight{ from{opacity:0; transform:translateX(40px)} to{opacity:1; transform:translateX(0)} }
 @keyframes slideFade{ from{opacity:.2; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
-/* Responsive */
+/* ===================== Responsive ===================== */
 @media (max-width: 950px){
   .hero{ flex-direction:column; text-align:center; min-height:unset; }
   .hero-content{ text-align:center; margin-bottom:1.6rem; max-width:100%; }
@@ -234,4 +235,70 @@
   .hs-grid{ grid-template-columns:1fr; }
   .hs-copy{ order:2; }
   .hs-visual{ order:1; }
+}
+
+/* 🔒 Ajuste fino para teléfonos (≤ 600px) */
+@media (max-width: 600px){
+  .hero{
+    padding: 1.25rem .9rem 1.6rem;
+  }
+  .hero-decor1, .hero-decor2{
+    display:none; /* quita decor que puede molestar en pantallas chicas */
+  }
+
+  .hero-slider{ gap:12px; min-width: 0; }
+  .hs-card{
+    min-height: 420px;         /* un poco más compacta en mobile */
+    border-radius:22px;
+  }
+  .hs-card-border{ border-radius:24px; }
+
+  .hs-grid{
+    padding: 16px;             /* menos padding interno */
+    gap: 10px;
+  }
+  .hs-copy{
+    text-align:center;
+  }
+  .hs-sub{ margin-bottom:.55rem; }
+
+  /* Teléfono + mock más chicos para evitar desbordes */
+  .mock{
+    width: min(86vw, 320px);
+    height: min(118vw, 520px);
+  }
+  .phone{
+    width: min(74vw, 240px);
+    height: min(118vw, 420px);
+    border-radius: 26px;
+  }
+  .wa-circle{
+    width: 110px;
+    height: 110px;
+    top: 76px;
+    box-shadow: inset 0 0 0 8px #ffe1f1, 0 10px 18px rgba(214,51,132,.18);
+  }
+  .wa-badge{
+    bottom: 18px;
+    font-size: .9rem;
+    padding: .45rem .9rem;
+  }
+
+  /* Burbujas: un poco más angostas y ajustadas en vertical */
+  .bubble{
+    width: calc(100% - 40px);
+    padding: .5rem .75rem;
+    font-size: .9rem;
+  }
+  .b1{ top: 22px; }
+  .b2{ top: 150px; }
+  .b3{ top: 206px; }
+
+  /* Redes: que no queden fuera de pantalla */
+  .socials{
+    position: static;
+    margin-top: 10px;
+    justify-content: center;
+  }
+  .soc{ left: 0 !important; }
 }
