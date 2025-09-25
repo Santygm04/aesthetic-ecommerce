@@ -181,7 +181,7 @@
 }
 .b1{ top: 30px; }     /* arriba del círculo */
 .b2{ top: 170px; }    /* entre círculo y botón */
-.b3{ top: 230px; }    /* más abajo */
+.b3{ top: 250px; }    /* más abajo */
 
 /* Redes (solo contacto) */
 .socials{
@@ -293,7 +293,7 @@
   }
   .b1{ top: 22px; }
   .b2{ top: 150px; }
-  .b3{ top: 257px; }
+  .b3{ top: 206px; }
 
   /* Redes: que no queden fuera de pantalla */
   .socials{
@@ -313,6 +313,6 @@
   }
   .b1{ top: 22px; }
   .b2{ top: 150px; }
-  .b3{ top: 256px; }
+  .b3{ top: 236px; }
 
 }
