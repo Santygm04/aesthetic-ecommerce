@@ -289,6 +289,7 @@
     width: calc(100% - 40px);
     padding: .5rem .75rem;
     font-size: .9rem;
+    margin: 3px !important;
   }
   .b1{ top: 22px; }
   .b2{ top: 150px; }
