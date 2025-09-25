@@ -306,7 +306,7 @@
 
 @media (max-width: 768px) {
   
-  .bubble{
+  .bubble b1 {
     position:absolute;
     left:50%; transform:translateX(-50%);
     width: calc(100% - 64px); /* deja 32px de margen por lado */
