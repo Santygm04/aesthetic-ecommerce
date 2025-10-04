@@ -116,7 +116,16 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       {/* logo que navega al inicio */}
-      <NavLink to="/" className="navbar-logo brand-script">AESTHETIC</NavLink>
+      <NavLink to="/" className="navbar-logo brand-script" aria-label="Inicio">
+        {/* ⤵️ Reemplazá la ruta por tu imagen de logo */}
+        <img
+          src={"/ruta/a/tu/logo.png"} // ← PONÉ ACÁ LA RUTA DEL LOGO
+          alt="AESTHETIC"
+          className="navbar-logo-img"
+          loading="eager"
+          decoding="async"
+        />
+      </NavLink>
 
       {/* Toggle + Hamburguesa + Overlay */}
       <input
