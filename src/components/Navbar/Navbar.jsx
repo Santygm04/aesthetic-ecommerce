@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.jsx
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../components/Navbar/Navbar.css";
@@ -124,6 +125,7 @@ export default function Navbar() {
           className="navbar-logo-img"
           loading="eager"
           decoding="async"
+          draggable="false"
         />
       </NavLink>
 
