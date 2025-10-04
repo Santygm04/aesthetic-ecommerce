@@ -29,15 +29,15 @@
   gap:.5rem;
 }
 
-/* ===== LOGO por imagen (más grande y sin “cuadrado” blanco) ===== */
+/* LOGO por imagen (más grande) */
 .navbar-logo-img{
   display:block;
-  height: clamp(36px, 6vw, 56px); /* ← tamaño del logo (más grande) */
-  width: 300px;
+  height: clamp(44px, 8vw, 72px); /* ↑ antes 36/6vw/56  → ahora más grande */
+  width:auto;
   object-fit:contain;
   image-rendering:-webkit-optimize-contrast;
   background:transparent;
-  mix-blend-mode:multiply;       /* “funde” el blanco con el fondo rosado */
+  mix-blend-mode:multiply;
   -webkit-user-drag:none;
   user-select:none;
 }
