@@ -32,7 +32,7 @@
 /* ===== LOGO por imagen (más grande y sin “cuadrado” blanco) ===== */
 .navbar-logo-img{
   display:block;
-  height: clamp(75px, 6vw, 56px); /* ← tamaño del logo (más grande) */
+  height: clamp(36px, 13vw, 86px); /* ← tamaño del logo (más grande) */
   width:auto;
   object-fit:contain;
   image-rendering:-webkit-optimize-contrast;
