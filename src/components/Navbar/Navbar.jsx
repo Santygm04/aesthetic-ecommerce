@@ -119,7 +119,7 @@ export default function Navbar() {
       <NavLink to="/" className="navbar-logo brand-script" aria-label="Inicio">
         {/* ⤵️ Reemplazá la ruta por tu imagen de logo */}
         <img
-          src={"/ruta/a/tu/logo.png"} // ← PONÉ ACÁ LA RUTA DEL LOGO
+          src={"../../../public/assets/logo.aesthetic.png"} // ← PONÉ ACÁ LA RUTA DEL LOGO
           alt="AESTHETIC"
           className="navbar-logo-img"
           loading="eager"
