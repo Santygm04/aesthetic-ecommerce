@@ -32,7 +32,7 @@
 /* LOGO por imagen (más grande) */
 .navbar-logo-img{
   display:block;
-  height: clamp(60px, 6vw, 104px); /* ↑ antes 36/6vw/56  → ahora más grande */
+  height: clamp(60px, 12vw, 88px); /* ↑ antes 36/6vw/56  → ahora más grande */
   width:auto;
   object-fit:contain;
   image-rendering:-webkit-optimize-contrast;
