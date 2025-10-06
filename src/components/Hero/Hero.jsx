@@ -81,15 +81,6 @@ export default function Hero() {
           >
             <div className="hs-card-border" aria-hidden />
             <div className="hs-grid">
-              <div
-                      className="phone-screen"
-                      style={{
-                        ["--phone-img"]:
-                          s.id === "envios"
-                            ? "url('/assets/primavera.jpg')" // ← cambiá esta ruta si querés
-                            : "none",
-                      }}
-                    ></div>
               {/* Copy */}
               <div className="hs-copy">
                 <h3 className="hs-title">{s.title}</h3>
@@ -107,6 +98,15 @@ export default function Hero() {
                   <div className="blob blob2" />
 
                   {/* Teléfono */}
+                  <div
+                      className="phone-screen"
+                      style={{
+                        ["--phone-img"]:
+                          s.id === "envios"
+                            ? "url('/assets/primavera.jpg')" // ← cambiá esta ruta si querés
+                            : "none",
+                      }}
+                    ></div>
                   <div className="phone">
                     <div className="notch" />
 
@@ -121,7 +121,15 @@ export default function Hero() {
                       }}
                     >
                       <div className="wa-circle" />
-
+                      <div
+                      className="phone-screen"
+                      style={{
+                        ["--phone-img"]:
+                          s.id === "envios"
+                            ? "url('/assets/primavera.jpg')" // ← cambiá esta ruta si querés
+                            : "none",
+                      }}
+                    ></div>
                       {/* Burbujas centradas DENTRO del teléfono */}
                       {(s.bubbles || []).slice(0, 3).map((txt, j) => (
                         <div key={j} className={`bubble b${j + 1}`}>{txt}</div>
@@ -141,15 +149,6 @@ export default function Hero() {
                   </div>
 
                   {/* Redes solo en “Contacto” */}
-                  <div
-                      className="phone-screen"
-                      style={{
-                        ["--phone-img"]:
-                          s.id === "envios"
-                            ? "url('/assets/primavera.jpg')" // ← cambiá esta ruta si querés
-                            : "none",
-                      }}
-                    ></div>
                   {s.id === "contacto" && (
                     <div className="socials">
                       <a className="soc ig" href={IG_URL} target="_blank" rel="noreferrer" title="Instagram">IG</a>
