@@ -108,7 +108,7 @@ export default function Hero() {
                         ["--phone-img"]: "url('/assets/primavera.jpg')", // misma imagen para los 3 slides
                       }}
                     >
-                      <div className="wa-circle" />
+                   
 
                       {/* Burbujas centradas DENTRO del teléfono */}
                       {(s.bubbles || []).slice(0, 3).map((txt, j) => (
