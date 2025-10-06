@@ -69,6 +69,8 @@ export default function Carrito() {
                           className="qty-btn"
                           onClick={() => updateQuantity(prod.key, prod.cantidad + 1)}
                           aria-label="Sumar uno"
+                          title={prod.maxStock ? `Stock máximo: ${prod.maxStock}` : undefined}
+                          disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}
                         >
                           <FaPlus />
                         </button>

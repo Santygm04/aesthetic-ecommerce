@@ -1,3 +1,4 @@
+// src/components/ProductCard/ProductCard.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaHeart, FaRegHeart, FaEye } from "react-icons/fa";
@@ -157,8 +158,9 @@ export default function ProductCard({ producto }) {
       _id: id,
       precio: priceToShow,
       cantidad: 1,
+      stock: Number(producto.stock ?? 0), // 👈 pasa stock del producto
       ...(chosenVariant
-        ? { variant: { vid: chosenVariant.vid, size: chosenVariant.size || chosenVariant.talle, color: chosenVariant.color } }
+        ? { variant: { vid: chosenVariant.vid, size: chosenVariant.size || chosenVariant.talle, color: chosenVariant.color, stock: Number(chosenVariant.stock ?? 0) } } // 👈 y stock de la variante si hay
         : {}),
     };
     addToCart(payload);

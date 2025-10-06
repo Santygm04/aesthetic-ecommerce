@@ -52,7 +52,7 @@ export default function Cart() {
           </thead>
           <tbody>
             {cart.map((prod) => (
-              <tr key={prod._id}>
+              <tr key={prod.key}>
                 <td>
                   <img src={prod.imagen} alt={prod.nombre} className="cart-thumb" loading="lazy" />
                 </td>
@@ -60,14 +60,31 @@ export default function Cart() {
                 <td>${prod.precio}</td>
                 <td>
                   <div className="qty-buttons">
-                    <button onClick={() => updateQuantity(prod._id, prod.cantidad - 1)} disabled={prod.cantidad === 1} aria-label="Quitar uno"><FaMinus /></button>
+                    <button
+                      onClick={() => updateQuantity(prod.key, prod.cantidad - 1)}
+                      disabled={prod.cantidad === 1}
+                      aria-label="Quitar uno"
+                    >
+                      <FaMinus />
+                    </button>
                     <span aria-live="polite">{prod.cantidad}</span>
-                    <button onClick={() => updateQuantity(prod._id, prod.cantidad + 1)} aria-label="Sumar uno"><FaPlus /></button>
+                    <button
+                      onClick={() => updateQuantity(prod.key, prod.cantidad + 1)}
+                      aria-label="Sumar uno"
+                      title={prod.maxStock ? `Stock máximo: ${prod.maxStock}` : undefined}
+                      disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}
+                    >
+                      <FaPlus />
+                    </button>
                   </div>
                 </td>
                 <td><b>${prod.precio * prod.cantidad}</b></td>
                 <td>
-                  <button className="btn-remove" onClick={() => removeFromCart(prod._id)} aria-label={`Eliminar ${prod.nombre}`}>
+                  <button
+                    className="btn-remove"
+                    onClick={() => removeFromCart(prod.key)}
+                    aria-label={`Eliminar ${prod.nombre}`}
+                  >
                     <FaTrash />
                   </button>
                 </td>

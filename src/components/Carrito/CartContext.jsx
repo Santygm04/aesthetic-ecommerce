@@ -1,3 +1,4 @@
+// src/components/Carrito/CartContext.jsx
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const CartContext = createContext();
@@ -12,14 +13,37 @@ function makeKey(id, variant) {
   return `${id}::${variant?.vid || "default"}`;
 }
 
+// === STOCK helper: detecta el stock disponible del producto/variante ===
+function deriveMaxStock(obj) {
+  if (!obj) return null;
+  // prioridad: stock de variante > stock de producto
+  const vStock = obj?.variant && obj.variant.stock != null ? Number(obj.variant.stock) : null;
+  const pStock =
+    obj?.stock != null
+      ? Number(obj.stock)
+      : (obj?.Stock != null ? Number(obj.Stock) : null);
+
+  const fromPayload =
+    obj?.maxStock != null ? Number(obj.maxStock) : null;
+
+  // el primero definido y > 0
+  const candidates = [vStock, pStock, fromPayload].filter(
+    (n) => typeof n === "number" && !Number.isNaN(n) && n > 0
+  );
+  return candidates.length ? candidates[0] : null; // null = sin límite conocido
+}
+
 function normalizeItems(arr) {
   return arr.map((it) => {
     const id = it._id || it.id;
+    const maxStock = deriveMaxStock(it);
+    const cant = it.cantidad && it.cantidad > 0 ? Number(it.cantidad) : 1;
     return {
       ...it,
       _id: id,
       key: it.key || makeKey(id, it.variant || null),
-      cantidad: it.cantidad && it.cantidad > 0 ? it.cantidad : 1,
+      maxStock: maxStock != null ? maxStock : it.maxStock ?? null,
+      cantidad: maxStock != null ? Math.min(cant, maxStock) : cant,
     };
   });
 }
@@ -119,26 +143,43 @@ export function CartProvider({ children }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  // Agrega productos al carrito (unifica por productoId + variante)
+  // Agrega productos al carrito (unifica por productoId + variante) con límite por stock
   const addToCart = (producto) => {
     const id = producto._id || producto.id;
-    const variant = producto.variant || null; // {vid,size,color}
+    const variant = producto.variant || null; // {vid,size,color,stock?}
     const key = makeKey(id, variant);
+    const maxStock = deriveMaxStock(producto);
 
     setCart((prev) => {
       const existe = prev.find((p) => p.key === key);
       if (existe) {
+        const cur = Number(existe.cantidad || 1);
+        const toAdd = Number(producto.cantidad && producto.cantidad > 0 ? producto.cantidad : 1);
+        const cap = (maxStock != null ? maxStock : (existe.maxStock != null ? existe.maxStock : null));
+        const next = cap != null ? Math.min(cur + toAdd, cap) : (cur + toAdd);
         return prev.map((p) =>
-          p.key === key ? { ...p, cantidad: (p.cantidad || 1) + 1 } : p
+          p.key === key
+            ? {
+                ...p,
+                cantidad: next,
+                // guardamos/actualizamos el stock máximo conocido
+                maxStock: cap != null ? cap : null,
+                // si mandaron una variante más específica, la mantenemos
+                variant: variant || p.variant,
+              }
+            : p
         );
       }
+      const qty = Number(producto.cantidad && producto.cantidad > 0 ? producto.cantidad : 1);
+      const finalQty = maxStock != null ? Math.min(qty, maxStock) : qty;
       return [
         ...prev,
         {
           ...producto,
           _id: id,
           key,
-          cantidad: producto.cantidad && producto.cantidad > 0 ? producto.cantidad : 1,
+          cantidad: finalQty,
+          maxStock: maxStock != null ? maxStock : null,
         },
       ];
     });
@@ -149,12 +190,16 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((p) => p.key !== key));
   };
 
-  // Cambia la cantidad de un item por key
+  // Cambia la cantidad de un item por key (respetando stock)
   const updateQuantity = (key, cantidad) => {
     setCart((prev) =>
-      prev.map((p) =>
-        p.key === key ? { ...p, cantidad: Math.max(1, Number(cantidad) || 1) } : p
-      )
+      prev.map((p) => {
+        if (p.key !== key) return p;
+        const cap = p.maxStock != null ? Number(p.maxStock) : deriveMaxStock(p);
+        let next = Math.max(1, Number(cantidad) || 1);
+        if (cap != null && cap > 0) next = Math.min(next, cap);
+        return { ...p, cantidad: next, maxStock: cap != null ? cap : p.maxStock ?? null };
+      })
     );
   };
 

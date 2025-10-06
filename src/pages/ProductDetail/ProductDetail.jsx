@@ -233,11 +233,13 @@ export default function ProductDetail() {
       nombre: p.nombre,
       imagen: img,
       precio: priceToShow,
+      stock: Number(p?.stock || 0), // 👈 pasa stock del producto
       variant: chosenVariant
         ? {
             vid: chosenVariant.vid,
             size: chosenVariant.size,
             color: chosenVariant.color,
+            stock: Number(chosenVariant.stock || 0), // 👈 pasa stock de la variante
           }
         : undefined,
       cantidad: qty,
@@ -335,7 +337,6 @@ export default function ProductDetail() {
                         return (
                           <button
                             key={s}
-                            type="button"
                             // 👇 sin disabled: siempre clickeable
                             className={`swatch ${selSize === s ? "active" : ""} ${out ? "" : ""}`}
                             title={out ? "Sin stock" : ""}
@@ -355,6 +356,7 @@ export default function ProductDetail() {
                                 setSelColor(colorWithStockForSize || colorsOfSize[0] || "");
                               }
                             }}
+                            type="button"
                           >
                             {s}
                           </button>
@@ -374,11 +376,11 @@ export default function ProductDetail() {
                         return (
                           <button
                             key={c}
-                            type="button"
                             // 👇 sin disabled: siempre clickeable
                             className={`swatch ${selColor === c ? "active" : ""} ${out ? "" : ""}`}
                             title={out ? "Sin stock" : c}
                             onClick={() => setSelColor(c)}
+                            type="button"
                           >
                             {c}
                           </button>
@@ -418,6 +420,7 @@ export default function ProductDetail() {
                   onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
                   type="button"
                   disabled={qty >= maxQty || agotado}
+                  title={`Máximo ${maxQty}`}
                 >
                   +
                 </button>
