@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
 import primavera from "/assets/primavera.jpg"
 import primavera1 from "/assets/primavera-1.png"
-import primavera2 from "/assets/primavera.png"
+import primavera2 from "/assets/primavera-2.png"
 
 const RAW_WA = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
 const SELLER_WA = String(RAW_WA).replace(/\D/g, "");
