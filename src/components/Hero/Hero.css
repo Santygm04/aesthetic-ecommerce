@@ -354,3 +354,60 @@
 }
 
 }
+
+/* …tu CSS existente arriba… */
+
+/* === Pantalla del teléfono === */
+.phone-screen{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  overflow:hidden;
+}
+.phone-screen::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image: var(--phone-img, none);
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.035);
+  filter: saturate(1.03) brightness(.98);
+  z-index:0;
+}
+.phone-screen::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(to bottom,
+              rgba(255,255,255,.20) 0%,
+              rgba(255,255,255,.45) 45%,
+              rgba(255,255,255,.85) 100%);
+  z-index:0;
+}
+/* Cualquier hijo va por encima (burbujas, círculo, botón) */
+.phone-screen > *{ z-index:1; position:relative; }
+
+/* Video/GIF dentro de la pantalla */
+.screen-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:inherit;
+  z-index:0 !important; /* debajo de las burbujas */
+}
+.phone-screen.has-video::before{ display:none; } /* para no mezclar con imagen */
+
+/* === Ejemplo de animación CSS opcional === */
+@keyframes pulseGrad {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.screen-anim-pulse::before{
+  background-image: linear-gradient(120deg,#ffd2ea, #ffeaf6, #fff0f7, #ffd2ea);
+  background-size: 300% 300%;
+  animation: pulseGrad 6s ease-in-out infinite;
+}
+
+/* …resto de tu CSS tal cual… */
