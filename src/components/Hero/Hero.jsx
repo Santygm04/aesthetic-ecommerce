@@ -100,23 +100,35 @@ export default function Hero() {
                   {/* Teléfono */}
                   <div className="phone">
                     <div className="notch" />
-                    <div className="wa-circle" />
 
-                    {/* Burbujas centradas DENTRO del teléfono */}
-                    {(s.bubbles || []).slice(0, 3).map((txt, j) => (
-                      <div key={j} className={`bubble b${j + 1}`}>{txt}</div>
-                    ))}
-
-                    {/* Botón WA real */}
-                    <a
-                      className="wa-badge"
-                      href={`https://wa.me/${SELLER_WA}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label="Abrir WhatsApp"
+                    {/* Pantalla con imagen de fondo */}
+                    <div
+                      className="phone-screen"
+                      style={{
+                        ["--phone-img"]:
+                          s.id === "envios"
+                            ? "url('/assets/primavera.jpg')" // ← cambiá esta ruta si querés
+                            : "none",
+                      }}
                     >
-                      WhatsApp
-                    </a>
+                      <div className="wa-circle" />
+
+                      {/* Burbujas centradas DENTRO del teléfono */}
+                      {(s.bubbles || []).slice(0, 3).map((txt, j) => (
+                        <div key={j} className={`bubble b${j + 1}`}>{txt}</div>
+                      ))}
+
+                      {/* Botón WA real */}
+                      <a
+                        className="wa-badge"
+                        href={`https://wa.me/${SELLER_WA}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Abrir WhatsApp"
+                      >
+                        WhatsApp
+                      </a>
+                    </div>
                   </div>
 
                   {/* Redes solo en “Contacto” */}
