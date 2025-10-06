@@ -153,6 +153,36 @@
   position:absolute; top:12px; left:50%; transform:translateX(-50%);
   width:44%; height:12px; border-radius:12px; background:#eee;
 }
+
+/* === NUEVO: pantalla con imagen de fondo === */
+.phone-screen{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  overflow:hidden;
+}
+.phone-screen::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image: var(--phone-img, none);
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.035);
+  filter: saturate(1.03) brightness(.98);
+  z-index:0;
+}
+.phone-screen::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(255,255,255,.20) 0%,
+                                         rgba(255,255,255,.45) 45%,
+                                         rgba(255,255,255,.85) 100%);
+  z-index:0;
+}
+/* Asegura que los elementos queden por encima de la imagen */
+.phone-screen > *{ z-index:1; }
+
+/* Decor dentro del teléfono */
 .wa-circle{
   position:absolute; top:88px; left:50%; transform:translateX(-50%);
   width:130px; height:130px; border-radius:50%;
