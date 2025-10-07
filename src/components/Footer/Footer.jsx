@@ -50,7 +50,7 @@ export default function Footer() {
         <small className="footer-credit">
           Sitio creado por{" "}
           <a
-            href="#"
+            href="https://github.com/Santygm04"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Autor del sitio"
