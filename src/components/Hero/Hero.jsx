@@ -114,8 +114,6 @@ export default function Hero() {
                         ["--phone-img"]: `url('${s.screenImg || "/assets/primavera.jpg"}')`,
                       }}
                     >
-                      {/* Decor dentro del teléfono */}
-                      <div className="wa-circle" />
 
                       {/* Burbujas centradas DENTRO del teléfono */}
                       {(s.bubbles || []).slice(0, 3).map((txt, j) => (
