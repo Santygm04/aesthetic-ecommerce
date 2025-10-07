@@ -24,7 +24,7 @@ export default function Hero() {
       bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
       cta: { href: "/pagos", label: "Ver pagos" },
       // ← ruta específica de imagen para este slide
-      screenImg: "/assets/hero/pagos.jpg",
+      screenImg: "/assets/primavera.jpg",
     },
     {
       id: "envios",
@@ -39,7 +39,7 @@ export default function Hero() {
       bubbles: ["💳 Pago acreditado", "📦 Preparación coordinada ", "🚚 Despachos coordinados por wsp"],
       cta: { href: "/envios", label: "Ver envíos" },
       // ← ruta específica de imagen para este slide
-      screenImg: "/assets/hero/envios.jpg",
+      screenImg: "/assets/primavera-1.png",
     },
     {
       id: "contacto",
@@ -50,7 +50,7 @@ export default function Hero() {
       bubbles: ["💬 WhatsApp directo", "✉ Email de soporte", "⚡ Respuesta rápida"],
       cta: { href: "/contacto", label: "Ver contactos" },
       // ← ruta específica de imagen para este slide
-      screenImg: "/assets/hero/contacto.jpg",
+      screenImg: "/assets/primavera-2.png",
     },
   ];
 
