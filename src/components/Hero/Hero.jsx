@@ -1,39 +1,12 @@
 // src/components/Hero/Hero.jsx
 import { useEffect, useState } from "react";
 import "../../components/Hero/Hero.css";
-import primavera from "/assets/primavera.jpg"
-import primavera1 from "/assets/primavera-1.png"
-import primavera2 from "/assets/primavera-2.png"
 
 const RAW_WA = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
 const SELLER_WA = String(RAW_WA).replace(/\D/g, "");
 const CONTACT_MAIL = import.meta.env.VITE_CONTACT_EMAIL || "Paulagonzaleslazaro@gmail.com";
 const IG_URL = import.meta.env.VITE_IG_URL || "https://instagram.com/";
 const FB_URL = import.meta.env.VITE_FB_URL || "https://facebook.com/";
-
-/* Componente interno para la “pantalla” del teléfono */
-function PhoneScreen({ screen, children }) {
-  const imgVar = screen?.img ? `url('${screen.img}')` : "none";
-  return (
-    <div
-      className={`phone-screen ${screen?.className || ""} ${screen?.video ? "has-video" : ""}`}
-      style={{ ["--phone-img"]: imgVar }}
-    >
-      {screen?.video && (
-        <video
-          className="screen-video"
-          src={screen.video}
-          poster={screen.poster}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      )}
-      {children}
-    </div>
-  );
-}
 
 export default function Hero() {
   // Slides con chips/burbujas claras por flujo
@@ -50,8 +23,6 @@ export default function Hero() {
       ],
       bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
       cta: { href: "/pagos", label: "Ver pagos" },
-      // === PERSONALIZÁ ACA: imagen estática ===
-      screen: { img:  {primavera} }// cambia la ruta
     },
     {
       id: "envios",
@@ -65,11 +36,6 @@ export default function Hero() {
       ],
       bubbles: ["💳 Pago acreditado", "📦 Preparación coordinada ", "🚚 Despachos coordinados por wsp"],
       cta: { href: "/envios", label: "Ver envíos" },
-      // === PERSONALIZÁ ACA: video/animación (también acepta GIF) ===
-      screen: {
-        video: {primavera1}, // o /assets/hero/envios.gif
-        poster: {primavera2},
-      },
     },
     {
       id: "contacto",
@@ -79,11 +45,6 @@ export default function Hero() {
       bullets: [`WhatsApp: +${SELLER_WA}`, `Email: ${CONTACT_MAIL}`, "Instagram & Facebook disponibles"],
       bubbles: ["💬 WhatsApp directo", "✉ Email de soporte", "⚡ Respuesta rápida"],
       cta: { href: "/contacto", label: "Ver contactos" },
-      // === PERSONALIZÁ ACA: animación CSS (de ejemplo) + imagen de fondo opcional ===
-      screen: {
-        img: "/assets/hero/contacto.jpg",
-        className: "screen-anim-pulse", // quitalo si no querés animación CSS
-      },
     },
   ];
 
@@ -130,7 +91,7 @@ export default function Hero() {
                 <a className="hs-cta glow" href={s.cta.href}>{s.cta.label}</a>
               </div>
 
-              {/* Visual tipo “imagen/animación” */}
+              {/* Visual tipo “imagen” */}
               <div className={`hs-visual ${s.id}`} aria-hidden>
                 <div className="mock">
                   <div className="blob blob1" />
@@ -140,9 +101,14 @@ export default function Hero() {
                   <div className="phone">
                     <div className="notch" />
 
-                    {/* Pantalla con contenido por slide */}
-                    <PhoneScreen screen={s.screen}>
-                      <div className="wa-circle" />
+                    {/* Pantalla con imagen de fondo */}
+                    <div
+                      className="phone-screen"
+                      style={{
+                        ["--phone-img"]: "url('/assets/primavera.jpg')", // misma imagen para los 3 slides
+                      }}
+                    >
+                   
 
                       {/* Burbujas centradas DENTRO del teléfono */}
                       {(s.bubbles || []).slice(0, 3).map((txt, j) => (
@@ -159,7 +125,7 @@ export default function Hero() {
                       >
                         WhatsApp
                       </a>
-                    </PhoneScreen>
+                    </div>
                   </div>
 
                   {/* Redes solo en “Contacto” */}
