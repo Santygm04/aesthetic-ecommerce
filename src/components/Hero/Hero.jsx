@@ -23,6 +23,8 @@ export default function Hero() {
       ],
       bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
       cta: { href: "/pagos", label: "Ver pagos" },
+      // ← ruta específica de imagen para este slide
+      screenImg: "/assets/hero/pagos.jpg",
     },
     {
       id: "envios",
@@ -36,6 +38,8 @@ export default function Hero() {
       ],
       bubbles: ["💳 Pago acreditado", "📦 Preparación coordinada ", "🚚 Despachos coordinados por wsp"],
       cta: { href: "/envios", label: "Ver envíos" },
+      // ← ruta específica de imagen para este slide
+      screenImg: "/assets/hero/envios.jpg",
     },
     {
       id: "contacto",
@@ -45,6 +49,8 @@ export default function Hero() {
       bullets: [`WhatsApp: +${SELLER_WA}`, `Email: ${CONTACT_MAIL}`, "Instagram & Facebook disponibles"],
       bubbles: ["💬 WhatsApp directo", "✉ Email de soporte", "⚡ Respuesta rápida"],
       cta: { href: "/contacto", label: "Ver contactos" },
+      // ← ruta específica de imagen para este slide
+      screenImg: "/assets/hero/contacto.jpg",
     },
   ];
 
@@ -105,10 +111,11 @@ export default function Hero() {
                     <div
                       className="phone-screen"
                       style={{
-                        ["--phone-img"]: "url('/assets/primavera.jpg')", // misma imagen para los 3 slides
+                        ["--phone-img"]: `url('${s.screenImg || "/assets/primavera.jpg"}')`,
                       }}
                     >
-                   
+                      {/* Decor dentro del teléfono */}
+                      <div className="wa-circle" />
 
                       {/* Burbujas centradas DENTRO del teléfono */}
                       {(s.bubbles || []).slice(0, 3).map((txt, j) => (
