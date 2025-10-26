@@ -57,7 +57,7 @@ const CIUDADES = {
   Jujuy: ["San Salvador de Jujuy", "Palpalá", "Perico"],
   "Entre Ríos": ["Paraná", "Concordia", "Gualeguaychú"],
   Chaco: ["Resistencia", "Barranqueras", "Roque Sáenz Peña"],
-  Corrientes: ["Corrientes", "Goya", "Paso de los Libres"],
+  Corrientes: ["Corrientes", "Goya", "Paso de los Libros"],
   Chubut: ["Rawson", "Trelew", "Comodoro Rivadavia"],
   "Santa Cruz": ["Río Gallegos", "Caleta Olivia", "El Calafate"],
   "Tierra del Fuego": ["Ushuaia", "Río Grande"],
@@ -67,6 +67,22 @@ const CIUDADES = {
   Formosa: ["Formosa", "Clorinda"],
   "Santiago del Estero": ["Santiago del Estero", "La Banda"],
 };
+
+// -----------------------------------------------------------
+// 🌟 NUEVO COMPONENTE: Modal de Carga 
+// -----------------------------------------------------------
+const LoadingModal = ({ loading }) => {
+  if (!loading) return null;
+  return (
+    <div className="loading-modal-overlay">
+      <div className="loading-modal-content">
+        <div className="loader-spinner"></div>
+        <p>Procesando tu compra. Por favor, espera...</p>
+      </div>
+    </div>
+  );
+};
+// -----------------------------------------------------------
 
 export default function FormularioCheckout({ total, productos }) {
   const { clearCart } = useCart(); // 👈 NUEVO
@@ -162,7 +178,7 @@ export default function FormularioCheckout({ total, productos }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
-    setLoading(true);
+    setLoading(true); // 👈 **Muestra el modal al empezar**
     try {
       // ✅ Chequeo rápido de stock antes de mandar
       const over = productos.find(
@@ -191,7 +207,7 @@ export default function FormularioCheckout({ total, productos }) {
     } catch (err) {
       setMensaje("❌ " + (err?.message || "Error procesando el pago"));
     } finally {
-      setLoading(false);
+      setLoading(false); // 👈 **Oculta el modal al finalizar**
     }
   };
 
@@ -204,314 +220,338 @@ export default function FormularioCheckout({ total, productos }) {
   };
 
   return (
-    <form className="checkout-form pro" onSubmit={handleSubmit}>
-      <h3>Completa tus datos</h3>
+    <>
+      <form className="checkout-form pro" onSubmit={handleSubmit}>
+        <h3>Completa tus datos</h3>
 
-      {/* Datos principales */}
-      <div className="form-grid grid-2">
-        <div className="form-group">
-          <label>Nombre y apellido</label>
-          <input
-            className="control"
-            name="nombre"
-            placeholder="Ej: Ana Pérez"
-            value={form.nombre}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Teléfono</label>
-          <input
-            className="control"
-            name="telefono"
-            type="tel"
-            placeholder="Ej: +54 9 11 5555 5555"
-            value={form.telefono}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            className="control"
-            name="email"
-            type="email"
-            placeholder="tu@correo.com"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        {/* MÉTODO DE PAGO — Tarjetas lindas */}
-        <div className="form-group">
-          <label>Método de pago</label>
-          <div className="pay-methods">
-            {/* Transferencia (única habilitada) */}
-            <label
-              className={`pay-card ${pago === "transferencia" ? "active" : ""}`}
-            >
-              <input
-                type="radio"
-                name="pago"
-                value="transferencia"
-                checked={pago === "transferencia"}
-                onChange={handlePagoChange}
-              />
-              <div className="pay-icon" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path
-                    d="M3 10h18M5 10V8l7-4 7 4v2M6 10v8M10 10v8M14 10v8M18 10v8M4 20h16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className="pay-title">Transferencia bancaria</div>
-              <div className="pay-sub">
-                Alias: <strong>{BANK_ALIAS.toUpperCase()}</strong>
-              </div>
-            </label>
-
-            {/* Próximamente: MP */}
-            <label className="pay-card disabled" title="Próximamente">
-              <input type="radio" name="pago" value="mercadopago" disabled />
-              <div className="pay-icon" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="9"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <path
-                    d="M7 12c2.2-2.2 7.8-2.2 10 0"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <div className="pay-title-1">Mercado Pago</div>
-              <div className="pay-badge1">Próximamente</div>
-            </label>
-
-            {/* Próximamente: Tarjeta */}
-            <label className="pay-card disabled" title="Próximamente">
-              <input type="radio" name="pago" value="tarjeta" disabled />
-              <div className="pay-icon" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <rect
-                    x="3"
-                    y="6"
-                    width="18"
-                    height="12"
-                    rx="2.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <rect x="6" y="12" width="6" height="2.5" rx="1.2" />
-                </svg>
-              </div>
-              <div className="pay-title-2">Tarjeta</div>
-              <div className="pay-badge2">Próximamente</div>
-            </label>
-          </div>
-          <small className="alias-hint">
-            {" "}
-            Por ahora sólo disponible: transferencia bancaria.{" "}
-          </small>
-        </div>
-      </div>
-
-      {/* Entrega */}
-      <div className="form-group">
-        <label>Entrega</label>
-        <div className="shipping-options">
-          <label
-            className={`ship-card ${shippingMethod === "envio" ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="shipping"
-              value="envio"
-              checked={shippingMethod === "envio"}
-              onChange={() => setShippingMethod("envio")}
-            />
-            <div className="ship-title">Envío (coordinamos por WhatsApp)</div>
-            <div className="ship-text">Lo recibís en tu domicilio</div>
-          </label>
-
-          <label
-            className={`ship-card ${shippingMethod === "retiro" ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="shipping"
-              value="retiro"
-              checked={shippingMethod === "retiro"}
-              onChange={() => setShippingMethod("retiro")}
-            />
-            <div className="ship-title">Retiro en local</div>
-            <div className="ship-text">Coordinamos por WhatsApp</div>
-          </label>
-        </div>
-      </div>
-
-      {/* Dirección */}
-      {shippingMethod === "envio" && (
-        <div className="shipping-form-grid compact">
-          <div className="form-group grid-span-2">
-            <label>Calle</label>
-            <input
-              className="control"
-              placeholder="Ej: Av. Siempreviva"
-              value={address.calle}
-              onChange={(e) =>
-                setAddress({ ...address, calle: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Número</label>
-            <input
-              className="control"
-              placeholder="1234"
-              value={address.numero}
-              onChange={(e) =>
-                setAddress({ ...address, numero: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Piso/Depto (opcional)</label>
-            <input
-              className="control"
-              placeholder="Piso 2, Dto A"
-              value={address.piso}
-              onChange={(e) => setAddress({ ...address, piso: e.target.value })}
-            />
-          </div>
-
-          {/* === Ciudad (SELECT) === */}
-          <div className="form-group">
-            <label>Ciudad</label>
-            <select
-              className="control"
-              value={address.ciudad}
-              onChange={(e) =>
-                setAddress({ ...address, ciudad: e.target.value })
-              }
-              required
-              disabled={!address.provincia}
-            >
-              <option value="" disabled>
-                {address.provincia ? "Seleccioná ciudad" : "Primero elegí provincia"}
-              </option>
-              {ciudadesDisponibles.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* === Provincia (SELECT) === */}
-          <div className="form-group">
-            <label>Provincia</label>
-            <select
-              className="control"
-              value={address.provincia}
-              onChange={(e) =>
-                setAddress({ ...address, provincia: e.target.value, ciudad: "" })
-              }
-              required
-            >
-              <option value="" disabled>
-                Seleccioná provincia
-              </option>
-              {PROVINCIAS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Código Postal</label>
-            <input
-              className="control"
-              placeholder="Ej: 1663"
-              value={address.cp}
-              onChange={(e) => setAddress({ ...address, cp: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Transferencia (sub-bloque) */}
-      {pago === "transferencia" && (
+        {/* Datos principales */}
         <div className="form-grid grid-2">
-          <div className="form-group grid-span-2">
-            <label>Alias para transferir</label>
-            <div
-              className="alias-display"
-              onClick={copiarAlias}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="alias-text">{BANK_ALIAS.toUpperCase()}</span>
-              <button type="button" className="copy-btn" onClick={copiarAlias}>
-                Copiar
-              </button>
+          <div className="form-group">
+            <label>Nombre y apellido</label>
+            <input
+              className="control"
+              name="nombre"
+              placeholder="Ej: Ana Pérez"
+              value={form.nombre}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Teléfono</label>
+            <input
+              className="control"
+              name="telefono"
+              type="tel"
+              placeholder="Ej: +54 9 11 5555 5555"
+              value={form.telefono}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              className="control"
+              name="email"
+              type="email"
+              placeholder="tu@correo.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* MÉTODO DE PAGO — Tarjetas lindas */}
+          <div className="form-group">
+            <label>Método de pago</label>
+            <div className="pay-methods">
+              {/* Transferencia (única habilitada) */}
+              <label
+                className={`pay-card ${
+                  pago === "transferencia" ? "active" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="pago"
+                  value="transferencia"
+                  checked={pago === "transferencia"}
+                  onChange={handlePagoChange}
+                />
+                <div className="pay-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                      d="M3 10h18M5 10V8l7-4 7 4v2M6 10v8M10 10v8M14 10v8M18 10v8M4 20h16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="pay-title">Transferencia bancaria</div>
+                <div className="pay-sub">
+                  Alias: <strong>{BANK_ALIAS.toUpperCase()}</strong>
+                </div>
+              </label>
+
+              {/* Próximamente: MP */}
+              <label className="pay-card disabled" title="Próximamente">
+                <input type="radio" name="pago" value="mercadopago" disabled />
+                <div className="pay-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="9"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <path
+                      d="M7 12c2.2-2.2 7.8-2.2 10 0"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+                <div className="pay-title-1">Mercado Pago</div>
+                <div className="pay-badge1">Próximamente</div>
+              </label>
+
+              {/* Próximamente: Tarjeta */}
+              <label className="pay-card disabled" title="Próximamente">
+                <input type="radio" name="pago" value="tarjeta" disabled />
+                <div className="pay-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <rect
+                      x="3"
+                      y="6"
+                      width="18"
+                      height="12"
+                      rx="2.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <rect x="6" y="12" width="6" height="2.5" rx="1.2" />
+                  </svg>
+                </div>
+                <div className="pay-title-2">Tarjeta</div>
+                <div className="pay-badge2">Próximamente</div>
+              </label>
             </div>
             <small className="alias-hint">
               {" "}
-              Tocá el alias o el botón para copiarlo.{" "}
+              Por ahora sólo disponible: transferencia bancaria.{" "}
             </small>
           </div>
+        </div>
 
-          <div className="form-group grid-span-2">
-            <label>Comprobante (JPG/PNG/PDF)</label>
-            <input
-              className="control-file"
-              type="file"
-              accept="image/*,application/pdf"
-              onChange={(e) => setComprobante(e.target.files?.[0] || null)}
-            />
+        {/* Entrega */}
+        <div className="form-group">
+          <label>Entrega</label>
+          <div className="shipping-options">
+            <label
+              className={`ship-card ${
+                shippingMethod === "envio" ? "active" : ""
+              }`}
+            >
+              <input
+                type="radio"
+                name="shipping"
+                value="envio"
+                checked={shippingMethod === "envio"}
+                onChange={() => setShippingMethod("envio")}
+              />
+              <div className="ship-title">Envío (coordinamos por WhatsApp)</div>
+              <div className="ship-text">Lo recibís en tu domicilio</div>
+            </label>
+
+            <label
+              className={`ship-card ${
+                shippingMethod === "retiro" ? "active" : ""
+              }`}
+            >
+              <input
+                type="radio"
+                name="shipping"
+                value="retiro"
+                checked={shippingMethod === "retiro"}
+                onChange={() => setShippingMethod("retiro")}
+              />
+              <div className="ship-title">Retiro en local</div>
+              <div className="ship-text">Coordinamos por WhatsApp</div>
+            </label>
           </div>
         </div>
-      )}
 
-      {/* Resumen */}
-      <div className="summary-card">
-        <div className="sum-row">
-          <span>Total</span>
-          <strong>${total}</strong>
+        {/* Dirección */}
+        {shippingMethod === "envio" && (
+          <div className="shipping-form-grid compact">
+            <div className="form-group grid-span-2">
+              <label>Calle</label>
+              <input
+                className="control"
+                placeholder="Ej: Av. Siempreviva"
+                value={address.calle}
+                onChange={(e) =>
+                  setAddress({ ...address, calle: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Número</label>
+              <input
+                className="control"
+                placeholder="1234"
+                value={address.numero}
+                onChange={(e) =>
+                  setAddress({ ...address, numero: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Piso/Depto (opcional)</label>
+              <input
+                className="control"
+                placeholder="Piso 2, Dto A"
+                value={address.piso}
+                onChange={(e) =>
+                  setAddress({ ...address, piso: e.target.value })
+                }
+              />
+            </div>
+
+            {/* === Ciudad (SELECT) === */}
+            <div className="form-group">
+              <label>Ciudad</label>
+              <select
+                className="control"
+                value={address.ciudad}
+                onChange={(e) =>
+                  setAddress({ ...address, ciudad: e.target.value })
+                }
+                required
+                disabled={!address.provincia}
+              >
+                <option value="" disabled>
+                  {address.provincia
+                    ? "Seleccioná ciudad"
+                    : "Primero elegí provincia"}
+                </option>
+                {ciudadesDisponibles.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* === Provincia (SELECT) === */}
+            <div className="form-group">
+              <label>Provincia</label>
+              <select
+                className="control"
+                value={address.provincia}
+                onChange={(e) =>
+                  setAddress({
+                    ...address,
+                    provincia: e.target.value,
+                    ciudad: "",
+                  })
+                }
+                required
+              >
+                <option value="" disabled>
+                  Seleccioná provincia
+                </option>
+                {PROVINCIAS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Código Postal</label>
+              <input
+                className="control"
+                placeholder="Ej: 1663"
+                value={address.cp}
+                onChange={(e) =>
+                  setAddress({ ...address, cp: e.target.value })
+                }
+                required
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Transferencia (sub-bloque) */}
+        {pago === "transferencia" && (
+          <div className="form-grid grid-2">
+            <div className="form-group grid-span-2">
+              <label>Alias para transferir</label>
+              <div
+                className="alias-display"
+                onClick={copiarAlias}
+                role="button"
+                tabIndex={0}
+              >
+                <span className="alias-text">{BANK_ALIAS.toUpperCase()}</span>
+                <button
+                  type="button"
+                  className="copy-btn"
+                  onClick={copiarAlias}
+                >
+                  Copiar
+                </button>
+              </div>
+              <small className="alias-hint">
+                {" "}
+                Tocá el alias o el botón para copiarlo.{" "}
+              </small>
+            </div>
+
+            <div className="form-group grid-span-2">
+              <label>Comprobante (JPG/PNG/PDF)</label>
+              <input
+                className="control-file"
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={(e) => setComprobante(e.target.files?.[0] || null)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Resumen */}
+        <div className="summary-card">
+          <div className="sum-row">
+            <span>Total</span>
+            <strong>${total}</strong>
+          </div>
         </div>
-      </div>
 
-      <button type="submit" className="checkout-btn" disabled={loading}>
-        {loading ? "Procesando…" : "Confirmar compra"}
-      </button>
-      {mensaje && <div className="mensaje-exito">{mensaje}</div>}
-    </form>
+        <button type="submit" className="checkout-btn" disabled={loading}>
+          {loading ? "Procesando…" : "Confirmar compra"}
+        </button>
+        {mensaje && <div className="mensaje-exito">{mensaje}</div>}
+      </form>
+      {/* 👈 Renderiza el modal de carga */}
+      <LoadingModal loading={loading} />
+    </>
   );
 }
