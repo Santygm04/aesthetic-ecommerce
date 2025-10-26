@@ -509,7 +509,7 @@ export default function FormularioCheckout({ total, productos }) {
       </div>
 
       <button type="submit" className="checkout-btn" disabled={loading}>
-        {loading ? "Procesando…" : "Enviar comprobante"}
+        {loading ? "Procesando…" : "Confirmar compra"}
       </button>
       {mensaje && <div className="mensaje-exito">{mensaje}</div>}
     </form>
