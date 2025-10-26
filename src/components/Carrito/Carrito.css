@@ -612,32 +612,7 @@ html, body{ max-width:100%; overflow-x:hidden; }
 /*Telefono grande*/
 @media (min-width: 380px) and (max-width: 431px){
 
-  .pay-title{
-    position: relative;
-    left: 10% !important;
-  }
 
-  .pay-title-1{
-    position: relative;
-    left: 12% !important;
-  }
-
-  .pay-badge1{
-    position: relative;
-    left: 10% !important;
-    width: 110px;
-  }
-
-  .pay-badge2{
-    position: relative;
-    left: 10% !important;
-    width: 110px;
-  }
-
-  div .pay-title-2{
-    position: relative;
-    left: 30% !important;
-  }
 }
  /*Tablet */
 @media (min-width: 540px) and (max-width: 769px) {
