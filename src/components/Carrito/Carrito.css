@@ -188,6 +188,7 @@ html, body{ max-width:100%; overflow-x:hidden; }
 .checkout-form .pay-icon{ width:36px; height:36px; color:#b51775; margin-bottom:.25rem; }
 .checkout-form .pay-title{ font-weight:800; color:#b51775; letter-spacing:.2px; }
 .checkout-form .pay-sub{ font-size:.92rem; color:#7d4d85; }
+.checkout-form .pay-sub1{ font-size:.92rem; color:#7d4d85; }
 .checkout-form .pay-card:hover{ border-color: var(--brand); background: linear-gradient(180deg,#fff 0%, #fff6fb 100%); transform: translateY(-1px); }
 .checkout-form .pay-card.active{ border-color:#ff8fc9; background: linear-gradient(180deg,#fff 0%, #fff0f8 100%); box-shadow:0 10px 24px rgba(255,46,166,.12); }
 .checkout-form .pay-card.active::after{
@@ -331,6 +332,7 @@ html, body{ max-width:100%; overflow-x:hidden; }
 .pay-card .pay-icon{ width:36px; height:36px; color:#b51775; margin-bottom:.25rem; }
 .pay-card .pay-title{ font-weight:800; color:#b51775; letter-spacing:.2px; }
 .pay-card .pay-sub{ font-size:.92rem; color:#7d4d85; }
+.pay-card .pay-sub1{ font-size:.92rem; color:#7d4d85; }
 .pay-card:hover{ border-color: var(--brand); background: linear-gradient(180deg,#fff 0%, #fff6fb 100%); transform: translateY(-1px); }
 .pay-card.active{ border-color:#ff8fc9; background: linear-gradient(180deg,#fff 0%, #fff0f8 100%); box-shadow:0 10px 24px rgba(255,46,166,.12); }
 .pay-card.active::after{
@@ -588,6 +590,11 @@ html, body{ max-width:100%; overflow-x:hidden; }
     justify-content: center;
   }
 
+  .pay-sub1{
+    display: flex;
+    justify-content: center;
+  }
+
  
   .pay-title{
     width: 100px;
@@ -636,6 +643,11 @@ html, body{ max-width:100%; overflow-x:hidden; }
   }
 
   .pay-sub{
+    position: relative;
+    bottom: 21% !important;
+  }
+
+  .pay-sub1{
     position: relative;
     bottom: 21% !important;
   }
@@ -778,6 +790,11 @@ html, body{ max-width:100%; overflow-x:hidden; }
     justify-content: center;
   }
 
+   .pay-sub1{
+    display: flex;
+    justify-content: center;
+  }
+
   .pay-badge{
     position: relative;
     left: -7% !important;
@@ -823,6 +840,12 @@ html, body{ max-width:100%; overflow-x:hidden; }
   .pay-sub{
     position: relative;
     bottom: 10% !important;
+  }
+
+.pay-sub1{
+    position: relative;
+    bottom: 10% !important;
+    margin-left: 45px;
   }
 
   .pay-title-1{
@@ -946,4 +969,6 @@ html, body{ max-width:100%; overflow-x:hidden; }
   100% {
     transform: rotate(360deg);
   }
+
+  
 }

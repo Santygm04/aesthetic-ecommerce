@@ -12,12 +12,17 @@ const AUTO_OPEN_WA =
   String(import.meta.env.VITE_AUTO_OPEN_WA_ON_PAID || "false").toLowerCase() === "true";
 
 export default function EstadoPago() {
-  const { estado } = useParams(); // exito | error | pending (pista)
+  // si tu ruta es /pago/estado o /pago/:estado, esto no rompe
+  const { estado } = useParams(); // exito | error | pending (opcional)
   const { search } = useLocation();
   const params = new URLSearchParams(search);
-  const orderId = params.get("o") || "";
-  const paymentId = params.get("payment_id") || params.get("collection_id") || "";
-  const canAutoOpen = params.get("fresh") === "1"; // solo auto-abrir si viene marcado como "reciente"
+
+  // ✅ Mercado Pago va a volver con orderId=...
+  const orderId = params.get("orderId") || params.get("o") || "";
+  const paymentId =
+    params.get("payment_id") || params.get("collection_id") || params.get("paymentId") || "";
+
+  const canAutoOpen = params.get("fresh") === "1";
 
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,9 +30,10 @@ export default function EstadoPago() {
   const pollRef = useRef(null);
   const autoOpenedRef = useRef(false);
 
-  const niceMoney = (n) => (typeof n === "number" ? n.toLocaleString("es-AR") : String(n || ""));
+  const niceMoney = (n) =>
+    typeof n === "number" ? n.toLocaleString("es-AR") : String(n || "");
   const shortId = (id) => (id ? String(id).slice(-6).toUpperCase() : "");
-  const prettyOrder = (o) => o?.shippingTicket || `AE-${shortId(o?.id || "")}`;
+  const prettyOrder = (o) => o?.shippingTicket || (o?.orderNumber ? `#${o.orderNumber}` : `AE-${shortId(o?.id || "")}`);
 
   const buildAddress = (a = {}) => {
     const parts = [
@@ -55,11 +61,13 @@ export default function EstadoPago() {
     return encodeURIComponent(lines.join("\n"));
   };
 
-  const waHref = info && SELLER_WA ? `https://wa.me/${SELLER_WA}?text=${buildWaText(info)}` : null;
+  const waHref =
+    info && SELLER_WA ? `https://wa.me/${SELLER_WA}?text=${buildWaText(info)}` : null;
 
   // Cargar y enganchar SSE
   useEffect(() => {
     let alive = true;
+
     if (!orderId) {
       setLoading(false);
       return;
@@ -68,75 +76,66 @@ export default function EstadoPago() {
     async function loadOnce() {
       try {
         const res = await fetch(`${API_URL}/api/payments/order/${orderId}`);
-        const data = await res.json();
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data) throw new Error("No data");
 
-        // 👉 Guarda referencia local para "Mis pedidos"
+        // guarda ref para "Mis pedidos"
         try {
           const code = data?.shippingTicket || (data?.orderNumber ? `#${data.orderNumber}` : null);
           addOrderRef({ _id: orderId, code, createdAt: data?.createdAt || Date.now() });
         } catch {}
 
-        if (
-          alive &&
-          paymentId &&
-          data?.paymentMethod === "mercadopago" &&
-          data?.status !== "paid"
-        ) {
-          try {
-            const r = await fetch(`${API_URL}/api/payments/mp/refresh?o=${orderId}&p=${paymentId}`);
-            const upd = await r.json();
-            setInfo(upd?.id ? upd : data);
-            // memoriza estado inicial
-            if (!esRef.current) esRef.current = {};
-            esRef.current._lastStatus = (upd?.id ? upd : data)?.status;
-          } catch {
-            setInfo(data);
-            if (!esRef.current) esRef.current = {};
-            esRef.current._lastStatus = data?.status;
-          } finally {
-            setLoading(false);
-          }
-        } else {
-          if (alive) setInfo(data);
-          if (!esRef.current) esRef.current = {};
-          esRef.current._lastStatus = data?.status;
-          setLoading(false);
-        }
+        if (!alive) return;
+        setInfo(data);
+
+        // guarda status inicial para badge
+        if (!esRef.current) esRef.current = {};
+        esRef.current._lastStatus = data?.status;
+
+        setLoading(false);
       } catch {
-        if (alive) {
-          setInfo(null);
-          setLoading(false);
-        }
+        if (!alive) return;
+        setInfo(null);
+        setLoading(false);
       }
     }
 
-    // 1) Primera carga
+    // 1) primera carga
     loadOnce();
 
-    // 2) SSE en vivo
+    // 2) SSE
     try {
       const es = new EventSource(`${API_URL}/api/payments/order/${orderId}/stream`);
       esRef.current = es;
+
       es.addEventListener("update", (ev) => {
         try {
-          const msg = JSON.parse(ev.data || "{}"); // { status }
-          if (msg?.status && alive) {
-            setInfo((prev) => (prev ? { ...prev, status: msg.status } : prev));
-            const prevSt = esRef.current?._lastStatus || null;
-            noteOrderUpdate({ orderId, prevStatus: prevSt, newStatus: msg.status });
-            esRef.current._lastStatus = msg.status;
-          }
+          const msg = JSON.parse(ev.data || "{}"); // { id, status }
+          if (!msg?.status || !alive) return;
+
+          setInfo((prev) => (prev ? { ...prev, status: msg.status } : prev));
+
+          const prevSt = esRef.current?._lastStatus || null;
+          noteOrderUpdate({ orderId, prevStatus: prevSt, newStatus: msg.status });
+          esRef.current._lastStatus = msg.status;
         } catch {}
       });
+
       es.onerror = () => {
         // fallback a polling suave si SSE falla
         if (!pollRef.current) {
           pollRef.current = setInterval(async () => {
             try {
               const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
-              const d = await r.json();
+              const d = await r.json().catch(() => null);
+              if (!d) return;
+
               setInfo(d);
-              noteOrderUpdate({ orderId, prevStatus: esRef.current?._lastStatus, newStatus: d?.status });
+              noteOrderUpdate({
+                orderId,
+                prevStatus: esRef.current?._lastStatus,
+                newStatus: d?.status,
+              });
               if (esRef.current) esRef.current._lastStatus = d?.status;
             } catch {}
           }, 8000);
@@ -147,9 +146,15 @@ export default function EstadoPago() {
       pollRef.current = setInterval(async () => {
         try {
           const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
-          const d = await r.json();
-        setInfo(d);
-          noteOrderUpdate({ orderId, prevStatus: esRef.current?._lastStatus, newStatus: d?.status });
+          const d = await r.json().catch(() => null);
+          if (!d) return;
+
+          setInfo(d);
+          noteOrderUpdate({
+            orderId,
+            prevStatus: esRef.current?._lastStatus,
+            newStatus: d?.status,
+          });
           if (esRef.current) esRef.current._lastStatus = d?.status;
         } catch {}
       }, 8000);
@@ -160,13 +165,14 @@ export default function EstadoPago() {
       if (esRef.current?.close) esRef.current.close();
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [orderId, paymentId]);
+  }, [orderId]);
 
   // Auto-open WA cuando pasa a paid (solo si viene "fresco")
   useEffect(() => {
     if (!AUTO_OPEN_WA || !SELLER_WA || !info || !canAutoOpen) return;
     if (autoOpenedRef.current) return;
-    if (info.paymentMethod === "transfer" && info.status === "paid") {
+
+    if (info.status === "paid") {
       autoOpenedRef.current = true;
       setTimeout(() => {
         if (waHref) window.location.href = waHref;
@@ -177,33 +183,19 @@ export default function EstadoPago() {
   const ui = useMemo(() => {
     if (!info) return { titulo: "Procesando…", color: "#f59e0b", rejected: false };
 
-    if (info.paymentMethod === "mercadopago") {
-      if (info.status === "paid" || info.status === "approved") {
-        return { titulo: "¡Pago aprobado!", color: "#22c55e", rejected: false };
-      }
-      if (info.status === "rejected" || info.status === "cancelled") {
-        return { titulo: "Pago rechazado", color: "#ef4444", rejected: true };
-      }
-      return { titulo: "Pago pendiente…", color: "#f59e0b", rejected: false };
-    }
+    const st = String(info.status || "pending");
 
-    if (info.paymentMethod === "transfer") {
-      if (info.status === "paid") {
-        return { titulo: "¡Comprobante verificado!", color: "#22c55e", rejected: false };
-      }
-      if (info.status === "cancelled" || info.status === "rejected") {
-        return { titulo: "Comprobante rechazado", color: "#ef4444", rejected: true };
-      }
-      return { titulo: "Pedido registrado (a confirmar)", color: "#f59e0b", rejected: false };
-    }
+    if (st === "paid") return { titulo: "¡Pago aprobado!", color: "#22c55e", rejected: false };
+    if (st === "rejected" || st === "cancelled")
+      return { titulo: "Pago rechazado", color: "#ef4444", rejected: true };
 
-    return { titulo: "Estado del pedido", color: "#111827", rejected: false };
+    return { titulo: "Pago pendiente…", color: "#f59e0b", rejected: false };
   }, [info]);
 
-  // === NUEVO: derivar estados de preparación/ despacho / entrega (sin tocar nada más) ===
+  // Avances (sin tocar tu lógica)
   const prepShipDeliver = useMemo(() => {
     const st = String(info?.status || "pending");
-    const isPaid = st === "paid" || st === "approved";
+    const isPaid = st === "paid";
     const isRetiro = info?.shipping?.method === "retiro";
     const isDespachado = Boolean(info?.shipping?.trackingNumber) || (isRetiro && isPaid);
     const deliveredAt = info?.shipping?.deliveredAt ? new Date(info.shipping.deliveredAt) : null;
@@ -213,12 +205,14 @@ export default function EstadoPago() {
   return (
     <section className="wrap">
       <div className="card" style={{ borderColor: ui.color }}>
-        <h2 className="title" style={{ color: ui.color }}>{ui.titulo}</h2>
+        <h2 className="title" style={{ color: ui.color }}>
+          {ui.titulo}
+        </h2>
 
         {ui.rejected && (
           <p className="muted" style={{ color: "#7a3d3d" }}>
-            No pudimos validar el pago. Revisá monto, alias/CBU y reenviá el comprobante.
-            Si ya transferiste correctamente, escribinos por WhatsApp con tu número de pedido <b>{prettyOrder(info)}</b>.
+            No pudimos validar el pago. Si creés que se acreditó, escribinos por WhatsApp con tu
+            número de pedido <b>{prettyOrder(info)}</b>.
           </p>
         )}
 
@@ -256,33 +250,32 @@ export default function EstadoPago() {
                       Copiar
                     </button>
                   </p>
-                  <p className="p"><b>Dirección:</b> {buildAddress(info?.shipping?.address) || "—"}</p>
+                  <p className="p">
+                    <b>Dirección:</b> {buildAddress(info?.shipping?.address) || "—"}
+                  </p>
                 </>
               ) : (
-                <p className="muted">Seleccionaste <b>Retiro en local</b>. Te vamos a contactar por WhatsApp para coordinar.</p>
+                <p className="muted">
+                  Seleccionaste <b>Retiro en local</b>. Te vamos a contactar por WhatsApp para coordinar.
+                </p>
               )}
             </div>
 
-            {/* Seguimiento propio */}
             <div className="block">
               <h3 className="h3">Seguimiento</h3>
               <OrderTimeline order={info} />
             </div>
 
-            {/* === NUEVO: Avances de preparación / despacho / entrega === */}
             <div className="block">
               <h3 className="h3">Avances</h3>
               <ul className="ul">
-                <li>
-                  <b>Preparación:</b>{" "}
-                  {prepShipDeliver.isPaid ? "Completada" : "Pendiente"}
-                </li>
+                <li><b>Preparación:</b> {prepShipDeliver.isPaid ? "Completada" : "Pendiente"}</li>
                 <li>
                   <b>{prepShipDeliver.isRetiro ? "Listo para retirar" : "Despacho"}:</b>{" "}
                   {prepShipDeliver.isDespachado ? "Hecho" : "Pendiente"}
                   {info?.shipping?.trackingNumber ? (
                     <>
-                      {" "}- Tracking: <span className="mono">{info.shipping.trackingNumber}</span>
+                      {" "} - Tracking: <span className="mono">{info.shipping.trackingNumber}</span>
                       {info?.shipping?.company ? ` (${info.shipping.company})` : ""}
                     </>
                   ) : null}
@@ -297,7 +290,6 @@ export default function EstadoPago() {
                 </li>
               </ul>
             </div>
-            {/* === FIN NUEVO === */}
 
             {SELLER_WA && (
               <div className="actions">
@@ -308,13 +300,14 @@ export default function EstadoPago() {
             )}
 
             <div className="actions">
-              {ui.rejected && (
-                <a href={`/pago?o=${encodeURIComponent(orderId)}`} className="outlineBtn">
-                  Subir nuevo comprobante
-                </a>
-              )}
               <a href="/" className="homeBtn">Volver al inicio</a>
-              <a href="/pedidos" className="homeBtn" style={{ background:"#fff", color:"#ff2ea6", border:"1px solid #ffd3ea" }}>Ver mis pedidos</a>
+              <a
+                href="/pedidos"
+                className="homeBtn"
+                style={{ background: "#fff", color: "#ff2ea6", border: "1px solid #ffd3ea" }}
+              >
+                Ver mis pedidos
+              </a>
             </div>
           </>
         )}

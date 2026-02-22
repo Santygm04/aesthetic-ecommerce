@@ -1,7 +1,7 @@
 // src/components/Carrito/FormularioCheckout.jsx
 import { useMemo, useState } from "react";
 import "../../components/Carrito/Carrito.css";
-import { useCart } from "./CartContext"; // 👈 NUEVO
+import { useCart } from "./CartContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const BANK_ALIAS = import.meta.env.VITE_BANK_ALIAS || "SANTYGM";
@@ -69,7 +69,7 @@ const CIUDADES = {
 };
 
 // -----------------------------------------------------------
-// 🌟 NUEVO COMPONENTE: Modal de Carga 
+// 🌟 Modal de Carga
 // -----------------------------------------------------------
 const LoadingModal = ({ loading }) => {
   if (!loading) return null;
@@ -85,7 +85,7 @@ const LoadingModal = ({ loading }) => {
 // -----------------------------------------------------------
 
 export default function FormularioCheckout({ total, productos }) {
-  const { clearCart } = useCart(); // 👈 NUEVO
+  const { clearCart } = useCart();
 
   const [form, setForm] = useState({
     nombre: "",
@@ -94,7 +94,7 @@ export default function FormularioCheckout({ total, productos }) {
     telefono: "",
   });
 
-  // Método de pago (por ahora solo transferencia)
+  // Método de pago (transferencia o mercadopago)
   const [pago, setPago] = useState("transferencia");
 
   // Entrega
@@ -122,7 +122,7 @@ export default function FormularioCheckout({ total, productos }) {
     [address.provincia]
   );
 
-  // 👉 Enviamos también la VARIANTE elegida si existe
+  // 👉 Items normalizados para orden
   const itemsForOrder = useMemo(
     () =>
       productos.map((p) => {
@@ -132,7 +132,7 @@ export default function FormularioCheckout({ total, productos }) {
               vid: v.vid || v._id || v.id || v.sku || "",
               size: v.size || v.talle || "",
               color: v.color || v.colour || "",
-              stock: v.stock != null ? Number(v.stock) : undefined, // 👈 pasa stock de variante si existe
+              stock: v.stock != null ? Number(v.stock) : undefined,
             }
           : p.vid || p.sku || p.size || p.talle || p.color
           ? {
@@ -171,14 +171,51 @@ export default function FormularioCheckout({ total, productos }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Error enviando comprobante");
 
-    clearCart(); // 👈 vaciamos el carrito al confirmar la orden
+    clearCart();
     window.location.href = `/pago/exito?o=${data.orderId}`;
+  };
+
+  // ---------- Mercado Pago (Checkout Pro)
+  const submitMercadoPago = async () => {
+    // Normalizamos items al formato esperado por backend
+    const mpItems = itemsForOrder.map((it) => ({
+      productId: it.productId,
+      nombre: it.nombre,
+      precio: Number(it.precio),
+      cantidad: Number(it.cantidad || 1),
+      variant: it.variant || undefined,
+    }));
+
+    const payload = {
+      buyer: form,
+      items: mpItems,
+      shipping: { method: shippingMethod, address },
+    };
+
+    const res = await fetch(`${API_URL}/api/payments/mp/create-preference`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.message || "Error iniciando Mercado Pago");
+
+    // Vaciar carrito y redirigir
+    clearCart();
+
+    if (!data?.init_point) {
+      throw new Error("Mercado Pago no devolvió el link de pago (init_point).");
+    }
+
+    window.location.href = data.init_point;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
-    setLoading(true); // 👈 **Muestra el modal al empezar**
+    setLoading(true);
+
     try {
       // ✅ Chequeo rápido de stock antes de mandar
       const over = productos.find(
@@ -199,15 +236,18 @@ export default function FormularioCheckout({ total, productos }) {
           address.cp;
         if (!ok) throw new Error("Completá la dirección de envío.");
       }
+
       if (pago === "transferencia") {
         await submitTransfer();
+      } else if (pago === "mercadopago") {
+        await submitMercadoPago();
       } else {
         throw new Error("Método de pago no disponible.");
       }
     } catch (err) {
       setMensaje("❌ " + (err?.message || "Error procesando el pago"));
     } finally {
-      setLoading(false); // 👈 **Oculta el modal al finalizar**
+      setLoading(false);
     }
   };
 
@@ -264,11 +304,11 @@ export default function FormularioCheckout({ total, productos }) {
             />
           </div>
 
-          {/* MÉTODO DE PAGO — Tarjetas lindas */}
+          {/* MÉTODO DE PAGO */}
           <div className="form-group">
             <label>Método de pago</label>
             <div className="pay-methods">
-              {/* Transferencia (única habilitada) */}
+              {/* Transferencia */}
               <label
                 className={`pay-card ${
                   pago === "transferencia" ? "active" : ""
@@ -299,9 +339,16 @@ export default function FormularioCheckout({ total, productos }) {
                 </div>
               </label>
 
-              {/* Próximamente: MP */}
-              <label className="pay-card disabled" title="Próximamente">
-                <input type="radio" name="pago" value="mercadopago" disabled />
+              {/* ✅ Mercado Pago (HABILITADO) */}
+              <label
+                className={`pay-card pay-card--mp ${pago === "mercadopago" ? "active" : ""}`}>
+                <input
+                  type="radio"
+                  name="pago"
+                  value="mercadopago"
+                  checked={pago === "mercadopago"}
+                  onChange={handlePagoChange}
+                />
                 <div className="pay-icon" aria-hidden="true">
                   <svg width="24" height="24" viewBox="0 0 24 24">
                     <circle
@@ -322,10 +369,10 @@ export default function FormularioCheckout({ total, productos }) {
                   </svg>
                 </div>
                 <div className="pay-title-1">Mercado Pago</div>
-                <div className="pay-badge1">Próximamente</div>
+                <div className="pay-sub1">Tarjeta / Débito / Transferencia</div>
               </label>
 
-              {/* Próximamente: Tarjeta */}
+              {/* Tarjeta (sigue en próximamente) */}
               <label className="pay-card disabled" title="Próximamente">
                 <input type="radio" name="pago" value="tarjeta" disabled />
                 <div className="pay-icon" aria-hidden="true">
@@ -348,8 +395,7 @@ export default function FormularioCheckout({ total, productos }) {
               </label>
             </div>
             <small className="alias-hint">
-              {" "}
-              Por ahora sólo disponible: transferencia bancaria.{" "}
+              Elegí transferencia o Mercado Pago.
             </small>
           </div>
         </div>
@@ -433,7 +479,7 @@ export default function FormularioCheckout({ total, productos }) {
               />
             </div>
 
-            {/* === Ciudad (SELECT) === */}
+            {/* Ciudad */}
             <div className="form-group">
               <label>Ciudad</label>
               <select
@@ -458,7 +504,7 @@ export default function FormularioCheckout({ total, productos }) {
               </select>
             </div>
 
-            {/* === Provincia (SELECT) === */}
+            {/* Provincia */}
             <div className="form-group">
               <label>Provincia</label>
               <select
@@ -520,8 +566,7 @@ export default function FormularioCheckout({ total, productos }) {
                 </button>
               </div>
               <small className="alias-hint">
-                {" "}
-                Tocá el alias o el botón para copiarlo.{" "}
+                Tocá el alias o el botón para copiarlo.
               </small>
             </div>
 
@@ -548,9 +593,10 @@ export default function FormularioCheckout({ total, productos }) {
         <button type="submit" className="checkout-btn" disabled={loading}>
           {loading ? "Procesando…" : "Confirmar compra"}
         </button>
+
         {mensaje && <div className="mensaje-exito">{mensaje}</div>}
       </form>
-      {/* 👈 Renderiza el modal de carga */}
+
       <LoadingModal loading={loading} />
     </>
   );
