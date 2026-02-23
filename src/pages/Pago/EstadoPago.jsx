@@ -197,7 +197,9 @@ export default function EstadoPago() {
     const st = String(info?.status || "pending");
     const isPaid = st === "paid";
     const isRetiro = info?.shipping?.method === "retiro";
-    const isDespachado = Boolean(info?.shipping?.trackingNumber) || (isRetiro && isPaid);
+    const isDespachado =
+  Boolean(info?.shipping?.trackingNumber) ||
+  Boolean(info?.shipping?.shippedAt); // ✅ listo cuando admin hace "DESPACHAR" (o marca listo)
     const deliveredAt = info?.shipping?.deliveredAt ? new Date(info.shipping.deliveredAt) : null;
     return { isPaid, isRetiro, isDespachado, deliveredAt };
   }, [info]);
