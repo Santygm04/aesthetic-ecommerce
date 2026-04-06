@@ -283,7 +283,7 @@
 
 /* Botón lupa */
 .search-btn{
-  position:absolute; top:50%; right:6px; transform:translateY(-50%);
+  position:absolute; top:50%; right:1px; transform:translateY(-50%);
   width:36px; height:36px; border:0; border-radius:10px; display:grid; place-items:center;
   background:#d63384; color:#fff; cursor:pointer; box-shadow:0 6px 18px rgba(214,51,132,.12);
 }
