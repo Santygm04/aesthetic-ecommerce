@@ -9,12 +9,12 @@ import "../../components/ProductSlider/ProductSlider.css";
 export default function ProductSlider({
   productos = [],
   title = "Destacados",
-  showTitle = true,          // 👈 NUEVO
+  showTitle = true,
 }) {
   const items = Array.isArray(productos) ? productos : (productos?.items || []);
   const hasItems = items && items.length > 0;
 
-  // 👉 evita duplicados por id (cuando viene 1 ítem slick duplicaba)
+  // evita duplicados por id
   const cleanItems = useMemo(() => {
     const map = new Map();
     (items || []).forEach(p => {
@@ -29,11 +29,12 @@ export default function ProductSlider({
 
   const settings = {
     dots: true,
-    infinite: count > 1,              // 🔒 sin loop si hay 1
+    infinite: count > 1,
     speed: 600,
-    slidesToShow: Math.min(3, count), // 🔒 no intentes mostrar más de los que hay
+    slidesToShow: Math.min(3, count),
     slidesToScroll: 1,
     arrows: count > 1,
+    adaptiveHeight: false,
     responsive: [
       { breakpoint: 900, settings: { slidesToShow: Math.min(2, count) } },
       { breakpoint: 600, settings: { slidesToShow: 1 } },
@@ -55,7 +56,6 @@ export default function ProductSlider({
     <section className={`slider-destacados ${isSingle ? "is-single" : ""}`}>
       {showTitle && <h2 className="slider-title">{title}</h2>}
 
-      {/* 👉 si hay sólo 1, no uses Slider para que no se duplique */}
       {isSingle ? (
         <div className="single-slide">
           <ProductCard producto={cleanItems[0]} />

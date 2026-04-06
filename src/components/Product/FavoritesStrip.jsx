@@ -5,14 +5,19 @@ import { FALLBACK_IMG } from "../../utils/product";
 export default function FavoritesStrip({ wishlist }) {
   if (!wishlist || wishlist.length === 0) return null;
 
+  const handleClick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const isSingle = wishlist.length === 1;
+
   return (
     <section className="rc" aria-label="Favoritos">
       <div className="rc-head">
         <h3 className="rc-title">Tus favoritos</h3>
       </div>
-      <div className="rc-row">
+
+      {/* 👇 rc-single cuando hay 1 solo favorito */}
+      <div className={`rc-row ${isSingle ? "rc-single" : ""}`}>
         {wishlist.map((p) => (
-          <Link key={p._id} to={`/producto/${p._id}`} className="rc-item">
+          <Link key={p._id} to={`/producto/${p._id}`} className="rc-item" onClick={handleClick}>
             <div className="rc-thumb">
               <img
                 src={p.imagen || FALLBACK_IMG}
