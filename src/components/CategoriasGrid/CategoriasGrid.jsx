@@ -3,21 +3,21 @@ import { Link } from "react-router-dom";
 import "../../components/CategoriasGrid/CategoriasGrid.css";
 import skincareImg from "../../../assets/Skincaree.PNG";
 import unasImg from "../../../assets/Unas.PNG";
-import pestañasImg from "../../../assets/Pestañas.png";
-import peluqueriaImg from "../../../assets/Peluquería.png";
-import marroquineriaImg from "../../../assets/Marroquineria.png";
-import maquillajeImg from "../../../assets/Maquillajes.png";
-import bijouteriaImg from "../../../assets/Bijouterie.png";
-import lenceriaImg from "../../../assets/Lenceria.png";
-import accesoriosImg from "../../../assets/Accesorios.png"; 
-import conjuntosImg from "../../../assets/Conjuntos.png"
-import topsImg from "../../../assets/TOPS.png"
-import vedetinasImg from "../../../assets/Vedetinas.png"
-import colalesImg from "../../../assets/Colales.png"
-import slipImg from "../../../assets/Slips.png"
-import boxerImg from "../../../assets/Boxers.png"
-import mediasImg from "../../../assets/Medias.png"
-import niñaImg from "../../../assets/Niña.png"
+import pestañasImg from "../../../assets/Pestanas.PNG";
+import peluqueriaImg from "../../../assets/Peluquería.PNG";
+import marroquineriaImg from "../../../assets/Marroquineria.PNG";
+import maquillajeImg from "../../../assets/Maquillajes.PNG";
+import bijouteriaImg from "../../../assets/Bijouterie.PNG";
+import lenceriaImg from "../../../assets/Lenceria.PNG";
+import accesoriosImg from "../../../assets/Accesorios.PNG"; 
+import conjuntosImg from "../../../assets/Conjuntos.PNG"
+import topsImg from "../../../assets/TOPS.PNG"
+import vedetinasImg from "../../../assets/Vedetinas.PNG"
+import colalesImg from "../../../assets/Colales.PNG"
+import slipImg from "../../../assets/Slips.PNG"
+import boxerImg from "../../../assets/Boxers.PNG"
+import mediasImg from "../../../assets/Medias.PNG"
+import niñaImg from "../../../assets/Niña.PNG"
 
 
 
