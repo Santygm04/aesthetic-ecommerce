@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import "../../components/CategoriasGrid/CategoriasGrid.css";
 import skincareImg from "../../../assets/Skincaree.PNG";
-import uñasImg from "../../../assets/Uñas.png";
+import unasImg from "../../../assets/Uñas.png";
 import pestañasImg from "../../../assets/Pestañas.png";
 import peluqueriaImg from "../../../assets/Peluquería.png";
 import marroquineriaImg from "../../../assets/Marroquineria.png";
@@ -31,7 +31,7 @@ const FEATURED = [
 
 const CATEGORIES = [
   { id: "skincare",   label: "SKIN CARE",    to: "/category/skincare",      img: skincareImg,     tone: "t-pink-soft"  },
-  { id: "unas",       label: "UÑAS",         to: "/category/uñas",          img: uñasImg,         tone: "t-nude"       },
+  { id: "unas",       label: "UÑAS",         to: "/category/uñas",          img: unasImg,         tone: "t-nude"       },
   { id: "pestañas",   label: "PESTAÑAS",     to: "/category/pestañas",      img: pestañasImg,     tone: "t-gray"       },
   { id: "peluqueria", label: "PELUQUERÍA",   to: "/category/peluquería",    img: peluqueriaImg,   tone: "t-violet-soft"},
   { id: "bolsos",     label: "MARROQUINERÍA",to: "/category/marroquineria", img: marroquineriaImg,tone: "t-rose"       },
