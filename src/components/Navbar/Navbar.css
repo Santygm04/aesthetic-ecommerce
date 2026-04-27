@@ -593,6 +593,7 @@ body.nav-open{ overflow:hidden; }
   position: fixed;
   left: 12px;
   right: 12px;
+  margin-bottom: -15px;
   bottom: calc(var(--nav-tabbar-mb) + env(safe-area-inset-bottom));
   transform: translateZ(0);
   will-change: transform;
