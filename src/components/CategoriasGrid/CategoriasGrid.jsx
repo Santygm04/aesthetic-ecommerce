@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import "../../components/CategoriasGrid/CategoriasGrid.css";
 import skincareImg from "../../../assets/Skincaree.PNG";
-import unasImg from "../../../assets/Unas.png";
+import unasImg from "../../../assets/Unas.PNG";
 import pestañasImg from "../../../assets/Pestañas.png";
 import peluqueriaImg from "../../../assets/Peluquería.png";
 import marroquineriaImg from "../../../assets/Marroquineria.png";
