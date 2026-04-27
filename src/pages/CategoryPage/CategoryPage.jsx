@@ -17,7 +17,7 @@ import skincareImg from "../../../assets/skincare.png";
 import bodycareImg from "../../../assets/bodycare.avif";
 import maquillajeImg from "../../../assets/maquillaje.avif";
 import unasImg from "../../../assets/uñas.avif";
-import pestanasImg from "../../../assets/pestañas.avif";
+import pestañasImg from "../../../assets/pestañas.avif";
 import peluqueriaImg from "../../../assets/peluqueria.avif";
 import bijouterieImg from "../../../assets/bijouteria.avif";
 import lenceriaImg from "../../../assets/lenceria.avif";
@@ -46,6 +46,8 @@ const categoryNames = {
   medias: "Medias",
 
   "nuevos-ingresos": "Nuevos ingresos",
+  "mas-vendidos": "Más Vendidos",
+  accesorios: "Accesorios",
 };
 
 // Imagen para cada categoría/subcategoría
@@ -54,7 +56,7 @@ const categoryImages = {
   bodycare: bodycareImg,
   maquillaje: maquillajeImg,
   uñas: unasImg,
-  pestañas: pestanasImg,
+  pestañas: pestañasImg,
   peluquería: peluqueriaImg,
   bijouteria: bijouterieImg,
   marroquineria: carterasImg,
@@ -70,6 +72,7 @@ const categoryImages = {
   niña: lenceriaImg,
   medias: lenceriaImg,
 
+  accesorios: ingresosImg,
   "nuevos-ingresos": ingresosImg,
   default: ingresosImg,
 };
@@ -217,6 +220,8 @@ export default function CategoryPage() {
   // Normalizo y decodifico params (maneja ñ/acentos)
   const cat = decodeURIComponent(params.categoria || "").toLowerCase();
   const subcat = decodeURIComponent(params.subcategoria || "").toLowerCase();
+  const isMasVendidos = cat === "mas-vendidos";
+  const [sort, setSort] = useState(isMasVendidos ? "ventas-desc" : "fecha-desc");
 
   // Estado
   const [productosRaw, setProductosRaw] = useState([]);
@@ -226,7 +231,6 @@ export default function CategoryPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const limit = 12;
-  const [sort, setSort] = useState("fecha-desc"); // "fecha-desc" | "precio-asc" | "precio-desc" | "nombre-asc"
 
   // Al cambiar cat/subcat, vuelvo a la primera página
   useEffect(() => {
@@ -242,7 +246,11 @@ export default function CategoryPage() {
         setLoading(true);
 
         const params = { page, limit, sort };
-        if (cat && subcat) {
+        if (cat === "nuevos-ingresos") {
+          params.tag = "nuevos-ingresos";        // filtra por tag en el back
+        } else if (cat === "mas-vendidos") {
+          params.tag = "mas-vendidos";           // filtra destacado:true en el back
+        } else if (cat && subcat) {
           params.categoria = cat;
           params.subcategoria = subcat;
         } else if (cat) {

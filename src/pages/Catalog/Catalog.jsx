@@ -4,7 +4,7 @@ import { normalizeProduct } from "../../utils/product";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import FiltersBar from "../../pages/Catalog/FilterBar";
 import Pagination from "../../pages/Catalog/Pagination";
-import "../../pages/Catalog/Catalog.css";
+import "./Catalog.css";
 
 const DEFAULT_LIMIT = 24;
 
@@ -96,6 +96,10 @@ export default function CatalogGrid({
 
   return (
     <section className="catalog">
+    <div className="catalog-header">
+      <h1 className="catalog-title">Todos los productos</h1>
+    </div>
+
       <FiltersBar
         loading={loading}
         search={search}

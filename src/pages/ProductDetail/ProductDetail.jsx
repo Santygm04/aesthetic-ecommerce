@@ -1,4 +1,5 @@
 // src/pages/ProductDetail/ProductDetail.jsx
+import { Helmet } from "react-helmet-async"; 
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../../utils/api";
@@ -9,7 +10,9 @@ import { useCart } from "../../components/Carrito/CartContext";
 import Gallery from "../../components/Product/Gallery";
 import RelatedCarousel from "../../components/Product/RelatedCarousel";
 import FavoritesStrip from "../../components/Product/FavoritesStrip";
+import BuyBox from "../../components/Product/BuyBox";  // ← CAMBIO
 import "../../pages/ProductDetail/ProductDetail.css";
+
 
 const isPromoActive = (promo) => {
   if (!promo || !promo.active) return false;
@@ -223,35 +226,53 @@ export default function ProductDetail() {
     });
   }, [maxQty]);
 
+  // ← CAMBIO #8: calcular distribución de tonos para pasar al carrito
+  const cantTonos = Number(raw?.cantidadTonos) || 0;
+  const tonosDisp = Array.isArray(raw?.tonosDisponibles) && raw.tonosDisponibles.length
+    ? raw.tonosDisponibles
+    : cantTonos ? Array.from({ length: cantTonos }, (_, i) => `Tono ${i + 1}`) : [];
+  const porTono = cantTonos > 0 ? Math.floor(qty / cantTonos) : 0;
+  const extra   = cantTonos > 0 ? qty % cantTonos : 0;
+  const distribucionTonos = cantTonos > 0
+    ? tonosDisp.map((t, i) => ({ tono: t, cantidad: porTono + (i < extra ? 1 : 0) }))
+    : null;
+
   const handleAddToCart = () => {
     if (agotado || !p) return;
     const img = p.imagenes?.[0] || p.imagen;
 
     addToCart({
-      ...(p.raw || {}),
-      _id: p.id,
-      nombre: p.nombre,
-      imagen: img,
-      precio: priceToShow,
-      stock: Number(p?.stock || 0), // 👈 pasa stock del producto
-      variant: chosenVariant
-        ? {
-            vid: chosenVariant.vid,
-            size: chosenVariant.size,
-            color: chosenVariant.color,
-            stock: Number(chosenVariant.stock || 0), // 👈 pasa stock de la variante
-          }
-        : undefined,
-      cantidad: qty,
+    ...(p.raw || {}),
+    _id:             p.id,
+    nombre:          p.nombre,
+    imagen:          img,
+    precio:          Number(raw?.precio          ?? p?.precio ?? 0),
+    precioUnitario:  Number(raw?.precio          ?? p?.precio ?? 0),
+    precioEspecial:  raw?.precioEspecial  != null ? Number(raw.precioEspecial)  : null,
+    precioMayorista: raw?.precioMayorista != null ? Number(raw.precioMayorista) : null,
+    stock:           Number(p?.stock || 0),
+    variant: chosenVariant
+    ? {
+        vid:   chosenVariant.vid,
+        size:  chosenVariant.size,
+        color: chosenVariant.color,
+        stock: Number(chosenVariant.stock || 0),
+      }
+    : undefined,
+  cantidad: qty,
+   // ← CAMBIO #8: distribución de tonos y unidades por caja
+  unidadesPorCaja:    raw?.unidadesPorCaja ?? null,
+  distribucionTonos:  distribucionTonos,
     });
   };
 
   const toggleWish = () => {
     wishlist.toggle({
-      _id: p.id,
+      _id:    p.id,
       nombre: p.nombre,
       imagen: p.imagenes?.[0],
       precio: priceToShow,
+      stock:  Number(p?.stock || raw?.stock || 1), // ← CAMBIO: pasar stock real
     });
     setWish((v) => !v);
   };
@@ -280,6 +301,97 @@ export default function ProductDetail() {
 
   return (
     <>
+
+    {/* ── SEO DINÁMICO POR PRODUCTO ← CAMBIO SEO ── */}
+      {p && (
+        <Helmet>
+          {/* Título */}
+          <title>{p.nombre} | AESTHETIC</title>
+
+          {/* Meta descripción */}
+          <meta
+            name="description"
+            content={
+              p.descripcion
+                ? p.descripcion.slice(0, 155)
+                : `Comprá ${p.nombre} en AESTHETIC. Envíos a todo el país.`
+            }
+          />
+
+          {/* Canonical */}
+          <link
+            rel="canonical"
+            href={`https://aestheticmakeup.com.ar/producto/${p.id}`}
+          />
+
+          {/* Open Graph — para WhatsApp, Facebook, Instagram */}
+          <meta property="og:type"        content="product" />
+          <meta property="og:title"       content={`${p.nombre} | AESTHETIC`} />
+          <meta
+            property="og:description"
+            content={
+              p.descripcion
+                ? p.descripcion.slice(0, 155)
+                : `Comprá ${p.nombre} en AESTHETIC`
+            }
+          />
+          <meta
+            property="og:image"
+            content={p.imagenes?.[0] || p.imagen || "https://aestheticmakeup.com.ar/logo.png"}
+          />
+          <meta
+            property="og:url"
+            content={`https://aestheticmakeup.com.ar/producto/${p.id}`}
+          />
+          <meta property="og:site_name"   content="AESTHETIC" />
+          <meta property="og:locale"      content="es_AR" />
+
+          {/* Twitter Card */}
+          <meta name="twitter:card"        content="summary_large_image" />
+          <meta name="twitter:title"       content={`${p.nombre} | AESTHETIC`} />
+          <meta
+            name="twitter:description"
+            content={
+              p.descripcion
+                ? p.descripcion.slice(0, 155)
+                : `Comprá ${p.nombre} en AESTHETIC`
+            }
+          />
+          <meta
+            name="twitter:image"
+            content={p.imagenes?.[0] || p.imagen || "https://aestheticmakeup.com.ar/logo.png"}
+          />
+
+          {/* Schema.org Product — para Google Shopping y rich results */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: p.nombre,
+              description: p.descripcion || `Comprá ${p.nombre} en AESTHETIC`,
+              image: p.imagenes?.[0] || p.imagen || "",
+              url: `https://aestheticmakeup.com.ar/producto/${p.id}`,
+              brand: {
+                "@type": "Brand",
+                name: "AESTHETIC",
+              },
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "ARS",
+                price: Number(raw?.precio ?? p.precio ?? 0),
+                availability: agotado
+                  ? "https://schema.org/OutOfStock"
+                  : "https://schema.org/InStock",
+                seller: {
+                  "@type": "Organization",
+                  name: "AESTHETIC",
+                },
+              },
+            })}
+          </script>
+        </Helmet>
+      )}
+
       <section className="pd">
         <nav className="pd-breadcrumb">
           <Link to="/">Inicio</Link>
@@ -303,155 +415,41 @@ export default function ProductDetail() {
             onToggleWish={toggleWish}
           />
 
-          {/* === BUY BOX + selectores de variantes === */}
-          <div className="pd-buy">
-            <h1 className="pd-title">{p.nombre}</h1>
-
-            <div className="pd-chips">
-              {p.categoria && <span className="chip outline">{p.categoria}</span>}
-              {p.subcategoria && <span className="chip outline">{p.subcategoria}</span>}
-            </div>
-
-            <div className="pd-price">
-              <span className="now">
-                ${Number(priceToShow).toLocaleString("es-AR")}
-              </span>
-              {originalForOff && originalForOff > priceToShow && (
-                <span className="old">
-                  ${Number(originalForOff).toLocaleString("es-AR")}
-                </span>
-              )}
-              {off ? <span className="pd-off">-{off}%</span> : null}
-            </div>
-
-            {/* Selectores de variantes (solo si hay) */}
-            {variants.length > 0 && (
-              <div className="pd-variants">
-                {/* Talles */}
-                {sizes.length > 0 && (
-                  <div className="pd-var-row">
-                    <span className="pd-var-label">Talle</span>
-                    <div className="swatches">
-                      {sizes.map((s) => {
-                        const out = isSizeDisabled(s); // true = ese talle no tiene stock
-                        return (
-                          <button
-                            key={s}
-                            // 👇 sin disabled: siempre clickeable
-                            className={`swatch ${selSize === s ? "active" : ""} ${out ? "" : ""}`}
-                            title={out ? "Sin stock" : ""}
-                            onClick={() => {
-                              setSelSize(s);
-                              // elegir color consistente con el talle
-                              const colorsOfSize = variants
-                                .filter((v) => v.size === s && v.color)
-                                .map((v) => v.color);
-
-                              // preferir color con stock para ese talle
-                              const colorWithStockForSize = variants.find(
-                                (v) => v.size === s && Number(v.stock || 0) > 0 && v.color
-                              )?.color;
-
-                              if (!colorsOfSize.includes(selColor)) {
-                                setSelColor(colorWithStockForSize || colorsOfSize[0] || "");
-                              }
-                            }}
-                            type="button"
-                          >
-                            {s}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Colores */}
-                {colorsForSize.length > 0 && (
-                  <div className="pd-var-row">
-                    <span className="pd-var-label">Color</span>
-                    <div className="swatches">
-                      {colorsForSize.map((c) => {
-                        const out = isColorDisabled(c); // true = ese color (con el talle actual) no tiene stock
-                        return (
-                          <button
-                            key={c}
-                            // 👇 sin disabled: siempre clickeable
-                            className={`swatch ${selColor === c ? "active" : ""} ${out ? "" : ""}`}
-                            title={out ? "Sin stock" : c}
-                            onClick={() => setSelColor(c)}
-                            type="button"
-                          >
-                            {c}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Stock + cantidad */}
-            <div className="pd-stock-row">
-              <span className={`stock ${agotado ? "danger" : "ok"}`}>
-                {agotado ? "Sin stock" : `Stock: ${stockToShow}`}
-                {chosenVariant ? ` · ${chosenVariant.size} / ${chosenVariant.color}` : ""}
-              </span>
-
-              <div className="qty">
-                <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  type="button"
-                  disabled={qty <= 1}
-                >
-                  -
-                </button>
-                <input
-                  value={qty}
-                  min={1}
-                  max={maxQty}
-                  onChange={(e) => {
-                    const n = Math.max(1, Math.min(Number(e.target.value) || 1, maxQty));
-                    setQty(n);
-                  }}
-                />
-                <button
-                  onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
-                  type="button"
-                  disabled={qty >= maxQty || agotado}
-                  title={`Máximo ${maxQty}`}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* CTA */}
-            <button
-              className="pd-cta"
-              onClick={handleAddToCart}
-              disabled={agotado}
-              aria-disabled={agotado}
-              type="button"
-            >
-              {agotado ? "Sin stock" : "Agregar al carrito"}
-            </button>
-
-            {/* Beneficios */}
-            <ul className="pd-benefits" style={{ marginTop: 12 }}>
-              <li>
-                <span>🚚</span>
-                <span>Envío rápido</span>
-                <small>a todo el país</small>
-              </li>
-              <li>
-                <span>🛡️</span>
-                <span>Compra protegida</span>
-                <small>pagos seguros</small>
-              </li>
-            </ul>
-          </div>
+          {/* === BUY BOX con sistema 3 precios ← CAMBIO #7 === */}
+          <BuyBox
+           producto={{
+              nombre:          p.nombre,
+              categoria:       p.categoria,
+              subcategoria:    p.subcategoria,
+              marca:           raw?.marca ?? null,
+              precio:          Number(raw?.precio ?? p?.precio ?? 0),
+              precioEspecial:  raw?.precioEspecial  != null ? Number(raw.precioEspecial)  : null,
+              precioMayorista: raw?.precioMayorista != null ? Number(raw.precioMayorista) : null,
+              tienda:          raw?.tienda   ?? null,
+              garantiaDias:    raw?.garantiaDias ?? null,
+              unidadesPorCaja: raw?.unidadesPorCaja ?? null,
+              cantidadTonos:   raw?.cantidadTonos   ?? null,
+              modoTonos:       raw?.modoTonos || "automatico",
+              tonosDisponibles: Array.isArray(raw?.tonosDisponibles) ? raw.tonosDisponibles : [],
+            }}
+            stockNum={stockToShow}
+            agotado={agotado}
+            qty={qty}
+            setQty={setQty}
+            onAddToCart={handleAddToCart}
+            // ── Variantes: BuyBox las renderiza si las recibe ← CAMBIO
+            variants={variants}
+            sizes={sizes}
+            selSize={selSize}
+            setSelSize={setSelSize}
+            colorsForSize={colorsForSize}
+            selColor={selColor}
+            setSelColor={setSelColor}
+            isSizeDisabled={isSizeDisabled}
+            isColorDisabled={isColorDisabled}
+            chosenVariant={chosenVariant}
+            maxQty={maxQty}
+          />
         </div>
 
         <section className="pd-long">

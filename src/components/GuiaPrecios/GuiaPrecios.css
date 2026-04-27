@@ -1,0 +1,217 @@
+/* src/components/GuiaPrecios/GuiaPrecios.css */
+
+.guia-precios{
+  width: 100%;
+  max-width: 1280px;
+  margin: clamp(2rem, 5vw, 3.5rem) auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Tarjeta fucsia estilo "cartel" */
+.gp-card{
+  position: relative;
+  background: linear-gradient(135deg, #ff2ea6 0%, #e11a8a 100%);
+  border-radius: clamp(16px, 2.4vw, 28px);
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.2rem, 4vw, 3rem) clamp(2rem, 5vw, 3.5rem);
+  color: #fff;
+  box-shadow: 0 20px 48px rgba(255, 46, 166, .25);
+  overflow: hidden;
+
+  /* Borde doble interno (estilo la imagen de referencia) */
+  outline: 2px solid rgba(255,255,255,.55);
+  outline-offset: -14px;
+}
+
+/* Patrón decorativo suave */
+.gp-card::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(255,255,255,.2) 0 3px, transparent 4px),
+    radial-gradient(circle at 92% 85%, rgba(255,255,255,.15) 0 4px, transparent 5px);
+  pointer-events: none;
+  opacity: .55;
+}
+
+/* ============ HEAD ============ */
+.gp-head{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.6rem, 1.8vw, 1.2rem);
+  margin-bottom: .4rem;
+}
+
+.gp-head h2{
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.8rem, 5.5vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0,0,0,.15);
+}
+
+.gp-diamond{
+  width: clamp(10px, 1.6vw, 16px);
+  height: clamp(10px, 1.6vw, 16px);
+  background: rgba(255,255,255,.55);
+  transform: rotate(45deg);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.gp-divider{
+  height: 2px;
+  background: rgba(255,255,255,.55);
+  border-radius: 2px;
+  margin: clamp(.8rem, 2vw, 1.4rem) auto clamp(1.4rem, 3vw, 2.2rem);
+  max-width: 90%;
+}
+
+/* ============ BODY (tiers + cart) ============ */
+.gp-body{
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+@media (max-width: 720px){
+  .gp-body{ grid-template-columns: 1fr; }
+  .gp-cart{ display: none; }
+}
+
+.gp-tiers{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(.8rem, 2vw, 1.4rem);
+}
+
+.gp-tier{
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: clamp(.8rem, 2vw, 1.4rem);
+}
+
+/* Etiqueta de precio con muesca lateral */
+.gp-tag{
+  display: inline-block;
+  width: clamp(68px, 10vw, 110px);
+  height: clamp(34px, 5vw, 54px);
+  border-radius: 6px;
+  background: #fff;
+  clip-path: polygon(
+    8% 0, 100% 0, 100% 100%, 8% 100%,
+    0 72%, 4% 50%, 0 28%
+  );
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  position: relative;
+}
+
+/* Línea horizontal decorativa dentro de la etiqueta (como la imagen) */
+.gp-tag::before,
+.gp-tag::after{
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 8%;
+  height: 2px;
+  background: rgba(0,0,0,.18);
+  border-radius: 2px;
+}
+.gp-tag::before{ top: 28%; }
+.gp-tag::after { bottom: 28%; }
+
+.tag-minorista{ background: #ffffff; }
+.tag-minorista::before,
+.tag-minorista::after{ background: #d62828; opacity: .85; }
+
+.tag-especial{ background: #ff9a3c; }
+.tag-especial::before,
+.tag-especial::after{ background: rgba(255,255,255,.5); }
+
+.tag-mayorista{ background: #84e070; }
+.tag-mayorista::before,
+.tag-mayorista::after{ background: rgba(255,255,255,.5); }
+
+.gp-tier-body h3{
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.1rem, 2.6vw, 1.9rem);
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.gp-tier-body p{
+  margin: .25rem 0 0;
+  color: #fff;
+  opacity: .95;
+  font-size: clamp(.88rem, 1.6vw, 1.12rem);
+  line-height: 1.35;
+}
+
+/* ============ CART ICON ============ */
+.gp-cart{
+  display: grid;
+  place-items: center;
+}
+.gp-cart svg{
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.2));
+}
+
+/* ============ TAGLINE AMARILLA ============ */
+.gp-tagline-wrap{
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.gp-tagline{
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(.6rem, 1.8vw, 1rem);
+  background: #ffd84a;
+  color: #9b1248;
+  padding: clamp(.7rem, 1.8vw, 1rem) clamp(1.4rem, 4vw, 2.6rem);
+  border-radius: 999px;
+  font-size: clamp(1rem, 2.6vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(0,0,0,.18);
+  line-height: 1.2;
+}
+
+.gp-tagline strong{
+  font-weight: 900;
+  text-wrap: balance;
+}
+
+.gp-dot{
+  width: clamp(6px, 1.2vw, 10px);
+  height: clamp(6px, 1.2vw, 10px);
+  background: #9b1248;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px){
+  .gp-card{ outline-offset: -10px; }
+  .gp-tag{ width: 56px; height: 28px; }
+  .gp-tagline{ font-size: .95rem; padding: .6rem 1.1rem; }
+}

@@ -1,62 +1,40 @@
 // src/pages/Categories/Categories.jsx
 import { Link } from "react-router-dom";
-import "../../pages/Categories/Categories.css";
-import lenceriaIcon from "../../../assets/iconos/lenceria.png";
-import section from "../../../assets/iconos/section.png";
-import novedades from "../../../assets/iconos/novedades.png";
+import "./Categories.css";
 
 // NEW: badges
 import useCatalogStats from "../../hooks/useCatalogStats";
 import { hasUpdates, markSeen } from "../../utils/seen";
 
-const categorias = [
-  // 👉 Secciones primero
-  {
-    titulo: "Secciones",
-    icono: section,
-    rutas: [
-      { nombre: "Skincare", ruta: "/category/skincare" },
-      { nombre: "Maquillaje", ruta: "/category/maquillaje" },
-      { nombre: "Uñas", ruta: "/category/uñas" },
-      { nombre: "Pestañas", ruta: "/category/pestañas" },
-      { nombre: "Bijouteria", ruta: "/category/bijouteria" },
-      { nombre: "Bodycare", ruta: "/category/bodycare" },
-      { nombre: "Marroquineria", ruta: "/category/marroquineria" },
-      { nombre: "Peluqueria", ruta: "/category/peluquería" }
-    ]
-  },
-  // 👉 Lencería después
-  {
-    titulo: "Lencería / Ropa interior",
-    icono: lenceriaIcon,
-    rutas: [
-      { nombre: "Ver todo", ruta: "/category/lenceria" },
-      { nombre: "Conjuntos", ruta: "/category/lenceria/conjuntos" },
-      { nombre: "Tops y corpiños", ruta: "/category/lenceria/tops-y-corpiños" },
-      { nombre: "Vedetinas", ruta: "/category/lenceria/vedetinas" },
-      { nombre: "Colales", ruta: "/category/lenceria/colales" },
-      { nombre: "Boxer", ruta: "/category/lenceria/boxer" },
-      { nombre: "Slip", ruta: "/category/lenceria/slip" },
-      { nombre: "Niña", ruta: "/category/lenceria/niña" },
-      { nombre: "Medias", ruta: "/category/lenceria/medias" }
-    ]
-  },
-  // 👉 Nuevos ingresos al final
-  {
-    titulo: "Nuevos ingresos",
-    icono: novedades,
-    rutas: [{ nombre: "Nuevos ingresos", ruta: "/category/nuevos-ingresos" }]
-  }
+/**
+ * Categorías como grilla de tiles con imagen de fondo.
+ * Destacadas arriba (4 tiles grandes), resto en grilla regular.
+ * TODO: reemplazá el `img` de cada item por la ruta real de la imagen.
+ */
+const DESTACADAS = [
+  { key: "nuevos",         nombre: "NUEVOS INGRESOS",   ruta: "/category/nuevos-ingresos", img: "" },
+  { key: "todos",          nombre: "TODOS LOS PRODUCTOS", ruta: "/category/",               img: "" },
+  { key: "ofertas",        nombre: "OFERTAS / PROMOCIONES", ruta: "/promos",               img: "" },
+  { key: "mas-vendidos",   nombre: "MÁS VENDIDOS",      ruta: "/category/mas-vendidos",    img: "" },
 ];
 
-const slugFromRuta = (ruta) => {
-  try {
-    const parts = ruta.split("/").filter(Boolean);
-    const idx = parts.findIndex((p) => p === "category");
-    if (idx >= 0 && parts[idx + 1]) {
-      return decodeURIComponent(parts[idx + 1]).toLowerCase();
-    }
-  } catch {}
+const CATEGORIAS = [
+  { slug: "skincare",       nombre: "SKINCARE",       img: "" },
+  { slug: "uñas",           nombre: "UÑAS",           img: "" },
+  { slug: "pestañas",       nombre: "PESTAÑAS",       img: "" },
+  { slug: "peluquería",     nombre: "PELUQUERÍA",     img: "" },
+  { slug: "maquillaje",     nombre: "MAQUILLAJE",     img: "" },
+  { slug: "bodycare",       nombre: "BODYCARE",       img: "" },
+  { slug: "bijouteria",     nombre: "BIJOUTERÍA",     img: "" },
+  { slug: "marroquineria",  nombre: "MARROQUINERÍA",  img: "" },
+  { slug: "accesorios",     nombre: "ACCESORIOS",     img: "" },
+  { slug: "lenceria",       nombre: "LENCERÍA",       img: "" },
+];
+
+const slugFromRuta = (ruta = "") => {
+  const parts = ruta.split("/").filter(Boolean);
+  const idx = parts.findIndex((p) => p === "category");
+  if (idx >= 0 && parts[idx + 1]) return decodeURIComponent(parts[idx + 1]).toLowerCase();
   return "";
 };
 
@@ -67,49 +45,64 @@ export default function Categories() {
   const nuevos = stats?.nuevos || { count: 0, latest: null };
 
   return (
-    <section className="category-section">
-      <h2 className="category-title">Categorías</h2>
-      <p className="category-subtitle">
-        Explorá nuestras secciones: lencería, skincare, bijouterie, y más.
-      </p>
+    <section className="cats-page">
+      <header className="cats-page__head">
+        <h1 className="cats-page__title">Categorías</h1>
+        <p className="cats-page__subtitle">
+          Explorá nuestras secciones. Hacé click en cualquier tile para ver los productos.
+        </p>
+      </header>
 
-      <div className="categories-grid">
-        {categorias.map((cat) => (
-          <div className="category-card" key={cat.titulo}>
-            <img className="category-card-img" src={cat.icono} alt={cat.titulo} />
-            <h3>
-              {cat.titulo}
-              {cat.titulo.toLowerCase().includes("nuevos ingresos") && (
-                <>
-                  {nuevos?.count > 0 && <span className="badge-pill hot">{nuevos.count}</span>}
-                  {hasUpdates("nuevos", nuevos?.latest) && <span className="badge-dot" />}
-                </>
-              )}
-            </h3>
+      {/* ===== Destacadas (4 tiles grandes) ===== */}
+      <div className="cats-page__grid cats-page__grid--hero">
+        {DESTACADAS.map((c) => {
+          const isNuevos = c.key === "nuevos";
+          const latest = isNuevos ? nuevos?.latest : null;
+          const showDot = isNuevos && hasUpdates("nuevos", latest);
+          const count = isNuevos ? (nuevos?.count || 0) : 0;
 
-            <ul>
-              {cat.rutas.map((sub) => {
-                const slug = slugFromRuta(sub.ruta);
-                const isNuevos = slug === "nuevos-ingresos";
-                const key = isNuevos ? "nuevos" : `cat:${slug}`;
-                const latest = isNuevos ? nuevos?.latest : catStats?.[slug]?.latestCreated;
-                const promoCount = isNuevos ? 0 : (promos?.[slug]?.count || 0);
+          return (
+            <Link
+              key={c.key}
+              to={c.ruta}
+              className={`cats-tile cats-tile--hero ${c.img ? "" : "no-img"}`}
+              onClick={() => isNuevos && markSeen("nuevos")}
+              style={c.img ? { backgroundImage: `url(${c.img})` } : undefined}
+            >
+              <span className="cats-tile__overlay" />
+              <span className="cats-tile__label">
+                {c.nombre}
+                {count > 0 && <span className="cats-tile__count">{count}</span>}
+              </span>
+              {showDot && <span className="cats-tile__dot" aria-hidden="true" />}
+            </Link>
+          );
+        })}
+      </div>
 
-                return (
-                  <li key={sub.nombre}>
-                    <Link to={sub.ruta} onClick={() => markSeen(key)}>
-                      {sub.nombre}
-                      {!isNuevos && promoCount > 0 && (
-                        <span className="badge-pill deal">{promoCount}</span>
-                      )}
-                      {hasUpdates(key, latest) && <span className="badge-dot" />}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+      {/* ===== Resto de categorías ===== */}
+      <div className="cats-page__grid cats-page__grid--regular">
+        {CATEGORIAS.map((c) => {
+          const ruta = `/category/${c.slug}`;
+          const key = `cat:${c.slug}`;
+          const latest = catStats?.[c.slug]?.latestCreated;
+          const promoCount = promos?.[c.slug]?.count || 0;
+
+          return (
+            <Link
+              key={c.slug}
+              to={ruta}
+              className={`cats-tile ${c.img ? "" : "no-img"}`}
+              onClick={() => markSeen(key)}
+              style={c.img ? { backgroundImage: `url(${c.img})` } : undefined}
+            >
+              <span className="cats-tile__overlay" />
+              <span className="cats-tile__label">{c.nombre}</span>
+              {promoCount > 0 && <span className="cats-tile__pill">{promoCount}</span>}
+              {hasUpdates(key, latest) && <span className="cats-tile__dot" aria-hidden="true" />}
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

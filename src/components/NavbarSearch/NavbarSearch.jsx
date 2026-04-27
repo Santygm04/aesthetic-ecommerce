@@ -80,22 +80,26 @@ export default function NavbarSearch({ inputRef }) {
   }, []);
 
   const goSearch = (term) => {
-    const t = (term ?? q).trim();
-    if (!t) return;
-    setSug([]); setFocused(false); setOpenCat(null);
-    nav(`/buscar?q=${encodeURIComponent(t)}`);
-  };
+  const t = (term ?? q).trim();
+  if (!t) return;
+  setSug([]); setFocused(false); setOpenCat(null);
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  nav(`/buscar?q=${encodeURIComponent(t)}`);
+};
 
   const goCategory = (slug) => {
-    setSug([]); setFocused(false); setOpenCat(null);
-    nav(`/category/${encodeURIComponent(slug)}`);
-  };
+  setSug([]); setFocused(false); setOpenCat(null);
+  // ← cierra el drawer del navbar si está abierto
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  nav(`/category/${encodeURIComponent(slug)}`);
+};
 
   const goSub = (cat, sub) => {
-    setSug([]); setFocused(false); setOpenCat(null);
-    if (sub) nav(`/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}`);
-    else nav(`/category/${encodeURIComponent(cat)}`);
-  };
+  setSug([]); setFocused(false); setOpenCat(null);
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  if (sub) nav(`/category/${encodeURIComponent(cat)}/${encodeURIComponent(sub)}`);
+  else nav(`/category/${encodeURIComponent(cat)}`);
+};
 
   const onCatClick = (slug) => {
     if (SUBCATS[slug]) setOpenCat((curr) => (curr === slug ? null : slug));

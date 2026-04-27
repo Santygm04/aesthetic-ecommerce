@@ -1,12 +1,36 @@
 // src/components/Product/FavoritesStrip.jsx
-import { Link } from "react-router-dom";
-import { FALLBACK_IMG } from "../../utils/product";
+import { useEffect, useState } from "react";
+import api from "../../utils/api";  // ← CAMBIO: fetch stock real
+import ProductCard from "../ProductCard/ProductCard";
 
 export default function FavoritesStrip({ wishlist }) {
-  if (!wishlist || wishlist.length === 0) return null;
+  const [productos, setProductos] = useState([]);
 
-  const handleClick = () => window.scrollTo({ top: 0, behavior: "smooth" });
-  const isSingle = wishlist.length === 1;
+  // ← CAMBIO: al montar, busca los datos frescos de cada favorito desde la API
+  useEffect(() => {
+    if (!wishlist || wishlist.length === 0) { setProductos([]); return; }
+
+    let alive = true;
+    (async () => {
+      const results = await Promise.allSettled(
+        wishlist.map(p =>
+          api.get(`/api/productos/${p._id}`, { params: { _t: Date.now() } })
+            .then(r => r.data)
+            .catch(() => p) // fallback al objeto del wishlist si falla
+        )
+      );
+      if (!alive) return;
+      setProductos(
+        results
+          .filter(r => r.status === "fulfilled" && r.value)
+          .map(r => r.value)
+      );
+    })();
+
+    return () => { alive = false; };
+  }, [wishlist]);
+
+  if (!wishlist || wishlist.length === 0) return null;
 
   return (
     <section className="rc" aria-label="Favoritos">
@@ -14,21 +38,11 @@ export default function FavoritesStrip({ wishlist }) {
         <h3 className="rc-title">Tus favoritos</h3>
       </div>
 
-      {/* 👇 rc-single cuando hay 1 solo favorito */}
-      <div className={`rc-row ${isSingle ? "rc-single" : ""}`}>
-        {wishlist.map((p) => (
-          <Link key={p._id} to={`/producto/${p._id}`} className="rc-item" onClick={handleClick}>
-            <div className="rc-thumb">
-              <img
-                src={p.imagen || FALLBACK_IMG}
-                alt={p.nombre}
-                onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
-                loading="lazy"
-              />
-            </div>
-            <div className="rc-name" title={p.nombre}>{p.nombre}</div>
-            <div className="rc-price">${Number(p.precio ?? 0).toLocaleString("es-AR")}</div>
-          </Link>
+      <div className="rc-cards-row">
+        {productos.map((p) => (
+          <div key={p._id} className="rc-card-wrap">
+            <ProductCard producto={p} />
+          </div>
         ))}
       </div>
     </section>

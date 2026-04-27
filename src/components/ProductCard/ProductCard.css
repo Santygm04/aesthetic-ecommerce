@@ -1,283 +1,385 @@
-/************************************************************
- * ProductCard.css – Fucsia + blanco (sin amarillos)
- ************************************************************/
+/* ===========================================================
+   ProductCard — estilo catálogo minimalista
+   Mobile-first: título + precios arriba, imagen grande debajo
+   =========================================================== */
+
 :root {
-  --brand: #ff2ea6;
-  --brand-600: #e11a8a;
-  --brand-50: #fff0f8;
-  --accent: #6a1b9a;
-  --chip-bd: #f3c9e2;
-  --shadow-soft: 0 8px 26px rgba(255, 46, 166, 0.10);
-  --shadow-hover: 0 18px 48px rgba(255, 46, 166, 0.18);
+  --pc-brand:        #ff2ea6;
+  --pc-brand-600:    #e11a8a;
+  --pc-ink:          #1a1a1a;
+  --pc-muted:        #7a7a7a;
+  --pc-muted-2:      #b3b3b3;
+  --pc-line:         #ececec;
+  --pc-bg:           #ffffff;
+  --pc-bg-alt:       #f5f5f5;
+  --pc-shadow-hover: 0 10px 28px rgba(0,0,0,.08);
+  --pc-radius:       6px;
 }
 
-/* ====== CARD BASE ====== */
-.product-card.pro {
+/* ======================================================
+   CARD base — vertical, mobile first
+   ====================================================== */
+.pc-min {
   position: relative;
-  text-align: center;
-  border-radius: 18px;
-  padding: 1rem .9rem .95rem;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(#fff, #fff) padding-box,
-    linear-gradient(135deg, #ffd1ec 0%, #ff9cd6 50%, #ffd1ec 100%) border-box;
-  box-shadow: var(--shadow-soft);
-  transition: transform .22s cubic-bezier(.68,-0.55,.27,1.55), box-shadow .22s, filter .2s;
-  max-width: clamp(220px, 28vw, 260px);
-  width: 100%;
-  margin: 3% auto;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-}
-.product-card.pro:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: var(--shadow-hover);
-  filter: saturate(1.03);
-}
-
-/* ====== IMAGEN ====== */
-.img-link { text-decoration: none; }
-
-.img-container.fancy {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 14px;
+  background: var(--pc-bg);
+  border: 1px solid transparent;        /* sin borde: look catálogo limpio */
+  border-radius: var(--pc-radius);
+  padding: 8px 8px 10px;
   overflow: hidden;
-  position: relative;
-  background: var(--brand-50);
-  margin: .35rem auto .8rem;
-  box-shadow: 0 6px 22px rgba(255,46,166,.10);
-  border: 2px solid transparent;
-  background:
-  linear-gradient(var(--brand-50), var(--brand-50)) padding-box,
-  linear-gradient(135deg, #ffb3d9 0%, #ff2ea6 40%, #ffb3d9 80%, #ffd1ec 100%) border-box;
+  width: 100%;
+  font-family: inherit;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.pc-min:hover {
+  border-color: var(--pc-line);
+  box-shadow: var(--pc-shadow-hover);
 }
 
-.product-card.pro img {
+/* Link overlay clickable */
+.pc-link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Interactivos por encima del overlay */
+.pc-wish,
+.pc-cta,
+.pc-opts,
+.pc-badges,
+.pc-img,
+.pc-head {
+  position: relative;
+  z-index: 2;
+}
+
+/* Badges DENTRO de la imagen */
+.pc-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 3;
+}
+
+.pc-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  line-height: 1.25;
+}
+.pc-badge--new { background: var(--pc-brand); color: #fff; }
+.pc-badge--off { background: var(--pc-ink);   color: #fff; }
+.pc-badge--out { background: #888;             color: #fff; }
+
+/* ============ WISHLIST — top-right ============ */
+/* Wishlist — sobre la imagen */
+.pc-wish {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.8);
+  background: rgba(255,255,255,.9);
+  color: var(--pc-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 3;
+  transition: all .15s ease;
+}
+.pc-wish:hover     { color: var(--pc-brand); border-color: var(--pc-brand); }
+.pc-wish.is-active { background: var(--pc-brand); color: #fff; border-color: var(--pc-brand); }
+
+/* ============ HEADER (título + precios) ARRIBA ============ */
+/* Header debajo de imagen */
+.pc-head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 8px 4px;
+  margin-bottom: 0;
+}
+
+.pc-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pc-brand);
+  line-height: 1.3;
+  margin: 0;
+  cursor: pointer;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.1px;
+}
+.pc-title:hover { color: var(--pc-brand-600); }
+
+.pc-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+.pc-price-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+.pc-lock {
+  color: var(--pc-muted-2);
+  font-size: 9px;
+  flex-shrink: 0;
+}
+.pc-price-from {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--pc-muted);
+}
+.pc-price-from.is-strike {
+  text-decoration: line-through;
+  color: var(--pc-muted-2);
+  font-weight: 500;
+}
+.pc-price-row--transfer { flex-wrap: wrap; gap: 2px 4px; }
+.pc-price-transfer {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--pc-brand);
+  letter-spacing: -0.2px;
+}
+.pc-price-note {
+  font-size: 9px;
+  color: var(--pc-muted);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+/* ============ IMAGEN grande dominante ============ */
+/* Imagen: relativa para contener los badges */
+.pc-img {
+  position: relative;        /* ← necesario para los badges */
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--pc-bg-alt);
+  border-radius: var(--pc-radius) var(--pc-radius) 0 0;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.pc-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
   display: block;
-  transition: transform .28s ease;
+  transition: transform .4s ease;
 }
-.product-card.pro:hover img { transform: scale(1.05); }
+.pc-min:hover .pc-img img { transform: scale(1.04); }
 
-/* Overlay */
-.img-actions {
-  position: absolute;
-  inset: auto .6rem .6rem .6rem;
-  display: flex;
-  gap: .5rem;
-  justify-content: center;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: .22s ease;
-  z-index: 3;
-}
-.product-card.pro:hover .img-actions { opacity: 1; transform: translateY(0); }
-
-.btn-outline {
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--chip-bd);
-  color: var(--brand);
-  font-weight: 700;
-  padding: .45rem .7rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: .9rem;
-}
-.btn-outline:hover { background: #fff; box-shadow: 0 8px 18px rgba(255,46,166,.18); }
-
-/* ====== WISHLIST — esquina inferior derecha de la imagen ====== */
-.wish-btn {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  top: auto !important;
-  left: auto !important;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid var(--chip-bd);
-  background: rgba(255,255,255,.9);
-  color: var(--brand);
-  cursor: pointer;
-  z-index: 4;
-  transition: transform .12s, box-shadow .22s, background .22s, color .22s;
-  backdrop-filter: blur(4px);
-}
-.wish-btn:hover { transform: scale(1.1); box-shadow: 0 8px 18px rgba(255,46,166,.18); }
-.wish-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-.wish-btn:focus-visible { outline: 3px solid #ffd1ec; outline-offset: 2px; }
-
-/* ====== TÍTULO ====== */
-.product-card.pro h3 {
-  font-size: clamp(.98rem, 2.6vw, 1.05rem);
-  color: var(--brand);
-  margin: .45rem 0 .2rem;
-  font-weight: 800;
-  line-height: 1.2;
-  min-height: 2.3em;
-}
-.titulo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ====== CHIPS — 1) 2 columnas siempre ====== */
-.chips {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .35rem;
-  margin: .1rem 0 .7rem;
-  padding: 0 .2rem;
-}
-.chip {
-  background: var(--brand-50);
-  color: var(--brand);
-  border: 1px solid var(--chip-bd);
-  border-radius: 999px;
-  font-size: .68rem;        /* 👈 más chico para que entre en 2 columnas */
-  font-weight: 700;
-  padding: .2rem .4rem;
-  line-height: 1;
-  text-transform: lowercase;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;  /* 👈 si igual no entra, corta con ... */
-}
-/* si hay solo 1 chip, que ocupe las 2 columnas */
-.chips .chip:only-child {
-  grid-column: 1 / -1;
-}
-/* ====== PRECIOS ====== */
-.price-wrap {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: .5rem;
-  margin: .1rem 0 .7rem;
-}
-.price { font-weight: 900; font-size: clamp(1rem, 2.8vw, 1.08rem); color: var(--accent); }
-.price-original { color: #a7a7a7; text-decoration: line-through; font-weight: 600; font-size: .93rem; }
-
-/* ====== CTA ====== */
-.btn-cart.big {
+.pc-img-placeholder {
   width: 100%;
-  background: var(--brand);
-  color: #fff;
-  font-weight: 800;
-  border: none;
-  border-radius: 12px;
-  padding: .75rem 1rem;
-  font-size: .98rem;
-  cursor: pointer;
-  box-shadow: 0 6px 24px rgba(255,46,166,.25);
-  transition: transform .14s, box-shadow .22s, background .23s;
-  position: relative;
-  overflow: hidden;
-  min-height: 44px;
-  margin-top: auto;
-}
-.btn-cart.big:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 30px rgba(255,46,166,.35); background: var(--brand-600); }
-.btn-cart.big[disabled], .btn-cart.big[aria-disabled="true"] { background: #f1f1f1; color: #aaa; cursor: not-allowed; box-shadow: none; }
-.btn-cart.big.added .btn-sparkle { opacity: 1; animation: sparkle .8s ease forwards; }
-.btn-sparkle {
-  position: absolute; inset: 0;
+  height: 100%;
   background:
-    radial-gradient(closest-side, rgba(255,255,255,.95), transparent 70%) 30% 40%/8% 8% no-repeat,
-    radial-gradient(closest-side, rgba(255,255,255,.85), transparent 70%) 70% 60%/10% 10% no-repeat;
-  opacity: 0;
-  pointer-events: none;
-}
-@keyframes sparkle { 0%{transform:scale(.9);opacity:1} 100%{transform:scale(1.4);opacity:0} }
-
-/* ====== BADGES — 2) posición fija, agotado reemplaza a destacado en el JSX ====== */
-.badge-nuevos, .badge-agotado, .badge-off, .badge-star {
-  position: absolute;
-  padding: .26em .85em;
-  font-size: .78em;
-  font-weight: 800;
-  border-radius: 11px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  z-index: 5;
-  top: 10px;
-  bottom: auto !important;
-}
-/* Nuevo → izquierda arriba */
-.badge-nuevos {
-  left: 10px;
-  background: linear-gradient(90deg,#ff6fb5,#ff2ea6);
-  color: #fff;
-}
-/* Off → izquierda segunda fila */
-.badge-off {
-  left: 10px;
-  top: 40px;
-  background: var(--brand);
-  color: #fff;
-  border: 0;
-}
-/* Destacado o Agotado → derecha arriba (nunca juntos gracias al JSX) */
-.badge-star {
-  right: 10px;
-  left: auto;
-  background: var(--brand-50);
-  color: var(--brand);
-  border: 1px solid var(--chip-bd);
-}
-.badge-agotado {
-  right: 10px;
-  left: auto;
-  background: #333;
-  color: #fff;
+    linear-gradient(135deg, #ebebeb 25%, transparent 25%) 0 0/14px 14px,
+    linear-gradient(-135deg, #ebebeb 25%, transparent 25%) 0 0/14px 14px,
+    #f5f5f5;
 }
 
-/* ====== VARIANTES ====== */
+/* ============ VARIANTES ============ */
 .pc-opts {
   display: flex;
-  gap: .4rem;
-  justify-content: center;
-  margin: .2rem 0 .7rem;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 .pc-select {
-  border: 1px solid var(--chip-bd);
+  flex: 1;
+  border: 1px solid var(--pc-line);
   background: #fff;
-  color: #333;
-  border-radius: 10px;
-  padding: .38rem .55rem;
+  color: var(--pc-ink);
+  border-radius: var(--pc-radius);
+  padding: 5px 6px;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.pc-select:focus { outline: none; border-color: var(--pc-brand); }
+
+/* ============ CTA sutil al pie ============ */
+.pc-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: transparent;
+  color: var(--pc-ink);
+  border: 1px solid var(--pc-line);
+  border-radius: var(--pc-radius);
+  padding: 7px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  transition: all .15s ease;
+  text-transform: uppercase;
+  font-family: inherit;
+  margin-top: auto;
+}
+.pc-cta:hover:not(:disabled) {
+  background: var(--pc-brand);
+  color: #fff;
+  border-color: var(--pc-line);
+}
+.pc-cta:active:not(:disabled) { transform: scale(.98); }
+.pc-cta:disabled {
+  background: transparent;
+  color: var(--pc-muted-2);
+  border-color: var(--pc-line);
+  cursor: not-allowed;
+}
+.pc-cta.is-added {
+  background: #1f9d55;
+  color: #fff;
+  border-color: #1f9d55;
+}
+
+/* ============ ACCESIBILIDAD ============ */
+.pc-min :focus-visible {
+  outline: 2px solid var(--pc-brand);
+  outline-offset: 2px;
+}
+
+/* ======================================================
+   DESKTOP — mismo layout, tamaños mayores
+   ====================================================== */
+@media (min-width: 640px) {
+  .pc-min            { padding: 10px 10px 12px; }
+  .pc-title          { font-size: 13px; }
+  .pc-price-from     { font-size: 12px; }
+  .pc-price-transfer { font-size: 13px; }
+  .pc-price-note     { font-size: 10px; }
+  .pc-cta            { padding: 8px 12px; font-size: 11.5px; }
+  .pc-badge          { font-size: 10px; padding: 3px 7px; }
+  .pc-wish           { width: 28px; height: 28px; top: 8px; right: 8px; }
+}
+
+/* Mobile: imagen vertical, no recortada */
+@media (max-width: 639px) {
+  .pc-img { 
+    aspect-ratio: 4 / 6;        /* ← más vertical en mobile */
+    border-radius: var(--pc-radius) var(--pc-radius) 0 0;
+  }
+  .pc-img img {
+    object-fit: contain;         /* ← sin recorte, muestra todo el producto */
+    background: var(--pc-bg-alt);
+  }
+}
+
+@media (min-width: 900px) {
+  .pc-img { aspect-ratio: 2.5 / 4.5 }   /* ← levemente menos vertical en pantallas grandes */
+  
+}
+
+
+/*
+  PEGÁ esto al FINAL de ProductCard.css
+  ─── Sistema de 3 precios en la card ───
+*/
+
+/* Contenedor de los 3 tiers */
+.pc-price-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 4px;
+}
+
+/* Fila de un tier */
+.pc-tier-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  transition: background .15s;
+  opacity: 0.65;
+}
+
+/* Tier activo → resaltado */
+.pc-tier-row.is-active-tier {
+  opacity: 1;
+  background: #fff0f8;
+}
+
+/* Etiqueta cuadrada de color (U / E / M) */
+.pc-tier-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  flex-shrink: 0;
+  /* simula la etiqueta de precio física con muesca */
+  clip-path: polygon(6% 0, 100% 0, 100% 100%, 6% 100%, 0 70%, 3% 50%, 0 30%);
+}
+.pc-tier-tag--unitario  { background: #fff; border: 1.5px solid #ccc; color: #333; }
+.pc-tier-tag--especial  { background: #f97316; color: #fff; }
+.pc-tier-tag--mayorista { background: #84e070; color: #1a1a1a; }
+
+/* Precio del tier */
+.pc-tier-price {
+  font-size: 13px;
   font-weight: 800;
-  font-size: .88rem;
-  max-width: 48%;
+  color: #1a1a1a;
+  letter-spacing: -.3px;
+  line-height: 1;
+}
+.pc-tier-row.is-active-tier .pc-tier-price {
+  color: #ff2ea6;
 }
 
-/* ====== ACCESIBILIDAD ====== */
-.product-card.pro :focus-visible { outline: 3px solid #ffd1ec; outline-offset: 2px; }
-
-/* ====== RESPONSIVE ====== */
-@media (max-width: 480px) {
-  .product-card.pro { max-width: 240px; }
-  .btn-outline { padding: .4rem .6rem; font-size: .88rem; }
-  .product-card.pro h3 { font-size: clamp(.94rem, 2.8vw, 1rem); }
-  .chips { gap: .3rem; }
+/* Descripción del tier */
+.pc-tier-label {
+  font-size: 10px;
+  color: #7a7a7a;
+  font-weight: 500;
+  line-height: 1;
+}
+.pc-tier-row.is-active-tier .pc-tier-label {
+  color: #e11a8a;
 }
 
-@media (min-width: 380px) and (max-width: 431px) {
-  .promos-grid { display: flex; }
+/* Badge del tier actual del carrito */
+.pc-tier-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
-@media (min-width: 432px) and (max-width: 480px) {
-  .promos-grid { display: flex; }
-}
-@media (min-width: 540px) and (max-width: 769px) {
-  .promos-grid { display: flex; }
-}
-@media (min-width: 980px) and (max-width: 1281px) {
-  .promos-grid { display: flex; }
-}
+

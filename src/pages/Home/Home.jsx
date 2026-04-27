@@ -1,10 +1,10 @@
-// Home.jsx
+// src/pages/Home/Home.jsx
 import { useEffect, useState } from "react";
 import Hero from "../../components/Hero/Hero";
+import CategoriasGrid from "../../components/CategoriasGrid/CategoriasGrid";
 import ProductSlider from "../../components/ProductSlider/ProductSlider";
+import GuiaPrecios from "../../components/GuiaPrecios/GuiaPrecios";
 import BannerPromo from "../../components/BannerPromo/BannerPromo";
-import Beneficios from "../../components/Beneficios/Beneficios";
-import Categories from "../Categories/Categories";
 import api from "../../utils/api";
 import "../../pages/Home/Home.css";
 
@@ -96,23 +96,31 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      {/* Carrusel rectangular informativo (¿Cómo comprar?, Importante, Guía de precios) */}
       <Hero />
 
+      {/* Grilla cuadrada de categorías con imagen de fondo */}
+      <CategoriasGrid />
+
+      {/* Slider de destacados */}
       <section className="home-strip fade-in-section">
+        <div className="strip-head">
+          <h2>Destacados</h2>
+        </div>
         {loading ? (
           <p className="strip-msg">Cargando…</p>
         ) : destacados.length === 0 ? (
           <p className="strip-msg">No hay productos destacados aún.</p>
         ) : (
-          <ProductSlider productos={destacados} title="Destacados" />
+          <ProductSlider productos={destacados} showTitle={false} />
         )}
       </section>
 
+      {/* Guía de precios (minorista / especial / mayorista) */}
+      <GuiaPrecios />
+
       {/* Banner grande si hay promos activas */}
       {promos.length > 0 && <BannerPromo />}
-
-      <Beneficios />
-      <Categories />
     </div>
   );
 }

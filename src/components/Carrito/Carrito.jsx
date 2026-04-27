@@ -1,13 +1,26 @@
 // src/components/Carrito/Carrito.jsx
 import "../../components/Carrito/Carrito.css";
-import { useCart } from "./CartContext";
+import { useCart, precioEfectivo } from "./CartContext";
 import { Link } from "react-router-dom";
 import FormularioCheckout from "../../components/Carrito/FormularioCheckout";
 import { FaPlus, FaMinus, FaTrashAlt } from "react-icons/fa";
 
 export default function Carrito() {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
-  const total = cart.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0);
+  // ← CAMBIO: traemos tier y subtotal del contexto
+  const { cart, removeFromCart, updateQuantity, clearCart, tier, subtotal } = useCart();
+
+  // ← CAMBIO: total calculado con precioEfectivo según tier
+  const total = subtotal;
+
+  const fmtARS = (n) =>
+    Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const TIER_LABEL = {
+    unitario:  { label: "Precio Unitario",  color: "#1a1a1a", bg: "#f5f5f5"  },
+    especial:  { label: "Precio Especial",  color: "#fff",    bg: "#f97316"  },
+    mayorista: { label: "Precio Mayorista", color: "#1a1a1a", bg: "#84e070"  },
+  };
+  const tierInfo = TIER_LABEL[tier] || TIER_LABEL.unitario;
 
   if (cart.length === 0) {
     return (
@@ -24,9 +37,13 @@ export default function Carrito() {
     <section className="carrito-container" aria-labelledby="carrito-title">
       <h2 className="carrito-title" id="carrito-title">Carrito de compras</h2>
 
+      {/* ← CAMBIO: badge del tier activo */}
+      <div className="carrito-tier-badge" style={{ background: tierInfo.bg, color: tierInfo.color }}>
+        {tierInfo.label} activo
+      </div>
+
       <div className="carrito-flex">
         <div className="carrito-table-box">
-          {/* wrapper para scroll en móvil */}
           <div className="carrito-table-scroll" role="region" aria-label="Productos del carrito" tabIndex={0}>
             <table className="carrito-table">
               <thead>
@@ -40,62 +57,67 @@ export default function Carrito() {
                 </tr>
               </thead>
               <tbody>
-                {cart.map((prod) => (
-                  <tr key={prod.key}>
-                    <td>
-                      <img src={prod.imagen} alt={prod.nombre} className="cart-thumb" loading="lazy" />
-                    </td>
-                    <td>
-                      {prod.nombre}
-                      {prod.variant && (
-                        <div className="muted" style={{ fontSize: ".88rem" }}>
-                          {prod.variant.size} • {prod.variant.color}
+                {cart.map((prod) => {
+                  // ← CAMBIO: precio efectivo según tier
+                  const precioEf = precioEfectivo(prod, tier);
+                  return (
+                    <tr key={prod.key}>
+                      <td>
+                        <img src={prod.imagen} alt={prod.nombre} className="cart-thumb" loading="lazy" />
+                      </td>
+                      <td>
+                        {prod.nombre}
+                        {prod.variant && (
+                          <div className="muted" style={{ fontSize: ".88rem" }}>
+                            {prod.variant.size} • {prod.variant.color}
+                          </div>
+                        )}
+                      </td>
+                      {/* ← CAMBIO: muestra precio del tier */}
+                      <td>${fmtARS(precioEf)}</td>
+                      <td>
+                        <div className="qty-btn-group">
+                          <button
+                            className="qty-btn"
+                            onClick={() => updateQuantity(prod.key, prod.cantidad - 1)}
+                            disabled={prod.cantidad <= 1}
+                            aria-label="Quitar uno"
+                          >
+                            <FaMinus />
+                          </button>
+                          <span className="cantidad-span" aria-live="polite">{prod.cantidad}</span>
+                          <button
+                            className="qty-btn"
+                            onClick={() => updateQuantity(prod.key, prod.cantidad + 1)}
+                            aria-label="Sumar uno"
+                            disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}
+                          >
+                            <FaPlus />
+                          </button>
                         </div>
-                      )}
-                    </td>
-                    <td>${prod.precio}</td>
-                    <td>
-                      <div className="qty-btn-group">
+                      </td>
+                      {/* ← CAMBIO: subtotal con precio del tier */}
+                      <td><b>${fmtARS(precioEf * prod.cantidad)}</b></td>
+                      <td>
                         <button
-                          className="qty-btn"
-                          onClick={() => updateQuantity(prod.key, prod.cantidad - 1)}
-                          disabled={prod.cantidad <= 1}
-                          aria-label="Quitar uno"
+                          className="cart-remove-btn"
+                          onClick={() => removeFromCart(prod.key)}
+                          title="Eliminar"
+                          aria-label={`Eliminar ${prod.nombre}`}
                         >
-                          <FaMinus />
+                          <FaTrashAlt />
                         </button>
-                        <span className="cantidad-span" aria-live="polite">{prod.cantidad}</span>
-                        <button
-                          className="qty-btn"
-                          onClick={() => updateQuantity(prod.key, prod.cantidad + 1)}
-                          aria-label="Sumar uno"
-                          title={prod.maxStock ? `Stock máximo: ${prod.maxStock}` : undefined}
-                          disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}
-                        >
-                          <FaPlus />
-                        </button>
-                      </div>
-                    </td>
-                    <td><b>${prod.precio * prod.cantidad}</b></td>
-                    <td>
-                      <button
-                        className="cart-remove-btn"
-                        onClick={() => removeFromCart(prod.key)}
-                        title="Eliminar"
-                        aria-label={`Eliminar ${prod.nombre}`}
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
           <div className="carrito-total">
             <h3>
-              Total: <span className="total-highlight">${total}</span>
+              Total: <span className="total-highlight">${fmtARS(total)}</span>
             </h3>
             <button className="cart-clear-btn" onClick={clearCart}>Vaciar carrito</button>
           </div>

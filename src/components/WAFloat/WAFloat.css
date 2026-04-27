@@ -69,8 +69,12 @@
 }
 
 @media (max-width: 769px){
-  .wa-float{ width: 52px; height: 52px; bottom: 66px !important; right: 14px; }
-  .wa-tooltip{ display: none; }
+  .wa-float{
+    width: 52px;
+    height: 52px;
+    bottom: calc(64px + 14px + 20px + env(safe-area-inset-bottom)) !important;
+    right: 14px;
+  }
 }
 
 /* No mostrar en impresión */

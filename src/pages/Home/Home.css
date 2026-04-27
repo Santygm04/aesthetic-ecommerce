@@ -1,3 +1,5 @@
+/* src/pages/Home/Home.css */
+
 .home-container {
   width: 100%;
   min-height: 100vh;
@@ -18,6 +20,30 @@
   }
 }
 
-.home-strip { margin: 24px 0; }
-.strip-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.strip-head h2 { color: #d63384; font-size: 1.6rem; font-weight: 900; letter-spacing: .3px; }
+.home-strip {
+  max-width: 1280px;
+  margin: clamp(1rem, 2vw, 1.5rem) auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.strip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.strip-head h2 {
+  color: #d63384;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: .3px;
+  margin: 0;
+}
+
+.strip-msg {
+  text-align: center;
+  color: #7d4d85;
+  padding: 2rem;
+  font-size: 1rem;
+}

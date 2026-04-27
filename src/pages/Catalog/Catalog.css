@@ -4,7 +4,7 @@
 /* Toolbar */
 .toolbar {
   display:flex; align-items:center; justify-content:space-between;
-  gap:1rem; margin-bottom: .9rem;
+  gap:1rem; margin-bottom: .9rem; flex-wrap: wrap;
 }
 .toolbar .left { display:flex; align-items:center; gap:.6rem; flex:1; }
 .toolbar .right { display:flex; align-items:center; gap:.6rem; }
@@ -16,12 +16,12 @@
 .lbl { color:#7a7a7a; font-weight:700; }
 .count { color:#7a7a7a; font-weight:700; }
 
-/* Grid */
 .grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap:16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);   /* ← 2 columnas en mobile */
+  gap: 10px;
 }
+
 .skeleton .card-skel{
   height:300px; border-radius:16px;
   background: linear-gradient(100deg,#f8e6f1 20%, #ffffff 40%, #f8e6f1 60%);
@@ -41,3 +41,36 @@
 }
 .pager button.active{ background:#fff0f7; border-color:#d63384; }
 .pager button:disabled{ opacity:.5; cursor:not-allowed; }
+
+.catalog-header {
+  padding: 1.2rem 0 .8rem;
+  text-align: center;
+}
+.catalog-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #d63384;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .catalog-header { padding: 2rem 0 1rem; }
+  .catalog-title { font-size: clamp(1.6rem, 4vw, 2.4rem); }
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}

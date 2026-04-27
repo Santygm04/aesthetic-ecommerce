@@ -1,18 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
+
 import App from "./App.jsx";
-import "../src/index.css";
+import "./index.css";
 import { CartProvider } from "./components/Carrito/CartContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <CartProvider>
-      <App />
-    </CartProvider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <HelmetProvider>
+      <BrowserRouter>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </BrowserRouter>
+    </HelmetProvider>
+  </React.StrictMode>
 );
 
+// Debug resolución (solo dev)
 if (import.meta.env.DEV) {
   const b = document.createElement('div');
   Object.assign(b.style, {
@@ -22,8 +29,10 @@ if (import.meta.env.DEV) {
   });
   document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(b);
-    const upd = () => { b.textContent =
-      `${window.innerWidth}×${window.innerHeight} @DPR ${window.devicePixelRatio}`; };
-    addEventListener('resize', upd); upd();
+    const upd = () => {
+      b.textContent = `${window.innerWidth}×${window.innerHeight} @DPR ${window.devicePixelRatio}`;
+    };
+    addEventListener('resize', upd);
+    upd();
   });
 }

@@ -18,7 +18,13 @@ export default function useWishlist() {
   const add = (p) => {
     setList((prev) => {
       if (prev.some((x) => x._id === p._id)) return prev;
-      const next = [{ _id: p._id, nombre: p.nombre, imagen: p.imagen, precio: p.precio }, ...prev];
+      const next = [{ 
+        _id:    p._id,
+        nombre: p.nombre,
+        imagen: p.imagen,
+        precio: p.precio,
+        stock:  Number(p.stock ?? 1), // ← CAMBIO: guardar stock para evitar falso "agotado"
+      }, ...prev];
       write(next);
       return next;
     });

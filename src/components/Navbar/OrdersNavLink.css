@@ -1,9 +1,57 @@
-.orders-nav-link{ position:relative; display:inline-flex; align-items:center; gap:6px; }
-.orders-badge{
-  position:absolute; top:-8px; right:-14px;
-  min-width:18px; height:18px; padding:0 6px;
-  border-radius:999px; background:#ff2ea6; color:#fff;
-  font-weight:900; font-size:11px; line-height:18px;
-  box-shadow:0 6px 16px rgba(255,46,166,.35);
-  display:inline-flex; align-items:center; justify-content:center;
+/* =====================================================
+   OrdersNavLink.css  —  Badge de órdenes pendientes
+   ===================================================== */
+
+/* ← FIX: Mis pedidos más ancho */
+.orders-nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: max-content;   /* ← no se corta */
+  white-space: nowrap;
+  letter-spacing: .2px;
+}
+
+.orders-badge {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--adm-brand, #db2777);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+  box-shadow:
+    0 4px 12px rgba(219, 39, 119, 0.35),
+    0 0 0 2px var(--adm-surface, #ffffff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  animation: ordersBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes ordersBadgePulse {
+  0%, 100% {
+    box-shadow:
+      0 4px 12px rgba(219, 39, 119, 0.35),
+      0 0 0 2px var(--adm-surface, #ffffff),
+      0 0 0 2px rgba(219, 39, 119, 0);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px rgba(219, 39, 119, 0.5),
+      0 0 0 2px var(--adm-surface, #ffffff),
+      0 0 0 6px rgba(219, 39, 119, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orders-badge { animation: none; }
 }

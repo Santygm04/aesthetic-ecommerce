@@ -1,0 +1,183 @@
+.cat-grid-section {
+  width: 100%;
+  max-width: 1280px;
+  margin: clamp(2rem, 5vw, 3.5rem) auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.cat-grid-title {
+  text-align: center;
+  color: #d63384;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: .5px;
+  margin: 0 0 .3rem;
+}
+
+.cat-grid-sub {
+  text-align: center;
+  color: #7d4d85;
+  font-size: clamp(.95rem, 1.8vw, 1.1rem);
+  margin: 0 0 clamp(1.2rem, 3vw, 2rem);
+}
+
+/* ── GRID ── */
+.cat-grid {
+  display: grid;
+  gap: clamp(.5rem, 1.2vw, 1rem);
+}
+
+.cat-grid-featured {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: clamp(.6rem, 1.4vw, 1.2rem);
+}
+
+.cat-grid-regular {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.cat-grid-subs {
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: clamp(.4rem, 1vw, .8rem);
+}
+
+/* ── TÍTULO SUBSECCIÓN ── */
+.cat-subcat-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(1.4rem, 3vw, 2.2rem);
+  margin-bottom: clamp(.4rem, 1vw, .7rem);
+}
+.cat-subcat-title span:first-child {
+  color: #d63384;
+  font-size: clamp(.95rem, 2vw, 1.15rem);
+  font-weight: 800;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+.cat-subcat-dash {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, #f9a8d4 0%, transparent 100%);
+  border-radius: 2px;
+}
+
+/* ── BREAKPOINTS ── */
+@media (max-width: 1100px) {
+  .cat-grid-regular { grid-template-columns: repeat(4, 1fr); }
+  .cat-grid-subs    { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+  .cat-grid-featured { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid-regular  { grid-template-columns: repeat(3, 1fr); }
+  .cat-grid-subs     { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+  .cat-grid-featured { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid-regular  { grid-template-columns: repeat(3, 1fr); }
+  .cat-grid-subs     { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 380px) {
+  .cat-grid-featured { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid-regular  { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid-subs     { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── TILE WRAP (card + nombre abajo) ── */
+.cat-tile-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cat-tile-name {
+  font-size: clamp(.68rem, 1.2vw, .82rem);
+  font-weight: 700;
+  color: #555;
+  text-align: center;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+/* ── TILE ── */
+.cat-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;        /* ← cuadrado perfecto */
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  background-color: #f3e8ff;
+  background-size: cover;      /* ← imagen llena todo */
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 16px rgba(214, 51, 132, .08);
+  transition: transform .28s ease, box-shadow .28s ease;
+  isolation: isolate;
+}
+
+.cat-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(214, 51, 132, .22);
+}
+
+/* Overlay degradado solo abajo para tiles grandes */
+.cat-tile-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(102, 99, 99, 0.384);
+  transition: background .28s ease;
+  z-index: 1;
+}
+.cat-tile:hover .cat-tile-overlay {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.cat-tile-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  color: #fff;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: clamp(.72rem, 1.3vw, .95rem);
+  text-shadow: 0 2px 12px rgba(0,0,0,.9);
+  line-height: 1.3;
+  text-wrap: balance;
+  width: 90%;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.cat-tile.is-big .cat-tile-label {
+  font-size: clamp(.9rem, 1.5vw, 1.15rem);
+  letter-spacing: 2.5px;
+}
+
+/* Tiles featured más altos que cuadrados */
+.cat-tile-wrap.is-big .cat-tile {
+  aspect-ratio: 1 / 1;
+}
+
+/* ── TONOS PLACEHOLDER ── */
+.cat-tile.t-violet       { background-image: linear-gradient(135deg, #b19cd9 0%, #8b5cf6 100%); }
+.cat-tile.t-violet-soft  { background-image: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%); }
+.cat-tile.t-pink         { background-image: linear-gradient(135deg, #ffb3d9 0%, #ff6fb5 100%); }
+.cat-tile.t-pink-soft    { background-image: linear-gradient(135deg, #ffd6e8 0%, #ff9cc2 100%); }
+.cat-tile.t-peach        { background-image: linear-gradient(135deg, #ffd9b3 0%, #ff9a3c 100%); }
+.cat-tile.t-beige        { background-image: linear-gradient(135deg, #f5e6d3 0%, #d4a373 100%); }
+.cat-tile.t-cream        { background-image: linear-gradient(135deg, #fff4e6 0%, #f5cba7 100%); }
+.cat-tile.t-nude         { background-image: linear-gradient(135deg, #f9e2d2 0%, #e8a87c 100%); }
+.cat-tile.t-gray         { background-image: linear-gradient(135deg, #d3d3d3 0%, #6b6b6b 100%); }
+.cat-tile.t-rose         { background-image: linear-gradient(135deg, #ffc0cb 0%, #e91e63 100%); }

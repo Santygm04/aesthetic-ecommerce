@@ -19,9 +19,18 @@ import lenceria from "../../../assets/iconos/lenceria.png";
 import carteras from "../../../assets/iconos/carteras.png";
 import nuevosIngresos from "../../../assets/iconos/nuevosI.png";
 
+// Ícono SVG inline para Accesorios (clip de pelo / horquilla)
+const AccesoriosIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    xmlns="http://www.w3.org/2000/svg" style={{display:"inline",verticalAlign:"middle"}}>
+    <path d="M12 2C9.5 2 7.5 3.8 7.5 6C7.5 7.4 8.3 8.6 9.5 9.3L7 20H9L10.5 13.5L12 15L13.5 13.5L15 20H17L14.5 9.3C15.7 8.6 16.5 7.4 16.5 6C16.5 3.8 14.5 2 12 2Z"
+      fill="#ff2ea6" opacity=".85"/>
+    <circle cx="12" cy="6" r="2" fill="#e11a8a"/>
+  </svg>
+);
+
 export default function Navbar() {
-  const { cart } = useCart();
-  const cartCount = cart.reduce((s, p) => s + (p.cantidad || 1), 0);
+  const { cartCount } = useCart();
 
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [isLenOpen, setIsLenOpen] = useState(false);
@@ -105,6 +114,7 @@ export default function Navbar() {
     { name: "Peluquería", slug: "peluquería", icon: peluqueria },
     { name: "Bijouterie", slug: "bijouteria", icon: bijouteria },
     { name: "Marroquinería", slug: "marroquineria", icon: carteras },
+    { name: "Accesorios", slug: "accesorios", icon: null, svgIcon: AccesoriosIcon },
     { name: "Lencería", slug: "lenceria", icon: lenceria },
     { name: "Nuevos ingresos", slug: "nuevos-ingresos", icon: nuevosIngresos },
   ];
@@ -164,17 +174,6 @@ export default function Navbar() {
         className={`navbar-links${searchOnlyOpen ? " search-only" : ""}`}
         id="main-menu"
       >
-        {/* Cerrar dentro del drawer (solo móvil/tablet) */}
-        <li className="nav-close-li">
-          <button
-            type="button"
-            className="nav-close-btn"
-            title="Cerrar"
-            onClick={closeSearchDrawer}
-          >
-            ✕
-          </button>
-        </li>
 
         {/* buscador dentro del drawer / en desktop queda igual */}
         <li className="nav-search">
@@ -259,6 +258,11 @@ export default function Navbar() {
                 Marroquineria <img src={carteras} className="img-icon" alt="" />
               </NavLink>
             </li>
+            <li>
+              <NavLink onClick={closeAll} to="/category/accesorios">
+                Accesorios <AccesoriosIcon />
+              </NavLink>
+            </li>
 
             <li className="menu-divider" />
 
@@ -329,13 +333,13 @@ export default function Navbar() {
         </button>
 
         {/* === Carrito AL MEDIO === */}
-        <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
-          <span className="cart-icon-wrapper">
-            <FaShoppingCart />
-            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-          </span>
-          <span>Carrito</span>
-        </NavLink>
+       <NavLink to="/carrito" className={({isActive}) => "tab-btn cart" + (isActive ? " is-active" : "")}>
+  <span className="cart-icon-wrapper">
+    <FaShoppingCart size={24} />
+    {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+  </span>
+  <span>Carrito</span>
+</NavLink>
         {/* ===================== */}
 
         {/* Categorías */}
@@ -368,7 +372,10 @@ export default function Navbar() {
         <div className="cat-sheet-grid">
           {CAT_ITEMS.map(c => (
             <button key={c.slug} type="button" className="cat-sheet-item" onClick={() => goCat(c.slug)}>
-              <img src={c.icon} alt="" />
+              {c.svgIcon
+                ? <span className="cat-sheet-svg-icon"><c.svgIcon /></span>
+                : <img src={c.icon} alt="" />
+              }
               <span>{c.name}</span>
             </button>
           ))}

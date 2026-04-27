@@ -1,169 +1,212 @@
 // src/components/Hero/Hero.jsx
 import { useEffect, useState } from "react";
-import "../../components/Hero/Hero.css";
+import "./Hero.css";
 
-const RAW_WA = import.meta.env.VITE_SELLER_PHONE || "+5493854112412";
-const SELLER_WA = String(RAW_WA).replace(/\D/g, "");
-const CONTACT_MAIL = import.meta.env.VITE_CONTACT_EMAIL || "Paulagonzaleslazaro@gmail.com";
-const IG_URL = import.meta.env.VITE_IG_URL || "https://instagram.com/";
-const FB_URL = import.meta.env.VITE_FB_URL || "https://facebook.com/";
-
+/**
+ * HERO rediseñado: carrusel rectangular grande con slides informativos.
+ * Los slides son tipo "banner" con imagen de fondo + overlay + contenido encima.
+ *
+ * TODO: cuando tengas las imágenes reales de cada slide, poné la ruta
+ * en la propiedad `bgImg` de cada slide (ej: "/assets/como-comprar.jpg").
+ * Mientras tanto, el slide muestra un fondo de color sólido como placeholder.
+ */
 export default function Hero() {
-  // Slides con chips/burbujas claras por flujo
   const slides = [
     {
-      id: "pagos",
-      theme: "theme-pagos",
-      title: "Pagos mayoristas",
-      subtitle: "Transferencia — sin recargo",
-      bullets: [
-        "Compras mayoristas",
-        "Factura corresponda",
-        "Coordinación por WhatsApp al cerrar el pedido",
+      id: "como-comprar",
+      theme: "theme-violet",
+      overline: "INFORMACIÓN",
+      title: "¿Cómo Comprar?",
+      // TODO: agregar imagen de fondo real
+      bgImg: "",
+      steps: [
+        {
+          num: "01",
+          title: "Entrá a aestheticmakeup.com.ar",
+          text: "Elegí tus productos favoritos y agregalos al carrito.",
+        },
+        {
+          num: "02",
+          title: "Revisá tu pedido",
+          text: "Chequeá que esté todo correcto: modelos, marcas y cantidades.",
+        },
+        {
+          num: "03",
+          title: "Hacé tu pedido por WhatsApp",
+          text: "Tocá el ícono abajo a la derecha o escribinos al 1122720888. Decinos tu número de pedido y coordinamos el pago y envío.",
+        },
+        {
+          num: "04",
+          title: "¡Listo!",
+          text: "Ahora solo queda esperar tu paquete con muchas ansias.",
+        },
       ],
-      bubbles: ["✅ Pedido confirmado", "🧾 Datos de pago enviados", "🔍 Validación de comprobante"],
-      cta: { href: "/pagos", label: "Ver pagos" },
-      // ← ruta específica de imagen para este slide
-      screenImg: "/assets/primavera.jpg",
     },
     {
-      id: "envios",
-      theme: "theme-envios",
-      title: "Envíos a todo el país, dependiendo de cada empresa",
-      subtitle: "Despacho dependiendo la empresa",
-      bullets: [
-        "Seguimiento por wsp",
-        "Costo según destino y transportista",
-        "Interior: $10.000 / $16.000 (referencia)",
+      id: "importante",
+      theme: "theme-violet",
+      overline: "TENÉ EN CUENTA",
+      title: "Importante",
+      // TODO: agregar imagen de fondo real
+      bgImg: "",
+      bubbles: [
+        {
+          text: "El mínimo de compra online es de $180.000.",
+          side: "left",
+        },
+        {
+          text: "Los pagos se pueden realizar mediante transferencia / depósito / efectivo.",
+          side: "right",
+        },
+        {
+          text: "Una vez finalizado tu carrito, comunicate con nosotros para especificar variantes de productos, métodos de pago y de envío.",
+          side: "left",
+        },
+        {
+          text: "No trabajamos con correo Argentino ni tampoco con Andreani.",
+          side: "right",
+        },
       ],
-      bubbles: ["💳 Pago acreditado", "📦 Preparación coordinada ", "🚚 Despachos coordinados por wsp"],
-      cta: { href: "/envios", label: "Ver envíos" },
-      // ← ruta específica de imagen para este slide
-      screenImg: "/assets/primavera-1.png",
     },
     {
-      id: "contacto",
-      theme: "theme-contacto",
-      title: "¿Necesitás ayuda?",
-      subtitle: "Respondemos rápido",
-      bullets: [`WhatsApp: +${SELLER_WA}`, `Email: ${CONTACT_MAIL}`, "Instagram & Facebook disponibles"],
-      bubbles: ["💬 WhatsApp directo", "✉ Email de soporte", "⚡ Respuesta rápida"],
-      cta: { href: "/contacto", label: "Ver contactos" },
-      // ← ruta específica de imagen para este slide
-      screenImg: "/assets/primavera-2.png",
+      id: "guia-precios",
+      theme: "theme-fucsia",
+      overline: "PRECIOS",
+      title: "Guía de Precios",
+      // TODO: agregar imagen de fondo real (o dejar el fucsia sólido)
+      bgImg: "",
+      tagline: "¡Cuanto más llevás, menos pagás!",
+      tiers: [
+        {
+          color: "minorista",
+          label: "PRECIO MINORISTA",
+          desc: "Sin mínimo de compra",
+        },
+        {
+          color: "especial",
+          label: "PRECIO ESPECIAL",
+          desc: "Comprando 5 productos (iguales o diferentes)",
+        },
+        {
+          color: "mayorista",
+          label: "PRECIO MAYORISTA",
+          desc: "Mínimo de compra $30.000",
+        },
+      ],
     },
   ];
 
   const [idx, setIdx] = useState(0);
+
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5200);
+    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 8000);
     return () => clearInterval(t);
   }, [slides.length]);
 
-  return (
-    <section className="hero" aria-label="Portada">
-      {/* Texto principal */}
-      <div className="hero-content reveal fade-up" style={{ "--reveal-delay": "80ms" }}>
-        <h1>
-          <span className="hero-fade">Descubrí tu estilo</span><br />
-          <span className="highlight-aesthetic">con <b>AESTHETIC</b></span>
-        </h1>
-        <p>Moda, belleza y elegancia en un solo lugar.</p>
-        <a href="/category" className="hero-btn glow">Ver Productos</a>
-      </div>
+  const goPrev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
+  const goNext = () => setIdx((i) => (i + 1) % slides.length);
 
-      {/* Banner deslizante */}
-      <div
-        className="hero-slider reveal fade-right"
-        style={{ "--reveal-delay": "160ms" }}
-        role="region"
-        aria-label="Información destacada"
-      >
+  return (
+    <section className="hero-carousel" aria-label="Información destacada">
+      <div className="hc-track" role="region" aria-roledescription="carrusel">
         {slides.map((s, i) => (
           <article
             key={s.id}
-            className={`hs-card ${s.theme}${idx === i ? " is-active" : ""}`}
+            className={`hc-slide ${s.theme}${idx === i ? " is-active" : ""}`}
             aria-hidden={idx !== i}
+            style={s.bgImg ? { backgroundImage: `url(${s.bgImg})` } : undefined}
           >
-            <div className="hs-card-border" aria-hidden />
-            <div className="hs-grid">
-              {/* Copy */}
-              <div className="hs-copy">
-                <h3 className="hs-title">{s.title}</h3>
-                <div className="hs-sub">{s.subtitle}</div>
-                <ul className="hs-list">
-                  {s.bullets.map((b, j) => (<li key={j}>{b}</li>))}
+            {/* Overlay + patrón decorativo */}
+            <div className="hc-overlay" aria-hidden />
+            <div className="hc-pattern" aria-hidden />
+
+            <div className="hc-content">
+              <span className="hc-overline">{s.overline}</span>
+              <h2 className="hc-title">{s.title}</h2>
+              <div className="hc-title-underline" aria-hidden />
+
+              {/* SLIDE 1: ¿Cómo comprar? */}
+              {s.steps && (
+                <ol className="hc-steps">
+                  {s.steps.map((step) => (
+                    <li key={step.num} className="hc-step">
+                      <span className="hc-step-num" aria-hidden>
+                        {step.num}
+                      </span>
+                      <div className="hc-step-body">
+                        <h3>{step.title}</h3>
+                        <p>{step.text}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )}
+
+              {/* SLIDE 2: Importante (bocadillos) */}
+              {s.bubbles && (
+                <ul className="hc-bubbles">
+                  {s.bubbles.map((b, j) => (
+                    <li key={j} className={`hc-bubble hc-bubble-${b.side}`}>
+                      {b.text}
+                    </li>
+                  ))}
                 </ul>
-                <a className="hs-cta glow" href={s.cta.href}>{s.cta.label}</a>
-              </div>
+              )}
 
-              {/* Visual tipo “imagen” */}
-              <div className={`hs-visual ${s.id}`} aria-hidden>
-                <div className="mock">
-                  <div className="blob blob1" />
-                  <div className="blob blob2" />
-
-                  {/* Teléfono */}
-                  <div className="phone">
-                    <div className="notch" />
-
-                    {/* Pantalla con imagen de fondo */}
-                    <div
-                      className="phone-screen"
-                      style={{
-                        ["--phone-img"]: `url('${s.screenImg || "/assets/primavera.jpg"}')`,
-                      }}
-                    >
-
-                      {/* Burbujas centradas DENTRO del teléfono */}
-                      {(s.bubbles || []).slice(0, 3).map((txt, j) => (
-                        <div key={j} className={`bubble b${j + 1}`}>{txt}</div>
-                      ))}
-
-                      {/* Botón WA real */}
-                      <a
-                        className="wa-badge"
-                        href={`https://wa.me/${SELLER_WA}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="Abrir WhatsApp"
-                      >
-                        WhatsApp
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Redes solo en “Contacto” */}
-                  {s.id === "contacto" && (
-                    <div className="socials">
-                      <a className="soc ig" href={IG_URL} target="_blank" rel="noreferrer" title="Instagram">IG</a>
-                      <a className="soc fb" href={FB_URL} target="_blank" rel="noreferrer" title="Facebook">FB</a>
-                      <a className="soc mail" href={`mailto:${CONTACT_MAIL}`} title="Email">✉</a>
-                    </div>
-                  )}
+              {/* SLIDE 3: Guía de precios */}
+              {s.tiers && (
+                <div className="hc-tiers-wrap">
+                  <ul className="hc-tiers">
+                    {s.tiers.map((t) => (
+                      <li key={t.color} className="hc-tier">
+                        <span className={`hc-tier-tag tag-${t.color}`} aria-hidden />
+                        <div className="hc-tier-body">
+                          <h3>{t.label}</h3>
+                          <p>{t.desc}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  {s.tagline && <div className="hc-tagline">{s.tagline}</div>}
                 </div>
-              </div>
+              )}
             </div>
           </article>
         ))}
 
-        {/* Dots */}
-        <div className="hs-dots" aria-label="Cambiar banner">
-          {slides.map((s, i) => (
-            <button
-              key={s.id}
-              type="button"
-              className={`dot${idx === i ? " active" : ""}`}
-              aria-label={s.title}
-              aria-pressed={idx === i}
-              onClick={() => setIdx(i)}
-            />
-          ))}
-        </div>
+        {/* Controles */}
+        <button
+          type="button"
+          className="hc-arrow hc-arrow-prev"
+          onClick={goPrev}
+          aria-label="Slide anterior"
+        >
+          <span aria-hidden>‹</span>
+        </button>
+        <button
+          type="button"
+          className="hc-arrow hc-arrow-next"
+          onClick={goNext}
+          aria-label="Slide siguiente"
+        >
+          <span aria-hidden>›</span>
+        </button>
       </div>
 
-      <div className="hero-decor hero-decor1" />
-      <div className="hero-decor hero-decor2" />
+      {/* Dots */}
+      <div className="hc-dots" role="tablist" aria-label="Cambiar slide">
+        {slides.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={idx === i}
+            aria-label={s.title}
+            className={`hc-dot${idx === i ? " active" : ""}`}
+            onClick={() => setIdx(i)}
+          />
+        ))}
+      </div>
     </section>
   );
 }

@@ -1,81 +1,137 @@
-.slider-destacados {
-  padding: 1.4rem 0 3rem;
-  background: none;
-  margin-bottom: 1.2rem;
-  overflow: hidden;          /* evita scroll horizontal */
+/***********************************************************
+ * ProductSlider.css — MINIMALISTA
+ * Ajustado al nuevo ProductCard blanco.
+ ***********************************************************/
+.ps-section {
+   padding: 8px 16px 48px;
+  background: #fff;
+  overflow: hidden;
 }
 
-/* wrapper extra para que los dots no se corten */
-.slider-destacados > .slick-slider {
+.ps-section > .slick-slider {
   overflow: visible;
 }
 
-/* 👇 el slick-list permite ver el hover hacia arriba */
-.slick-list {
-  margin: 0 -8px;
-  overflow: visible !important; /* visible para que no corte el hover */
-  /* el scroll horizontal lo contiene el padre con overflow:hidden */
+/* ============ HEAD ============ */
+.ps-head {
+  max-width: 1400px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px;
 }
+.ps-head-text { display: flex; flex-direction: column; gap: 4px; }
 
-.slider-title {
-  text-align: center;
-  color: #d63384;
-  font-size: 2rem;
+.ps-title {
+  margin: 0;
+  color: var(--pc-ink, #1a1a1a);
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
   font-weight: 800;
-  margin-bottom: 1.1rem;
-  letter-spacing: 1px;
+  letter-spacing: .2px;
+  line-height: 1.2;
+}
+.ps-subtitle {
+  margin: 0;
+  color: var(--pc-muted, #7a7a7a);
+  font-size: 13px;
+  font-weight: 500;
+}
+.ps-view-all {
+  color: var(--pc-brand, #ff2ea6);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ps-view-all:hover { text-decoration: underline; }
+
+/* ============ SLIDES ============ */
+.slick-list { margin: 0; overflow: visible !important; }
+.ps-section .slick-track {
+  display: flex !important;
+  align-items: stretch;
+  gap: 0;
+}
+.ps-section .slick-slide {
+  float: none;
+  height: inherit;
+  padding: 6px 8px;
+}
+.ps-section .slick-slide > div { height: 100%; }
+.ps-section .slick-slide > div > div { height: 100%; }
+.ps-section .pc-min {
+  height: 100%;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
 }
 
-/* Dots */
-.slick-dots {
-  bottom: -28px;
-  height: auto;
-}
+/* ============ DOTS ============ */
+.slick-dots { bottom: -30px; height: auto; }
 .slick-dots li button:before {
-  font-size: 10px;
-  color: #f3c9e2;
+  font-size: 8px;
+  color: #d0d0d0;
   opacity: 1;
 }
 .slick-dots li.slick-active button:before {
-  color: #d63384;
+  color: var(--pc-brand, #ff2ea6);
   opacity: 1;
 }
 
-/* Track altura pareja */
-.slider-destacados .slick-track {
-  display: flex !important;
-  align-items: stretch;
+/* ============ ARROWS ============ */
+.ps-section .slick-prev,
+.ps-section .slick-next {
+  width: 36px;
+  height: 36px;
+  background: #fff !important;
+  border: 1px solid #ececec;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  z-index: 4;
+  transition: all .15s ease;
 }
-
-.slider-destacados .slick-slide {
-  float: none;
-  height: inherit;
+.ps-section .slick-prev:hover,
+.ps-section .slick-next:hover {
+  background: var(--pc-brand, #ff2ea6) !important;
+  border-color: var(--pc-brand, #ff2ea6);
 }
-
-.slider-destacados .slick-slide > div {
-  padding: 0 8px;
-  height: 100%;
-  padding-top: 10px; /* 👈 espacio para el hover hacia arriba */
+.ps-section .slick-prev:hover:before,
+.ps-section .slick-next:hover:before {
+  color: #fff;
 }
-
-.slider-destacados .slick-slide > div > div {
-  height: 100%;
+.ps-section .slick-prev:before,
+.ps-section .slick-next:before {
+  color: var(--pc-ink, #1a1a1a);
+  font-size: 18px;
+  opacity: 1;
 }
+.ps-section .slick-prev { left: -6px; }
+.ps-section .slick-next { right: -6px; }
 
-.slider-destacados .product-card.pro {
-  height: 100%;
-  margin: 0 auto;
-}
-
-/* ====== 1 solo producto ====== */
-.slider-destacados.is-single .single-slide {
+/* ============ SINGLE ============ */
+.ps-section.is-single .ps-single {
   display: flex;
   justify-content: center;
 }
-.slider-destacados.is-single .single-slide > * {
-  width: min(340px, 92vw);
+.ps-section.is-single .ps-single > * {
+  width: min(280px, 92vw);
 }
 
+/* ============ EMPTY ============ */
+.ps-empty {
+  text-align: center;
+  color: var(--pc-muted, #7a7a7a);
+  font-weight: 500;
+  padding: 24px 0;
+}
+
+/* ============ RESPONSIVE ============ */
 @media (max-width: 700px) {
-  .slider-destacados { padding: 2rem 0 3rem; }
+  .ps-section { padding: 24px 8px 40px; }
+  .ps-section .slick-slide { padding: 4px 5px; }
+  .ps-head { align-items: center; margin-bottom: 12px; }
+  .ps-section .slick-prev { left: 0; }
+  .ps-section .slick-next { right: 0; }
 }

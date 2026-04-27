@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: 
+Sitemap: https://aestheticmakeup.com.ar/sitemap.xml
+Sitemap: https://api.aesthetic.com.ar/sitemap-productos.xml
