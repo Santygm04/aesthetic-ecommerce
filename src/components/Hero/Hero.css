@@ -1,10 +1,8 @@
 /* src/components/Hero/Hero.css */
 :root {
-  --brand:       #ff2ea6;
-  --brand-600:   #e11a8a;
-  --brand-light: #fff0f8;
-  --brand-soft:  #ffd6ee;
-  --ink:         #2b1a3a;
+  --brand:      #ff2ea6;
+  --brand-600:  #e11a8a;
+  --brand-soft: #ffd6ee;
 }
 
 .hero-carousel {
@@ -12,248 +10,38 @@
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #000;
 }
 
-/* ── TRACK ── */
+/* ── TRACK: proporción 16/9 ── */
 .hc-track {
   position: relative;
   width: 100%;
-  min-height: clamp(400px, 62vw, 700px);   /* ← más alto */
-  border-radius: 0;
+  aspect-ratio: 16 / 9;     
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(255, 46, 166, .12);
 }
 
 /* ── SLIDE ── */
 .hc-slide {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: stretch;
   opacity: 0;
   visibility: hidden;
-  transform: scale(1.01);
-  transition: opacity .55s ease, transform .55s ease, visibility .55s;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  transition: opacity .6s ease, visibility .6s;
 }
 .hc-slide.is-active {
   opacity: 1;
   visibility: visible;
-  transform: scale(1);
 }
 
-/* Tema rosa — reemplaza el violeta */
-.hc-slide.theme-violet {
-  background-color: #fff0f8;
-  background-image:
-    radial-gradient(600px 240px at 10% 0%, rgba(255,46,166,.12) 0%, transparent 60%),
-    radial-gradient(500px 220px at 100% 100%, rgba(225,26,138,.15) 0%, transparent 60%),
-    linear-gradient(135deg, #fff0f8 0%, #ffd6ee 100%);
-}
-
-/* Tema fucsia — igual pero más saturado */
-.hc-slide.theme-fucsia {
-  background-color: #ff2ea6;
-  background-image:
-    radial-gradient(600px 260px at 0% 0%, rgba(255,255,255,.18) 0%, transparent 60%),
-    radial-gradient(500px 220px at 100% 100%, rgba(0,0,0,.10) 0%, transparent 60%),
-    linear-gradient(135deg, #ff2ea6 0%, #e11a8a 100%);
-}
-
-.hc-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.0) 40%, rgba(0,0,0,.08) 100%);
-  pointer-events: none;
-}
-.hc-slide.theme-fucsia .hc-overlay {
-  background: linear-gradient(180deg, rgba(0,0,0,.0) 40%, rgba(0,0,0,.15) 100%);
-}
-
-.hc-pattern {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 8% 15%, rgba(255,255,255,.5) 0 3px, transparent 4px),
-    radial-gradient(circle at 92% 82%, rgba(255,255,255,.4) 0 4px, transparent 5px),
-    radial-gradient(circle at 85% 12%, rgba(255,255,255,.3) 0 2px, transparent 3px),
-    radial-gradient(circle at 50% 50%, rgba(255,46,166,.06) 0 80px, transparent 120px);
-  opacity: .6;
-}
-
-/* ── CONTENIDO ── */
-.hc-content {
-  position: relative;
-  z-index: 2;
+/* ── IMAGEN: llena todo el slide sin distorsión ── */
+.hc-img {
   width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
   height: 100%;
-  padding: clamp(1.5rem, 4vw, 3.2rem) clamp(1.5rem, 5vw, 4rem);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: clamp(.8rem, 1.8vw, 1.4rem);
-  color: var(--ink);
-}
-.hc-slide.theme-fucsia .hc-content { color: #fff; }
-
-.hc-overline {
-  font-size: clamp(.75rem, 1.3vw, .9rem);
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--brand);
-  opacity: .85;
-}
-.hc-slide.theme-fucsia .hc-overline { color: #ffd6ee; opacity: 1; }
-
-.hc-title {
-  margin: 0;
-  font-size: clamp(1.9rem, 5.5vw, 3.8rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -.5px;
-  text-wrap: balance;
-  color: var(--brand-600);
-}
-.hc-slide.theme-fucsia .hc-title { color: #fff; }
-
-.hc-title-underline {
-  width: clamp(80px, 14vw, 160px);
-  height: 3px;
-  background: var(--brand);
-  opacity: .5;
-  border-radius: 2px;
-  margin-bottom: .4rem;
-}
-.hc-slide.theme-fucsia .hc-title-underline { background: #fff; }
-
-/* ── SLIDE 1: PASOS ── */
-.hc-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(.6rem, 1.8vw, 1.4rem) clamp(1rem, 3vw, 2rem);
-}
-@media (max-width: 720px) { .hc-steps { grid-template-columns: 1fr; } }
-
-.hc-step {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: clamp(.5rem, 1.5vw, 1rem);
-  align-items: start;
-}
-
-.hc-step-num {
-  font-size: clamp(2rem, 4.5vw, 3.2rem);
-  font-weight: 900;
-  line-height: 1;
-  color: var(--brand);
-  opacity: .25;
-  letter-spacing: -2px;
-  min-width: 2.2ch;
-}
-
-.hc-step-body h3 {
-  margin: 0 0 .2rem;
-  font-size: clamp(.95rem, 1.7vw, 1.15rem);
-  font-weight: 800;
-  color: var(--brand-600);
-}
-.hc-step-body p {
-  margin: 0;
-  font-size: clamp(.82rem, 1.4vw, .98rem);
-  line-height: 1.45;
-  color: #7a3060;
-}
-
-/* ── SLIDE 2: BOCADILLOS ── */
-.hc-bubbles {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(.5rem, 1.4vw, .9rem);
-  max-width: 720px;
-}
-
-.hc-bubble {
-  padding: clamp(.7rem, 1.6vw, 1rem) clamp(.9rem, 2vw, 1.3rem);
-  background: rgba(255, 46, 166, .88);
-  color: #fff;
-  border-radius: 18px;
-  font-size: clamp(.88rem, 1.5vw, 1.05rem);
-  font-weight: 600;
-  line-height: 1.4;
-  box-shadow: 0 10px 24px rgba(225, 26, 138, .2);
-  max-width: 72%;
-}
-.hc-bubble-left  { align-self: flex-start; border-bottom-left-radius: 4px; }
-.hc-bubble-right { align-self: flex-end; border-bottom-right-radius: 4px; background: rgba(225,26,138,.92); }
-@media (max-width: 720px) { .hc-bubble { max-width: 92%; font-size: .85rem; } }
-
-/* ── SLIDE 3: GUÍA DE PRECIOS ── */
-.hc-tiers-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(.8rem, 2vw, 1.4rem);
-}
-
-.hc-tiers {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(.55rem, 1.4vw, .9rem);
-}
-
-.hc-tier {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: clamp(.7rem, 1.8vw, 1.2rem);
-}
-
-.hc-tier-tag {
-  display: inline-block;
-  width: clamp(54px, 8vw, 80px);
-  height: clamp(28px, 4vw, 40px);
-  border-radius: 4px;
-  clip-path: polygon(6% 0, 100% 0, 100% 100%, 6% 100%, 0 70%, 3% 50%, 0 30%);
-  box-shadow: 0 4px 10px rgba(0,0,0,.15);
-}
-.tag-minorista { background: #fff; border: 1px solid rgba(255,255,255,.4); }
-.tag-especial  { background: #ff9a3c; }
-.tag-mayorista { background: #84e070; }
-
-.hc-tier-body h3 {
-  margin: 0;
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  font-weight: 900;
-  letter-spacing: .5px;
-  color: #fff;
-}
-.hc-tier-body p {
-  margin: .15rem 0 0;
-  font-size: clamp(.82rem, 1.4vw, 1rem);
-  color: #ffd6ee;
-}
-
-.hc-tagline {
-  align-self: flex-start;
-  padding: clamp(.55rem, 1.4vw, .85rem) clamp(1rem, 2.5vw, 1.6rem);
-  background: #ffd84a;
-  color: #9b1248;
-  font-size: clamp(.95rem, 2vw, 1.25rem);
-  font-weight: 900;
-  border-radius: 999px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  object-fit: cover;          /* recorta para llenar, sin barras negras */
+  object-position: center;
+  display: block;
+  user-select: none;
 }
 
 /* ── FLECHAS ── */
@@ -261,53 +49,65 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: clamp(36px, 4vw, 48px);
-  height: clamp(36px, 4vw, 48px);
-  border-radius: 999px;
-  border: 0;
-  background: rgba(255,255,255,.9);
+  width: clamp(36px, 4vw, 52px);
+  height: clamp(36px, 4vw, 52px);
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, .85);
   color: var(--brand-600);
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 900;
   cursor: pointer;
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 20px rgba(255,46,166,.15);
-  transition: transform .2s, background .2s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+  transition: background .2s, transform .2s;
   z-index: 5;
+  line-height: 1;
 }
-.hc-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
-.hc-arrow-prev  { left: clamp(.8rem, 2vw, 1.6rem); }
-.hc-arrow-next  { right: clamp(.8rem, 2vw, 1.6rem); }
-.hc-arrow span  { line-height: 1; margin-top: -3px; }
+.hc-arrow:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+.hc-arrow-prev { left:  clamp(.6rem, 2vw, 1.4rem); }
+.hc-arrow-next { right: clamp(.6rem, 2vw, 1.4rem); }
+.hc-arrow span { margin-top: -2px; }
 
 /* ── DOTS ── */
 .hc-dots {
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding: clamp(.8rem, 1.5vw, 1.2rem) 0;
+  padding: .8rem 0;
   background: #fff;
 }
 .hc-dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  border: 0;
+  border: none;
   cursor: pointer;
   background: var(--brand-soft);
-  transition: background .2s, width .2s;
+  transition: background .25s, width .25s;
   padding: 0;
 }
-.hc-dot.active { background: var(--brand); width: 28px; }
+.hc-dot.active {
+  background: var(--brand);
+  width: 28px;
+}
 
 /* ── RESPONSIVE ── */
-@media (max-width: 720px) {
-  .hc-track { min-height: 480px; }   /* ← más alto en mobile también */
-  .hc-content { padding: 1.4rem 1.2rem; }
-}
+/* En mobile el 16/9 ya es automático por aspect-ratio,
+   pero si las imágenes son muy anchas en pantallas chicas
+   podemos forzar un mínimo de altura */
 @media (max-width: 480px) {
-  .hc-track { min-height: 440px; }
-  .hc-arrow { width: 32px; height: 32px; font-size: 1.2rem; }
-  .hc-tier-tag { width: 44px; height: 22px; }
+  .hc-track {
+    aspect-ratio: 16 / 9;   /* se mantiene, no hace falta cambiar */
+    min-height: 200px;       /* mínimo por si la pantalla es muy chica */
+  }
+  .hc-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
 }

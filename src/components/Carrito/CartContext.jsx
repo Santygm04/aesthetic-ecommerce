@@ -187,14 +187,18 @@ export function CartProvider({ children }) {
       const existe = prev.find((p) => p.key === key);
       if (existe) {
         const cur   = Number(existe.cantidad || 1);
-        const toAdd = Number(producto.cantidad && producto.cantidad > 0 ? producto.cantidad : 1);
+        const toAdd = (existe.cantidadTonos > 0 || existe.distribucionTonos?.length > 0)
+        ? Number(existe.unidadesPorCaja ?? 1)
+        : 1;
         const cap   = maxStock ?? existe.maxStock ?? null;
         const next  = cap != null ? Math.min(cur + toAdd, cap) : cur + toAdd;
         return prev.map((p) =>
           p.key === key ? { ...p, cantidad: next, maxStock: cap ?? null, variant: variant || p.variant } : p
         );
       }
-      const qty      = Number(producto.cantidad && producto.cantidad > 0 ? producto.cantidad : 1);
+      const esTonosNuevo = Number(producto.cantidadTonos) > 0;
+      const stepNuevo = esTonosNuevo ? Math.max(1, Number(producto.unidadesPorCaja) || 1) : 1;
+      const qty = Number(producto.cantidad && producto.cantidad > 0 ? producto.cantidad : stepNuevo);
       const finalQty = maxStock != null ? Math.min(qty, maxStock) : qty;
       return [
         ...prev,

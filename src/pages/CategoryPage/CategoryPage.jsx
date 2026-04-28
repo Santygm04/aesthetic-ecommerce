@@ -5,10 +5,7 @@ import api from "../../utils/api";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import "../../pages/CategoryPage/CategoryPage.css";
 
-// SSE – stream de productos en vivo
 import useProductStream from "../../hooks/useProductStream";
-
-// para marcar “visto” al entrar
 import { markSeen } from "../../../src/utils/seen";
 
 // Imágenes
@@ -23,7 +20,6 @@ import bijouterieImg from "../../../assets/bijouteria.avif";
 import lenceriaImg from "../../../assets/lenceria.avif";
 import carterasImg from "../../../assets/carteras.avif";
 
-// Nombres para UI
 const categoryNames = {
   skincare: "Skincare",
   bodycare: "Bodycare",
@@ -34,8 +30,6 @@ const categoryNames = {
   bijouteria: "Bijouteria",
   lenceria: "Lencería",
   marroquineria: "Marroquineria",
-
-  // Lencería (subcategorías)
   conjuntos: "Conjuntos",
   "tops-y-corpiños": "Tops y corpiños",
   vedetinas: "Vedetinas",
@@ -44,13 +38,11 @@ const categoryNames = {
   slip: "Slip",
   niña: "Niña",
   medias: "Medias",
-
   "nuevos-ingresos": "Nuevos ingresos",
   "mas-vendidos": "Más Vendidos",
   accesorios: "Accesorios",
 };
 
-// Imagen para cada categoría/subcategoría
 const categoryImages = {
   skincare: skincareImg,
   bodycare: bodycareImg,
@@ -60,8 +52,6 @@ const categoryImages = {
   peluquería: peluqueriaImg,
   bijouteria: bijouterieImg,
   marroquineria: carterasImg,
-
-  // Lencería y sus subcategorías
   lenceria: lenceriaImg,
   conjuntos: lenceriaImg,
   "tops-y-corpiños": lenceriaImg,
@@ -71,31 +61,36 @@ const categoryImages = {
   slip: lenceriaImg,
   niña: lenceriaImg,
   medias: lenceriaImg,
-
   accesorios: ingresosImg,
   "nuevos-ingresos": ingresosImg,
   default: ingresosImg,
 };
 
+// Subcategorías conocidas por categoría padre
+const subcatsByCat = {
+  lenceria: ["conjuntos", "tops-y-corpiños", "vedetinas", "colales", "boxer", "slip", "niña", "medias"],
+  maquillaje: ["labiales", "sombras", "brochas", "sets"],
+  skincare: ["serums", "limpiadores", "exfoliantes", "cremas"],
+  bodycare: ["jabones", "cremas-corporales", "aceites"],
+  uñas: ["soft-gel", "semi-permanente", "normal"],
+  pestañas: ["insumos", "kits", "extensiones"],
+  peluquería: ["peines", "cepillos", "tratamientos"],
+  bijouteria: ["aros", "collares", "pulseras", "anillos"],
+  marroquineria: ["mochilas", "riñoneras", "bolsos"],
+  accesorios: ["pelo"],
+};
+
 const beautify = (text) =>
   text ? text.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase()) : "";
 
-/* ============ helpers de normalización ============ */
+/* ============ helpers ============ */
 function getStock(p) {
   let v =
-    p?.stock ??
-    p?.cantidad ??
-    p?.quantity ??
-    p?.inventario ??
-    p?.stockDisponible ??
-    p?.stock_total ??
-    null;
-
+    p?.stock ?? p?.cantidad ?? p?.quantity ?? p?.inventario ??
+    p?.stockDisponible ?? p?.stock_total ?? null;
   if (v === true) return 1;
   if (v === false || v == null) return 0;
-
   if (typeof v === "number") return Number.isFinite(v) ? Math.max(0, v) : 0;
-
   if (typeof v === "string") {
     const m = v.match(/-?\d+/);
     if (!m) return 0;
@@ -119,48 +114,31 @@ function toNum(x) {
   return Number.isFinite(n) ? n : null;
 }
 
-/** Normaliza y aplica PROMO si corresponde.
- * Admite:
- * - raw.promo = { active, precio, pct }
- * - precioPromo | promoPrice | pricePromo
- * - promoPct | descuentoPct | descuentoPorc
- * - o bien precioOriginal/originalPrice ya seteado
- */
 function normalizeProduct(raw) {
   const basePrice =
     raw?.precio != null ? toNum(raw.precio) :
     raw?.price  != null ? toNum(raw.price)  : 0;
 
-  // precio promo directo
   let promoPrice =
-    toNum(raw?.precioPromo) ??
-    toNum(raw?.promoPrice) ??
-    toNum(raw?.pricePromo);
+    toNum(raw?.precioPromo) ?? toNum(raw?.promoPrice) ?? toNum(raw?.pricePromo);
 
-  // promo como objeto
   if ((!promoPrice || !(promoPrice > 0)) && raw?.promo && typeof raw.promo === "object") {
     if (raw.promo.active && toNum(raw.promo.precio) > 0)
       promoPrice = toNum(raw.promo.precio);
-    // porcentaje en objeto
     if ((!promoPrice || !(promoPrice > 0)) && toNum(raw.promo.pct) > 0) {
       const pct = toNum(raw.promo.pct);
       if (pct > 0 && pct < 100) promoPrice = +(basePrice * (1 - pct / 100)).toFixed(2);
     }
   }
 
-  // porcentaje suelto
-  if ((!promoPrice || !(promoPrice > 0))) {
-    const pct =
-      toNum(raw?.promoPct) ??
-      toNum(raw?.descuentoPct) ??
-      toNum(raw?.descuentoPorc);
+  if (!promoPrice || !(promoPrice > 0)) {
+    const pct = toNum(raw?.promoPct) ?? toNum(raw?.descuentoPct) ?? toNum(raw?.descuentoPorc);
     if (pct > 0 && pct < 100) promoPrice = +(basePrice * (1 - pct / 100)).toFixed(2);
   }
 
-  // compat: campos ya calculados
   let precioOriginal =
     raw?.precioOriginal != null ? toNum(raw.precioOriginal) :
-    raw?.originalPrice != null ? toNum(raw.originalPrice) : null;
+    raw?.originalPrice  != null ? toNum(raw.originalPrice)  : null;
 
   let precio = basePrice || 0;
   let isPromo = false;
@@ -170,19 +148,18 @@ function normalizeProduct(raw) {
     precio = promoPrice;
     isPromo = true;
   } else if (precioOriginal && basePrice < precioOriginal) {
-    // si ya viene original > base, lo consideramos promo igual
     precio = basePrice;
     isPromo = true;
   }
 
   return {
     ...raw,
-    _id: raw?._id || raw?.id,               // ProductCard espera _id
+    _id: raw?._id || raw?.id,
     nombre: raw?.nombre || raw?.name || raw?.titulo || "Producto",
-    imagen: firstImage(raw),                 // usar imagen o primera de imagenes
+    imagen: firstImage(raw),
     precio,
     precioOriginal,
-    promo: isPromo || !!raw?.promo,         // bandera útil para badge
+    promo: isPromo || !!raw?.promo,
     categoria: raw?.categoria || raw?.category || raw?.cat || null,
     subcategoria: raw?.subcategoria || raw?.subCategory || raw?.subcat || null,
     stock: getStock(raw),
@@ -193,19 +170,9 @@ function normalizeProduct(raw) {
 
 function localSort(items, sort) {
   if (!Array.isArray(items) || items.length === 0) return items;
-
-  if (sort === "precio-asc") {
-    return [...items].sort((a, b) => Number(a.precio) - Number(b.precio));
-  }
-  if (sort === "precio-desc") {
-    return [...items].sort((a, b) => Number(b.precio) - Number(a.precio));
-  }
-  if (sort === "nombre-asc") {
-    return [...items].sort((a, b) =>
-      String(a.nombre || "").localeCompare(String(b.nombre || ""))
-    );
-  }
-  // fecha-desc (fallback por createdAt/updatedAt/fecha)
+  if (sort === "precio-asc") return [...items].sort((a, b) => Number(a.precio) - Number(b.precio));
+  if (sort === "precio-desc") return [...items].sort((a, b) => Number(b.precio) - Number(a.precio));
+  if (sort === "nombre-asc") return [...items].sort((a, b) => String(a.nombre || "").localeCompare(String(b.nombre || "")));
   return [...items].sort((a, b) => {
     const da = new Date(a.createdAt || a.updatedAt || a.fecha || 0).getTime() || 0;
     const db = new Date(b.createdAt || b.updatedAt || b.fecha || 0).getTime() || 0;
@@ -216,51 +183,54 @@ function localSort(items, sort) {
 /* ================= Página ================= */
 export default function CategoryPage() {
   const params = useParams();
-
-  // Normalizo y decodifico params (maneja ñ/acentos)
-  const cat = decodeURIComponent(params.categoria || "").toLowerCase();
+  const cat    = decodeURIComponent(params.categoria    || "").toLowerCase();
   const subcat = decodeURIComponent(params.subcategoria || "").toLowerCase();
+
   const isMasVendidos = cat === "mas-vendidos";
-  const [sort, setSort] = useState(isMasVendidos ? "ventas-desc" : "fecha-desc");
+  const [sort, setSort]   = useState(isMasVendidos ? "ventas-desc" : "fecha-desc");
 
-  // Estado
+  // Estado principal
   const [productosRaw, setProductosRaw] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Paginación + orden
-  const [page, setPage] = useState(1);
+  const [loading, setLoading]           = useState(true);
+  const [page, setPage]   = useState(1);
   const [pages, setPages] = useState(1);
   const limit = 12;
 
-  // Al cambiar cat/subcat, vuelvo a la primera página
+  // ── Filtros nuevos ──
+  const [filtroPrecioMin, setFiltroPrecioMin] = useState("");
+  const [filtroPrecioMax, setFiltroPrecioMax] = useState("");
+  const [filtroSoloStock, setFiltroSoloStock] = useState(false);
+  const [filtroSoloPromo, setFiltroSoloPromo] = useState(false);
+  const [filtroSubcat,    setFiltroSubcat]    = useState("");
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+
+  // Subcategorías disponibles para esta categoría
+  const subcatsDisponibles = useMemo(() => subcatsByCat[cat] || [], [cat]);
+
+  // Resetear página y filtros al cambiar cat/subcat
   useEffect(() => {
     setPage(1);
+    setFiltroPrecioMin("");
+    setFiltroPrecioMax("");
+    setFiltroSoloStock(false);
+    setFiltroSoloPromo(false);
+    setFiltroSubcat("");
   }, [cat, subcat]);
 
-  // Carga inicial desde API (respeta paginación/orden del back)
+  // Fetch
   useEffect(() => {
     let alive = true;
-
     const fetchData = async () => {
       try {
         setLoading(true);
+        const p = { page, limit, sort };
+        if (cat === "nuevos-ingresos")  p.tag = "nuevos-ingresos";
+        else if (cat === "mas-vendidos") p.tag = "mas-vendidos";
+        else if (cat && subcat) { p.categoria = cat; p.subcategoria = subcat; }
+        else if (cat) p.categoria = cat;
 
-        const params = { page, limit, sort };
-        if (cat === "nuevos-ingresos") {
-          params.tag = "nuevos-ingresos";        // filtra por tag en el back
-        } else if (cat === "mas-vendidos") {
-          params.tag = "mas-vendidos";           // filtra destacado:true en el back
-        } else if (cat && subcat) {
-          params.categoria = cat;
-          params.subcategoria = subcat;
-        } else if (cat) {
-          params.categoria = cat;
-        }
-
-        const { data } = await api.get("/api/productos", { params });
-
-        // Soporta array simple o paginado { items, pages, total }
-        const items = Array.isArray(data) ? data : data.items || [];
+        const { data } = await api.get("/api/productos", { params: p });
+        const items     = Array.isArray(data) ? data : data.items || [];
         const nextPages = Array.isArray(data) ? 1 : data.pages || 1;
 
         if (!alive) return;
@@ -275,60 +245,33 @@ export default function CategoryPage() {
         if (alive) setLoading(false);
       }
     };
-
     fetchData();
     return () => { alive = false; };
   }, [cat, subcat, page, sort]);
 
-  // marcar como "visto" esta sección (para ocultar el puntito de novedades)
   useEffect(() => {
     if (!loading) {
-      if (cat === "nuevos-ingresos" || subcat === "nuevos-ingresos") {
-        markSeen("nuevos");
-      } else if (cat) {
-        markSeen(`cat:${cat}`);
-      }
+      if (cat === "nuevos-ingresos" || subcat === "nuevos-ingresos") markSeen("nuevos");
+      else if (cat) markSeen(`cat:${cat}`);
     }
   }, [loading, cat, subcat]);
 
-  // Filtro que usa el stream para saber si el producto pertenece a la vista actual
-  const matchesFilter = useMemo(() => {
-    return (raw) => {
-      const c = String(raw?.categoria || "").toLowerCase();
-      const s = String(raw?.subcategoria || "").toLowerCase();
-      const inCat = !cat || c === cat;
-      const inSub = !subcat || s === subcat;
-      return inCat && inSub;
-    };
+  const matchesFilter = useMemo(() => (raw) => {
+    const c = String(raw?.categoria    || "").toLowerCase();
+    const s = String(raw?.subcategoria || "").toLowerCase();
+    return (!cat || c === cat) && (!subcat || s === subcat);
   }, [cat, subcat]);
 
-  // Suscripción SSE: upserts / deletes en tiempo real
+  // SSE
   useProductStream({
     onUpsert: (p) => {
       setProductosRaw((prev) => {
-        const id = p._id || p.id;
+        const id  = p._id || p.id;
         const idx = prev.findIndex((x) => (x._id || x.id) === id);
-
-        // si el admin lo desactiva → sacarlo
-        if (p?.activo === false) {
-          return idx === -1 ? prev : prev.filter((x) => (x._id || x.id) !== id);
-        }
-
-        // si ya estaba listado pero ahora NO matchea filtros → remover
-        if (!matchesFilter(p)) {
-          return idx === -1 ? prev : prev.filter((x) => (x._id || x.id) !== id);
-        }
-
-        // si no existe: agregar SOLO en página 1 para no romper paginación
-        if (idx === -1) {
-          if (page !== 1) return prev;
-          return [p, ...prev];
-        }
-
-        // actualizar en lugar
-        const next = prev.slice();
-        next[idx] = { ...next[idx], ...p };
-        return next;
+        if (p?.activo === false) return idx === -1 ? prev : prev.filter((x) => (x._id || x.id) !== id);
+        if (!matchesFilter(p))   return idx === -1 ? prev : prev.filter((x) => (x._id || x.id) !== id);
+        if (idx === -1) { if (page !== 1) return prev; return [p, ...prev]; }
+        const next = prev.slice(); next[idx] = { ...next[idx], ...p }; return next;
       });
     },
     onDelete: (id) => {
@@ -336,35 +279,72 @@ export default function CategoryPage() {
     },
   });
 
-  // Normalizo para que ProductCard siempre tenga los campos que espera (incluye promo)
-  const productosNorm = useMemo(
-    () => productosRaw.map(normalizeProduct),
-    [productosRaw]
-  );
+  // Normalizar
+  const productosNorm = useMemo(() => productosRaw.map(normalizeProduct), [productosRaw]);
 
-  // Orden local como respaldo si el back ignora `sort`
-  const productos = useMemo(
-    () => localSort(productosNorm, sort),
-    [productosNorm, sort]
-  );
+  // Ordenar
+  const productosSorted = useMemo(() => localSort(productosNorm, sort), [productosNorm, sort]);
 
-  // Título
+  // ── Aplicar filtros locales ──
+  const productos = useMemo(() => {
+    let list = productosSorted;
+
+    // Subcategoría (solo si no viene ya en la URL)
+    if (!subcat && filtroSubcat) {
+      list = list.filter((p) =>
+        String(p.subcategoria || "").toLowerCase() === filtroSubcat
+      );
+    }
+
+    // Solo con stock
+    if (filtroSoloStock) {
+      list = list.filter((p) => p.stock > 0);
+    }
+
+    // Solo en promo
+    if (filtroSoloPromo) {
+      list = list.filter((p) => p.promo);
+    }
+
+    // Rango de precio
+    const min = parseFloat(filtroPrecioMin);
+    const max = parseFloat(filtroPrecioMax);
+    if (!isNaN(min)) list = list.filter((p) => p.precio >= min);
+    if (!isNaN(max)) list = list.filter((p) => p.precio <= max);
+
+    return list;
+  }, [productosSorted, filtroSubcat, filtroSoloStock, filtroSoloPromo, filtroPrecioMin, filtroPrecioMax, subcat]);
+
+  // Conteo de filtros activos
+  const filtrosActivos =
+    (filtroSoloStock ? 1 : 0) +
+    (filtroSoloPromo ? 1 : 0) +
+    (filtroPrecioMin !== "" ? 1 : 0) +
+    (filtroPrecioMax !== "" ? 1 : 0) +
+    (filtroSubcat !== "" ? 1 : 0);
+
+  const limpiarFiltros = () => {
+    setFiltroPrecioMin("");
+    setFiltroPrecioMax("");
+    setFiltroSoloStock(false);
+    setFiltroSoloPromo(false);
+    setFiltroSubcat("");
+  };
+
+  // Título e imagen
   let titulo = "";
   if (subcat && categoryNames[subcat]) titulo = categoryNames[subcat];
-  else if (cat && categoryNames[cat]) titulo = categoryNames[cat];
+  else if (cat && categoryNames[cat])  titulo = categoryNames[cat];
   else if (subcat) titulo = beautify(subcat);
-  else if (cat) titulo = beautify(cat);
+  else if (cat)    titulo = beautify(cat);
 
-  // Imagen
   const heroImg =
     (subcat && categoryImages[subcat]) ||
-    (cat && categoryImages[cat]) ||
+    (cat    && categoryImages[cat])    ||
     categoryImages.default;
 
-  const esNuevosIngresos =
-    cat === "nuevos-ingresos" || subcat === "nuevos-ingresos";
+  const esNuevosIngresos = cat === "nuevos-ingresos" || subcat === "nuevos-ingresos";
 
-  // Paginación
   const handlePrev = () => setPage((p) => Math.max(1, p - 1));
   const handleNext = () => setPage((p) => Math.min(pages, p + 1));
 
@@ -381,20 +361,16 @@ export default function CategoryPage() {
       )}
 
       {heroImg && <img className="category-hero-img" src={heroImg} alt={titulo} />}
+      {titulo   && <h2 className="category-title">{titulo}</h2>}
 
-      {titulo && <h2 className="category-title">{titulo}</h2>}
-
-      {/* Toolbar: orden + paginación */}
+      {/* ── Toolbar ── */}
       <div className="cat-toolbar">
         <div className="toolbar-left">
           <label className="label">Ordenar por</label>
           <select
             className="select"
             value={sort}
-            onChange={(e) => {
-              setSort(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => { setSort(e.target.value); setPage(1); }}
           >
             <option value="fecha-desc">Más recientes</option>
             <option value="precio-asc">Precio: menor a mayor</option>
@@ -403,28 +379,120 @@ export default function CategoryPage() {
           </select>
         </div>
 
-        {pages > 1 && (
-          <div className="pagination">
-            <button className="pg-btn" disabled={page === 1} onClick={handlePrev}>
-              ‹ Anterior
-            </button>
-            <span className="pg-info">
-              Página {page} de {pages}
-            </span>
-            <button className="pg-btn" disabled={page === pages} onClick={handleNext}>
-              Siguiente ›
-            </button>
-          </div>
-        )}
+        <div className="toolbar-right">
+          {/* Botón filtros */}
+          <button
+            className={`btn-filtros ${filtrosAbiertos ? "activo" : ""}`}
+            onClick={() => setFiltrosAbiertos((v) => !v)}
+          >
+            <span className="icon-filtro">⚙</span>
+            Filtros
+            {filtrosActivos > 0 && (
+              <span className="badge-filtros">{filtrosActivos}</span>
+            )}
+          </button>
+
+          {pages > 1 && (
+            <div className="pagination">
+              <button className="pg-btn" disabled={page === 1} onClick={handlePrev}>‹ Anterior</button>
+              <span className="pg-info">Página {page} de {pages}</span>
+              <button className="pg-btn" disabled={page === pages} onClick={handleNext}>Siguiente ›</button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Contenido */}
-      {loading ? (
-        <div className="loader-wrap">
-          <div className="spinner" />
+      {/* ── Panel de filtros ── */}
+      {filtrosAbiertos && (
+        <div className="filtros-panel">
+          {/* Subcategoría */}
+          {!subcat && subcatsDisponibles.length > 0 && (
+            <div className="filtro-grupo">
+              <label className="filtro-label">Subcategoría</label>
+              <select
+                className="select"
+                value={filtroSubcat}
+                onChange={(e) => setFiltroSubcat(e.target.value)}
+              >
+                <option value="">Todas</option>
+                {subcatsDisponibles.map((s) => (
+                  <option key={s} value={s}>
+                    {categoryNames[s] || beautify(s)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Rango de precio */}
+          <div className="filtro-grupo">
+            <label className="filtro-label">Precio</label>
+            <div className="filtro-precio-row">
+              <input
+                type="number"
+                className="input-precio"
+                placeholder="Mín $"
+                min={0}
+                value={filtroPrecioMin}
+                onChange={(e) => setFiltroPrecioMin(e.target.value)}
+              />
+              <span className="precio-sep">—</span>
+              <input
+                type="number"
+                className="input-precio"
+                placeholder="Máx $"
+                min={0}
+                value={filtroPrecioMax}
+                onChange={(e) => setFiltroPrecioMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Solo con stock */}
+          <div className="filtro-grupo filtro-check">
+            <label className="filtro-label-check">
+              <input
+                type="checkbox"
+                checked={filtroSoloStock}
+                onChange={(e) => setFiltroSoloStock(e.target.checked)}
+              />
+              Solo disponibles (con stock)
+            </label>
+          </div>
+
+          {/* Solo en promo */}
+          <div className="filtro-grupo filtro-check">
+            <label className="filtro-label-check">
+              <input
+                type="checkbox"
+                checked={filtroSoloPromo}
+                onChange={(e) => setFiltroSoloPromo(e.target.checked)}
+              />
+              Solo en promoción 🏷️
+            </label>
+          </div>
+
+          {/* Limpiar */}
+          {filtrosActivos > 0 && (
+            <button className="btn-limpiar" onClick={limpiarFiltros}>
+              ✕ Limpiar filtros
+            </button>
+          )}
         </div>
+      )}
+
+      {/* ── Resultados ── */}
+      {loading ? (
+        <div className="loader-wrap"><div className="spinner" /></div>
       ) : productos.length === 0 ? (
-        <p className="no-products">No hay productos en esta categoría.</p>
+        <div className="no-products-wrap">
+          <p className="no-products">No hay productos con los filtros seleccionados.</p>
+          {filtrosActivos > 0 && (
+            <button className="btn-limpiar" onClick={limpiarFiltros}>
+              Limpiar filtros
+            </button>
+          )}
+        </div>
       ) : (
         <div className="productos-grid">
           {productos.map((p) => (

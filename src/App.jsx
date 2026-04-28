@@ -21,6 +21,7 @@ const EstadoPago     = lazy(() => import("./pages/Pago/EstadoPago"));
 const PagoExito      = lazy(() => import("./pages/PagoExito"));
 const WAFloat        = lazy(() => import("./components/WAFloat/WAFloat"));
 const Orders         = lazy(() => import("./pages/Orders/Orders"));
+const MasVendidos = lazy(() => import("./pages/MasVendidos/MasVendidos"));
 
 function App() {
   const location = useLocation();
@@ -84,6 +85,7 @@ function App() {
           <Route path="/devoluciones" element={<Navigate to="/pagos" replace />} />
           <Route path="/envios" element={<Envios />} />
           <Route path="/catalog" element={<Catalog />} />
+          <Route path="/mas-vendidos" element={<MasVendidos />} />
           <Route path="/category" element={<Categories />} />
           <Route path="/category/:categoria" element={<CategoryPage />} />
           <Route path="/category/:categoria/:subcategoria" element={<CategoryPage />} />

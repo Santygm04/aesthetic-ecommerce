@@ -18,15 +18,16 @@ import slipImg from "../../../assets/Slips.PNG"
 import boxerImg from "../../../assets/Boxers.PNG"
 import mediasImg from "../../../assets/Medias.PNG"
 import niñaImg from "../../../assets/Niña.PNG"
-
-
-
+import masvendidosImg from "../../../assets/Masvendidos.png"
+import nuevosingresosImg from "../../../assets/Nuevosingresos.png"
+import ofertasImg from "../../../assets/Ofertas.png"
+import todolosproductosImg from "../../../assets/Todoslosproductos.png"
 
 const FEATURED = [
-    { id: "nuevos-ingresos", label: "NUEVOS INGRESOS",    to: "/category/nuevos-ingresos", img: "", tone: "t-violet"  },
-    { id: "todos",           label: "TODOS LOS PRODUCTOS", to: "/catalog",                  img: "", tone: "t-pink"    },
-    { id: "ofertas",         label: "OFERTAS / PROMOCIONES", to: "/promos",                 img: "", tone: "t-peach"   },
-    { id: "mas-vendidos",    label: "MÁS VENDIDOS",        to: "/category/mas-vendidos",    img: "", tone: "t-beige"   },
+    { id: "nuevos-ingresos", label: "NUEVOS INGRESOS",    to: "/category/nuevos-ingresos",  img: nuevosingresosImg, tone: "t-violet"  },
+    { id: "todos",           label: "TODOS LOS PRODUCTOS", to: "/catalog",                  img: todolosproductosImg, tone: "t-pink"    },
+    { id: "ofertas",         label: "OFERTAS / PROMOCIONES", to: "/promos",                 img: ofertasImg, tone: "t-peach"   },
+    { id: "mas-vendidos",    label: "MÁS VENDIDOS",             to: "/mas-vendidos",        img: masvendidosImg, tone: "t-beige" },
 ];
 
 const CATEGORIES = [

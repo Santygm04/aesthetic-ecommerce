@@ -144,12 +144,19 @@ export default function PagoExito() {
               </div>
 
               {ticket && (
-                <div className="pe-ticket">
-                  <span className="pe-ticket-label">Número de pedido</span>
-                  <span className="pe-ticket-code">{ticket}</span>
-                  <button className="pe-copy-btn" onClick={() => navigator.clipboard.writeText(ticket)}>
-                    Copiar
-                  </button>
+                <div className="pe-ticket" style={{ flexDirection: "column", alignItems: "flex-start", gap: ".5rem" }}>
+                  <span className="pe-ticket-label">🏷 Número de pedido</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: ".75rem", width: "100%" }}>
+                    <span className="pe-ticket-code" style={{ fontSize: "1.6rem", letterSpacing: "2px", flex: 1 }}>
+                      {ticket}
+                    </span>
+                    <button className="pe-copy-btn" onClick={() => navigator.clipboard.writeText(ticket)}>
+                      Copiar
+                    </button>
+                  </div>
+                  <span style={{ fontSize: ".78rem", color: "var(--pe-muted)" }}>
+                    Usá este número como referencia en tu transferencia
+                  </span>
                 </div>
               )}
 
@@ -198,15 +205,15 @@ export default function PagoExito() {
                 </div>
               )}
 
-              <div className="pe-actions">
-                {waHref && (
-                  <a href={waHref} target="_blank" rel="noreferrer" className="pe-btn pe-btn--wa">
-                    💬 Consultar por WhatsApp
-                  </a>
-                )}
-                <Link to="/pedidos" className="pe-btn pe-btn--orders">Mis pedidos</Link>
-                <Link to="/" className="pe-btn pe-btn--home">Seguir comprando</Link>
-              </div>
+              <div className="pe-actions" style={{flexWrap:"nowrap"}}>
+  {waHref && (
+    <a href={waHref} target="_blank" rel="noreferrer" className="pe-btn pe-btn--wa" style={{flex:"1 1 0",minWidth:0}}>
+      💬 WhatsApp
+    </a>
+  )}
+  <Link to="/pedidos" className="pe-btn pe-btn--orders" style={{flex:"1 1 0",minWidth:0}}>Mis pedidos</Link>
+  <Link to="/" className="pe-btn pe-btn--home" style={{flex:"1 1 0",minWidth:0}}>Seguir comprando</Link>
+</div>
             </>
           ) : (
             <div className="pe-success-header">
@@ -248,6 +255,17 @@ export default function PagoExito() {
   );
 
   /* ── PAID ✅ ── */
+  if (!order) return (
+    <div className="pe-wrap">
+      <div className="pe-card">
+        <div className="pe-success-header">
+          <div className="pe-spinner" />
+          <p className="pe-muted">Cargando tu pedido…</p>
+        </div>
+      </div>
+    </div>
+  );
+
   const envio  = order?.shipping?.method === "envio";
   const ticket = order?.shippingTicket;
   const addr   = order?.shipping?.address || {};
@@ -263,16 +281,23 @@ export default function PagoExito() {
           <p className="pe-muted">Gracias por tu compra en Aesthetic 🛍️</p>
         </div>
 
-        <div className="pe-ticket">
-          <span className="pe-ticket-label">Número de pedido</span>
-          <span className="pe-ticket-code">{ticket || shortId(orderId)}</span>
-          <button
-            className="pe-copy-btn"
-            onClick={() => navigator.clipboard.writeText(ticket || "")}
-            disabled={!ticket}
-          >
-            Copiar
-          </button>
+        <div className="pe-ticket" style={{ flexDirection: "column", alignItems: "flex-start", gap: ".5rem" }}>
+          <span className="pe-ticket-label">🏷 Número de pedido</span>
+          <div style={{ display: "flex", alignItems: "center", gap: ".75rem", width: "100%" }}>
+            <span className="pe-ticket-code" style={{ fontSize: "1.6rem", letterSpacing: "2px", flex: 1 }}>
+              {ticket || shortId(orderId)}
+            </span>
+            <button
+              className="pe-copy-btn"
+              onClick={() => navigator.clipboard.writeText(ticket || "")}
+              disabled={!ticket}
+            >
+              Copiar
+            </button>
+          </div>
+          <span style={{ fontSize: ".78rem", color: "var(--pe-muted)" }}>
+            Guardá este número para hacer seguimiento de tu pedido
+          </span>
         </div>
 
         <div className="pe-section">
@@ -284,7 +309,7 @@ export default function PagoExito() {
             </div>
             <div className="pe-row">
               <span>Método</span>
-              <span>{order.paymentMethod === "mercadopago" ? "Mercado Pago" : "Transferencia"}</span>
+              <span>{order?.paymentMethod === "mercadopago" ? "Mercado Pago" : "Transferencia"}</span>
             </div>
             <div className="pe-row">
               <span>Total</span>

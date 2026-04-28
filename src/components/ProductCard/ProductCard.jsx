@@ -129,10 +129,12 @@ export default function ProductCard({ producto }) {
 
   // ── Agregar al carrito ────────────────────────────────────────────────────
   const [added, setAdded] = useState(false);
-  const onAdd = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    if (!canAdd) return;
-    addToCart({
+ const onAdd = (e) => {
+  e.preventDefault(); e.stopPropagation();
+  if (!canAdd) return;
+  const esTonos = Number(producto.cantidadTonos) > 0;          // ← acá
+  const stepCard = esTonos ? Math.max(1, Number(producto.unidadesPorCaja) || 1) : 1;  // ← acá
+  addToCart({
       ...producto,
       _id: id,
       // Guardamos los 3 precios para que CartContext pueda recalcular
@@ -140,8 +142,11 @@ export default function ProductCard({ producto }) {
       precioUnitario,
       precioEspecial:  precioEspecialP,
       precioMayorista: precioMayoristaP,
-      cantidad: 1,
+      cantidad: stepCard, 
       stock: Number(producto.stock ?? 0),
+      cantidadTonos:   producto.cantidadTonos  ?? null,   // ← agregás esto
+      unidadesPorCaja: producto.unidadesPorCaja ?? null,   // ← y esto
+      distribucionTonos: null, // desde la card no calculamos distribución
       ...(chosenVariant
         ? { variant: { vid: chosenVariant.vid, size: chosenVariant.size || chosenVariant.talle, color: chosenVariant.color, stock: Number(chosenVariant.stock ?? 0) } }
         : {}),

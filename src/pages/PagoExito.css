@@ -286,6 +286,17 @@
   gap: .6rem;
   flex-wrap: wrap;
   margin-top: .25rem;
+  align-items: center;
+}
+
+.pe-actions .pe-btn--wa {
+  flex: 1 1 100%;
+}
+
+.pe-actions .pe-btn--orders,
+.pe-actions .pe-btn--home {
+  flex: 1 1 calc(50% - .3rem);
+  min-width: 0;
 }
 .pe-btn {
   display: inline-flex;

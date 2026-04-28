@@ -238,3 +238,183 @@
 .banner-nuevos-ingresos .fuego{ font-size:1.45em; animation: shakeFire 1.4s infinite; }
 
 /* ...resto igual... */
+
+/* ── Agregar al final de CategoryPage.css ── */
+
+/* Toolbar derecha */
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+}
+
+/* Botón de filtros */
+.btn-filtros {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .9rem;
+  border: 1.5px solid #efc9df;
+  background: #fff0f7;
+  color: #d63384;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .93rem;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, box-shadow .18s;
+  position: relative;
+}
+.btn-filtros:hover,
+.btn-filtros.activo {
+  background: #d63384;
+  color: #fff;
+  border-color: #d63384;
+  box-shadow: 0 4px 14px #d6338440;
+}
+.icon-filtro {
+  font-size: 1rem;
+}
+
+/* Badge de cantidad de filtros activos */
+.badge-filtros {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  background: #ff2ea6;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: .72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* Panel de filtros */
+.filtros-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 2rem;
+  align-items: flex-end;
+  background: #fff5fb;
+  border: 1.5px solid #f3c9e2;
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.2rem;
+  animation: slideDown .22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Grupo de filtro individual */
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  min-width: 140px;
+}
+
+.filtro-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: #d63384;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+/* Filtro precio - fila con dos inputs */
+.filtro-precio-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.input-precio {
+  width: 90px;
+  padding: .4rem .6rem;
+  border: 1.5px solid #efc9df;
+  border-radius: 9px;
+  font-size: .92rem;
+  color: #444;
+  background: #fff;
+  transition: border-color .18s;
+}
+.input-precio:focus {
+  outline: none;
+  border-color: #d63384;
+}
+.precio-sep {
+  color: #d63384;
+  font-weight: 700;
+}
+
+/* Filtros checkbox */
+.filtro-check {
+  justify-content: flex-end;
+}
+.filtro-label-check {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .93rem;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
+}
+.filtro-label-check input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: #d63384;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Botón limpiar filtros */
+.btn-limpiar {
+  padding: .42rem .85rem;
+  border: 1.5px solid #f3c9e2;
+  background: transparent;
+  color: #d63384;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: .87rem;
+  cursor: pointer;
+  transition: background .16s, color .16s;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-limpiar:hover {
+  background: #ffd6ee;
+}
+
+/* Wrap del mensaje "sin productos" con botón limpiar */
+.no-products-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .filtros-panel {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .filtro-grupo {
+    min-width: unset;
+    width: 100%;
+  }
+  .toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

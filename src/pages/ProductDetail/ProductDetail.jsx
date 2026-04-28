@@ -29,7 +29,7 @@ export default function ProductDetail() {
 
   const [raw, setRaw] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(Number(raw?.unidadesPorCaja) || 1);
   const [wish, setWish] = useState(false);
 
   // selección de variantes
@@ -37,11 +37,16 @@ export default function ProductDetail() {
   const [selColor, setSelColor] = useState("");
 
   // Reset de selección al cambiar de producto
-  useEffect(() => {
-    setSelSize("");
-    setSelColor("");
-    setQty(1);
-  }, [id]);
+ useEffect(() => {
+  setSelSize("");
+  setSelColor("");
+  setQty(Number(raw?.unidadesPorCaja) || 1);
+}, [id]);
+
+useEffect(() => {
+  if (!raw) return;
+  setQty(Number(raw.unidadesPorCaja) || 1);
+}, [raw?.unidadesPorCaja]);
 
   // ===== Carga inicial =====
   useEffect(() => {

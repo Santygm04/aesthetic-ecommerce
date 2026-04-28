@@ -60,6 +60,8 @@ export default function Carrito() {
                 {cart.map((prod) => {
                   // ← CAMBIO: precio efectivo según tier
                   const precioEf = precioEfectivo(prod, tier);
+                  const esTonos = Number(prod.cantidadTonos) > 0;
+                  const step = esTonos ? Math.max(1, Number(prod.unidadesPorCaja) || 1) : 1;
                   return (
                     <tr key={prod.key}>
                       <td>
@@ -78,22 +80,20 @@ export default function Carrito() {
                       <td>
                         <div className="qty-btn-group">
                           <button
-                            className="qty-btn"
-                            onClick={() => updateQuantity(prod.key, prod.cantidad - 1)}
-                            disabled={prod.cantidad <= 1}
-                            aria-label="Quitar uno"
-                          >
-                            <FaMinus />
-                          </button>
-                          <span className="cantidad-span" aria-live="polite">{prod.cantidad}</span>
-                          <button
-                            className="qty-btn"
-                            onClick={() => updateQuantity(prod.key, prod.cantidad + 1)}
-                            aria-label="Sumar uno"
-                            disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}
-                          >
-                            <FaPlus />
-                          </button>
+                          className="qty-btn"
+                          onClick={() => updateQuantity(prod.key, prod.cantidad - step)}
+                          disabled={prod.cantidad <= step}
+                          aria-label="Quitar uno">
+                          <FaMinus />
+                        </button>
+                        <span className="cantidad-span" aria-live="polite">{prod.cantidad}</span>
+                        <button
+                          className="qty-btn"
+                          onClick={() => updateQuantity(prod.key, prod.cantidad + step)}
+                          aria-label="Sumar uno"
+                          disabled={prod.maxStock ? prod.cantidad >= prod.maxStock : false}>
+                          <FaPlus />
+                        </button>
                         </div>
                       </td>
                       {/* ← CAMBIO: subtotal con precio del tier */}
