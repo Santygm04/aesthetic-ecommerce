@@ -190,17 +190,28 @@ export default function PagoExito() {
                   <h3 className="pe-section-title">Tu pedido</h3>
                   <div className="pe-items">
                     {order.items.map((it, i) => (
-                      <div key={i} className="pe-item-row">
-                        <span className="pe-item-name">
-                          {it.nombre}
-                          {(it.variant?.size || it.variant?.color)
-                            ? ` (${[it.variant.size, it.variant.color].filter(Boolean).join(" / ")})`
-                            : ""}
-                          {" "}×{it.cantidad}
-                        </span>
-                        <span className="pe-item-price">{fmtARS(it.subtotal || it.precio * it.cantidad)}</span>
-                      </div>
-                    ))}
+  <div key={i} className="pe-item-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+      <span className="pe-item-name">
+        {it.nombre}
+        {(it.variant?.size || it.variant?.color)
+          ? ` (${[it.variant.size, it.variant.color].filter(Boolean).join(" / ")})`
+          : ""}
+        {" "}×{it.cantidad}
+      </span>
+      <span className="pe-item-price">{fmtARS(it.subtotal || it.precio * it.cantidad)}</span>
+    </div>
+    {Array.isArray(it.distribucionTonos) && it.distribucionTonos.length > 0 && (
+      <div style={{ fontSize: ".78rem", color: "#7a7a7a", paddingLeft: 2 }}>
+        {it.distribucionTonos.map((t, j) => (
+          <span key={j} style={{ marginRight: 8 }}>
+            {t.tono}: <strong style={{ color: "#ff2ea6" }}>{t.cantidad} ud.</strong>
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+))}
                   </div>
                 </div>
               )}
@@ -323,17 +334,28 @@ export default function PagoExito() {
             <h3 className="pe-section-title">Productos</h3>
             <div className="pe-items">
               {order.items.map((it, i) => (
-                <div key={i} className="pe-item-row">
-                  <span className="pe-item-name">
-                    {it.nombre}
-                    {(it.variant?.size || it.variant?.color)
-                      ? ` (${[it.variant.size, it.variant.color].filter(Boolean).join(" / ")})`
-                      : ""}
-                    {" "}×{it.cantidad}
-                  </span>
-                  <span className="pe-item-price">{fmtARS(it.subtotal || it.precio * it.cantidad)}</span>
-                </div>
-              ))}
+  <div key={i} className="pe-item-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+      <span className="pe-item-name">
+        {it.nombre}
+        {(it.variant?.size || it.variant?.color)
+          ? ` (${[it.variant.size, it.variant.color].filter(Boolean).join(" / ")})`
+          : ""}
+        {" "}×{it.cantidad}
+      </span>
+      <span className="pe-item-price">{fmtARS(it.subtotal || it.precio * it.cantidad)}</span>
+    </div>
+    {Array.isArray(it.distribucionTonos) && it.distribucionTonos.length > 0 && (
+      <div style={{ fontSize: ".78rem", color: "#7a7a7a", paddingLeft: 2 }}>
+        {it.distribucionTonos.map((t, j) => (
+          <span key={j} style={{ marginRight: 8 }}>
+            {t.tono}: <strong style={{ color: "#ff2ea6" }}>{t.cantidad} ud.</strong>
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+))}
             </div>
           </div>
         )}

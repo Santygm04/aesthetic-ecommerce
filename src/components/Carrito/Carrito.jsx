@@ -68,13 +68,23 @@ export default function Carrito() {
                         <img src={prod.imagen} alt={prod.nombre} className="cart-thumb" loading="lazy" />
                       </td>
                       <td>
-                        {prod.nombre}
-                        {prod.variant && (
-                          <div className="muted" style={{ fontSize: ".88rem" }}>
-                            {prod.variant.size} • {prod.variant.color}
-                          </div>
-                        )}
-                      </td>
+  {prod.nombre}
+  {prod.variant && (
+    <div className="muted" style={{ fontSize: ".88rem" }}>
+      {prod.variant.size} • {prod.variant.color}
+    </div>
+  )}
+  {Array.isArray(prod.distribucionTonos) && prod.distribucionTonos.length > 0 && (
+  <div className="tonos-container">
+    {prod.distribucionTonos.map((t, i) => (
+      <div key={i} className="tono-pill">
+        <span className="tono-nombre">{t.tono}</span>
+        <span className="tono-cantidad">{t.cantidad} u</span>
+      </div>
+    ))}
+  </div>
+)}
+</td>
                       {/* ← CAMBIO: muestra precio del tier */}
                       <td>${fmtARS(precioEf)}</td>
                       <td>

@@ -98,22 +98,45 @@ export default function FormularioCheckout({ total, productos }) {
 
   // ← CAMBIO: items con precio efectivo del tier
   const itemsForOrder = useMemo(
-    () => productos.map((p) => {
-      const precioEf = precioEfectivo(p, tier);
-      const v = p.variant || null;
-      return {
-        productId: p._id,
-        nombre: p.nombre,
-        precio: precioEf,                          // ← precio del tier
-        precioUnitario: Number(p.precioUnitario ?? p.precio ?? 0),
-        cantidad: Number(p.cantidad || 1),
-        subtotal: precioEf * Number(p.cantidad || 1),
-        ...(v ? { variant: { vid: v.vid || "", size: v.size || "", color: v.color || "" } } : {}),
-        ...(p.maxStock != null ? { maxStock: Number(p.maxStock) } : {}),
-      };
-    }),
-    [productos, tier]
-  );
+  () => productos.map((p) => {
+    const precioEf = precioEfectivo(p, tier);
+    const v = p.variant || null;
+
+    return {
+      productId: p._id,
+      nombre: p.nombre,
+      precio: precioEf,
+      precioUnitario: Number(p.precioUnitario ?? p.precio ?? 0),
+      cantidad: Number(p.cantidad || 1),
+      subtotal: precioEf * Number(p.cantidad || 1),
+      distribucionTonos: p.distribucionTonos || null,
+      unidadesPorCaja: p.unidadesPorCaja || null,
+
+      ...(v ? {
+  variant: {
+    vid:   v.vid   || "",
+    size:  v.size  || "",
+    color: v.color || "",
+    tono:  v.tono  || "",
+  }
+} : {}),
+
+      ...(p.maxStock != null ? {
+        maxStock: Number(p.maxStock)
+      } : {}),
+
+      // ✅ 🔥 AGREGAR ESTO (EL FIX CLAVE)
+      ...(p.distribucionTonos ? {
+        distribucionTonos: p.distribucionTonos
+      } : {}),
+
+      ...(p.unidadesPorCaja ? {
+        unidadesPorCaja: p.unidadesPorCaja
+      } : {}),
+    };
+  }),
+  [productos, tier]
+);
 
   // ← CAMBIO: total calculado desde items con tier
   const totalEfectivo = useMemo(
@@ -403,13 +426,32 @@ export default function FormularioCheckout({ total, productos }) {
 
           {/* Detalle por producto */}
           <div className="sum-items">
-            {itemsForOrder.map((it, i) => (
-              <div key={i} className="sum-item-row">
-                <span className="sum-item-name">{it.nombre} x{it.cantidad}</span>
-                <span className="sum-item-price">${fmtARS(it.subtotal)}</span>
-              </div>
-            ))}
-          </div>
+  {itemsForOrder.map((it, i) => (
+    <div key={i} className="sum-item-row">
+      
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <span className="sum-item-name">
+          {it.nombre} x{it.cantidad}
+        </span>
+
+        {/* 👇 TONOS */}
+        {it.distribucionTonos && (
+  <div className="tonos-container">
+    {it.distribucionTonos.map((t, idx) => (
+      <span key={idx} className="tono-item">
+        {t.tono}: <strong>{t.cantidad} u.</strong>
+      </span>
+    ))}
+  </div>
+)}
+      </div>
+
+      <span className="sum-item-price">
+        ${fmtARS(it.subtotal)}
+      </span>
+    </div>
+  ))}
+</div>
 
           <div className="sum-divider" />
 

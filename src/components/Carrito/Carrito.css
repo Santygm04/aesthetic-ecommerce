@@ -1084,3 +1084,34 @@ html, body{ max-width:100%; overflow-x:hidden; }
   background: #ffe0f0;
   margin: .5rem 0;
 }
+
+.tonos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.tono-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff0f8;
+  border: 1px solid #ffcce6;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tono-nombre {
+  color: #d81b82;
+}
+
+.tono-cantidad {
+  background: #ff2ea6;
+  color: white;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 11px;
+}
