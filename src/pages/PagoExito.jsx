@@ -185,6 +185,19 @@ export default function PagoExito() {
                 </div>
               </div>
 
+              {order?.shipping?.method === "envio" && (
+                <div className="pe-section">
+                  <h3 className="pe-section-title">Dirección de envío</h3>
+                  <div className="pe-rows">
+                    {order.shipping.address?.calle && <div className="pe-row"><span>Calle</span><span>{order.shipping.address.calle} {order.shipping.address.numero}</span></div>}
+                    {order.shipping.address?.piso && <div className="pe-row"><span>Piso/Depto</span><span>{order.shipping.address.piso}</span></div>}
+                    {order.shipping.address?.ciudad && <div className="pe-row"><span>Ciudad</span><span>{order.shipping.address.ciudad}</span></div>}
+                    {order.shipping.address?.provincia && <div className="pe-row"><span>Provincia</span><span>{order.shipping.address.provincia}</span></div>}
+                    {order.shipping.address?.cp && <div className="pe-row"><span>Código Postal</span><span>{order.shipping.address.cp}</span></div>}
+                  </div>
+                </div>
+              )}
+
               {order?.items?.length > 0 && (
                 <div className="pe-section">
                   <h3 className="pe-section-title">Tu pedido</h3>
@@ -212,6 +225,17 @@ export default function PagoExito() {
     )}
   </div>
 ))}
+                  </div>
+                </div>
+              )}
+
+              {order?.buyer?.notas && (
+                <div className="pe-section">
+                  <h3 className="pe-section-title">Notas del pedido</h3>
+                  <div className="pe-rows">
+                    <div className="pe-row" style={{ justifyContent: "flex-start", color: "#374151" }}>
+                      📝 {order.buyer.notas}
+                    </div>
                   </div>
                 </div>
               )}
@@ -360,12 +384,27 @@ export default function PagoExito() {
           </div>
         )}
 
+        {order?.buyer?.notas && (
+          <div className="pe-section">
+            <h3 className="pe-section-title">Notas del pedido</h3>
+            <div className="pe-rows">
+              <div className="pe-row" style={{ justifyContent: "flex-start", color: "#374151" }}>
+                📝 {order.buyer.notas}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="pe-section">
           <h3 className="pe-section-title">Entrega</h3>
           {envio ? (
             <div className="pe-rows">
               <div className="pe-row"><span>Tipo</span><span>Envío a domicilio</span></div>
-              {dirStr && <div className="pe-row"><span>Dirección</span><span>{dirStr}</span></div>}
+              {addr.calle  && <div className="pe-row"><span>Calle</span><span>{addr.calle} {addr.numero}</span></div>}
+              {addr.piso   && <div className="pe-row"><span>Piso/Depto</span><span>{addr.piso}</span></div>}
+              {addr.ciudad && <div className="pe-row"><span>Ciudad</span><span>{addr.ciudad}</span></div>}
+              {addr.provincia && <div className="pe-row"><span>Provincia</span><span>{addr.provincia}</span></div>}
+              {addr.cp     && <div className="pe-row"><span>Código Postal</span><span>{addr.cp}</span></div>}
               <div className="pe-row pe-row--info">
                 📦 Te avisamos por WhatsApp cuando esté despachado.
               </div>
@@ -379,6 +418,17 @@ export default function PagoExito() {
             </div>
           )}
         </div>
+
+        {order?.buyer?.notas && (
+          <div className="pe-section">
+            <h3 className="pe-section-title">Notas del pedido</h3>
+            <div className="pe-rows">
+              <div className="pe-row" style={{ justifyContent: "flex-start", color: "#374151" }}>
+                📝 {order.buyer.notas}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="pe-actions">
           {waHref && (

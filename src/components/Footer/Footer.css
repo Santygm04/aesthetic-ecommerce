@@ -27,6 +27,7 @@
   align-items: start;
   max-width: 1200px;
   margin: 0 auto 1rem auto;
+  margin-bottom: 40px !important;
 }
 
 @media (min-width:769px){

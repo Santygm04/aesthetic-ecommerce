@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../../utils/api";
+import api from "../../utils/api";  
 import { normalizeProduct } from "../../utils/product";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import FiltersBar from "../../pages/Catalog/FilterBar";
@@ -18,7 +18,7 @@ export default function CatalogGrid({
 
   // UI state
   const [search, setSearch] = useState(initialSearch);
-  const [sort, setSort] = useState("recientes"); // recientes | precio-asc | precio-desc
+  const [sort, setSort] = useState("fecha-desc");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
@@ -38,7 +38,12 @@ export default function CatalogGrid({
         params.set("limit", String(DEFAULT_LIMIT));
         // si tu back entiende 'sort' lo mandamos:
         // recientes | precio-asc | precio-desc  (podés mapearlo en tu back)
-        params.set("sort", sort);
+        const sortMap = {
+  "recientes":   "fecha-desc",
+  "precio-asc":  "precio-asc",
+  "precio-desc": "precio-desc",
+};
+params.set("sort", sortMap[sort] || "fecha-desc");
 
         const { data } = await api.get(`/api/productos?${params.toString()}`);
 

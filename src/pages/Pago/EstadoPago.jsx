@@ -91,16 +91,23 @@ export default function EstadoPago() {
     try {
       const es = new EventSource(`${API_URL}/api/payments/order/${orderId}/stream`);
       esRef.current = es;
-      es.addEventListener("update", (ev) => {
-        try {
-          const msg = JSON.parse(ev.data || "{}");
-          if (!msg?.status || !alive) return;
-          setInfo((prev) => prev ? { ...prev, status: msg.status } : prev);
-          const prevSt = esRef.current?._lastStatus || null;
-          noteOrderUpdate({ orderId, prevStatus: prevSt, newStatus: msg.status });
-          esRef.current._lastStatus = msg.status;
-        } catch {}
-      });
+      es.addEventListener("update", async (ev) => {
+  try {
+    const msg = JSON.parse(ev.data || "{}");
+    if (!msg?.status || !alive) return;
+    // Re-fetch completo para obtener shipping actualizado
+    try {
+      const r = await fetch(`${API_URL}/api/payments/order/${orderId}`);
+      const d = await r.json().catch(() => null);
+      if (d && alive) setInfo(d);
+    } catch {
+      setInfo((prev) => prev ? { ...prev, status: msg.status } : prev);
+    }
+    const prevSt = esRef.current?._lastStatus || null;
+    noteOrderUpdate({ orderId, prevStatus: prevSt, newStatus: msg.status });
+    esRef.current._lastStatus = msg.status;
+  } catch {}
+});
       es.onerror = () => {
         if (!pollRef.current) {
           pollRef.current = setInterval(async () => {
@@ -355,7 +362,7 @@ export default function EstadoPago() {
               </div>
 
               {/* Paso 2 */}
-              <div style={{ display: "flex", gap: "1rem", padding: ".6rem 0", borderBottom: isRetiro ? "none" : "1px solid var(--ep-line)", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", gap: "1rem", padding: ".6rem 0", borderBottom: "1px solid var(--ep-line)", alignItems: "flex-start" }}>
                 <div style={dot(isDespachado, isPaid && !isDespachado)}>
                   {isDespachado ? "✓" : "2"}
                 </div>
@@ -376,27 +383,37 @@ export default function EstadoPago() {
                 </div>
               </div>
 
-              {/* Paso 3 — solo envío */}
-              {!isRetiro && (
-                <div style={{ display: "flex", gap: "1rem", padding: ".6rem 0 0", alignItems: "flex-start" }}>
-                  <div style={dot(!!deliveredAt, false)}>
-                    {deliveredAt ? "✓" : "3"}
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 800, fontSize: ".88rem", color: deliveredAt ? "var(--ep-ink)" : "var(--ep-muted)" }}>
-                      Entrega por transportista
-                    </p>
-                    <p style={{ margin: 0, fontSize: ".78rem", color: "var(--ep-muted)", marginTop: 3 }}>
-                      {deliveredAt
-                        ? `Entregado el ${deliveredAt.toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`
-                        : isDespachado ? "En camino a tu domicilio" : "Pendiente"}
-                    </p>
-                  </div>
+              {/* Paso 3 — envío o retiro */}
+              <div style={{ display: "flex", gap: "1rem", padding: ".6rem 0 0", alignItems: "flex-start" }}>
+                <div style={dot(!!deliveredAt, isDespachado && !deliveredAt)}>
+                  {deliveredAt ? "✓" : "3"}
                 </div>
-              )}
+                <div>
+                  <p style={{ margin: 0, fontWeight: 800, fontSize: ".88rem", color: deliveredAt ? "var(--ep-ink)" : isDespachado ? "var(--ep-brand)" : "var(--ep-muted)" }}>
+                    {isRetiro ? "Retirado" : "Entrega por transportista"}
+                  </p>
+                  <p style={{ margin: 0, fontSize: ".78rem", color: "var(--ep-muted)", marginTop: 3 }}>
+                    {deliveredAt
+                      ? (isRetiro
+                          ? `Retirado el ${deliveredAt.toLocaleDateString("es-AR", { day: "numeric", month: "long" })} ✓`
+                          : `Entregado el ${deliveredAt.toLocaleDateString("es-AR", { day: "numeric", month: "long" })}`)
+                      : isDespachado
+                        ? (isRetiro ? "Esperando que retires el pedido" : "En camino a tu domicilio")
+                        : "Pendiente"}
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>{/* /ep-grid */}
+
+          {/* NOTAS DEL PEDIDO */}
+          {info?.buyer?.notas && (
+            <div className="ep-infobox" style={{ background: "#fff8f0", borderColor: "#fde68a", borderLeftColor: "#f59e0b" }}>
+              <strong style={{ color: "#92400e" }}>📝 Notas del pedido</strong>
+              <span style={{ color: "#78350f" }}>{info.buyer.notas}</span>
+            </div>
+          )}
 
           {/* INFOBOX transferencia pendiente */}
           {info.status !== "paid" && info.paymentMethod === "transfer" && (

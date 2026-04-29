@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import "../../components/Carrito/Carrito.css";
 import { useCart, precioEfectivo, PRECIO_ESPECIAL_MIN_ITEMS, PRECIO_MAYORISTA_MIN_ARS } from "./CartContext";
+import { addOrderRef } from "../../utils/ordersLocal.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const BANK_ALIAS = import.meta.env.VITE_BANK_ALIAS || "SANTYGM";
@@ -15,32 +16,33 @@ const PROVINCIAS = [
   "Neuquén","Río Negro","Salta","San Juan","San Luis","Santa Cruz","Santa Fe",
   "Santiago del Estero","Tierra del Fuego","Tucumán",
 ];
-
 const CIUDADES = {
-  "Buenos Aires": ["La Plata","San Miguel","Mar del Plata","Bahía Blanca","San Isidro","Quilmes"],
-  CABA: ["Palermo","Recoleta","Caballito","Belgrano","Almagro"],
-  Córdoba: ["Córdoba","Río Cuarto","Villa María","Villa Carlos Paz"],
-  "Santa Fe": ["Rosario","Santa Fe","Rafaela","Venado Tuerto"],
-  Mendoza: ["Mendoza","Godoy Cruz","Guaymallén","San Rafael"],
-  Tucumán: ["San Miguel de Tucumán","Yerba Buena","Tafí Viejo"],
-  Neuquén: ["Neuquén","San Martín de los Andes","Plottier"],
-  "Río Negro": ["Viedma","General Roca","Bariloche"],
-  Misiones: ["Posadas","Oberá","Iguazú"],
-  Salta: ["Salta","Cafayate","Metán"],
-  "San Juan": ["San Juan","Rawson","Chimbas"],
-  "San Luis": ["San Luis","Villa Mercedes","Merlo"],
-  Jujuy: ["San Salvador de Jujuy","Palpalá","Perico"],
-  "Entre Ríos": ["Paraná","Concordia","Gualeguaychú"],
-  Chaco: ["Resistencia","Barranqueras","Roque Sáenz Peña"],
-  Corrientes: ["Corrientes","Goya","Paso de los Libros"],
-  Chubut: ["Rawson","Trelew","Comodoro Rivadavia"],
-  "Santa Cruz": ["Río Gallegos","Caleta Olivia","El Calafate"],
-  "Tierra del Fuego": ["Ushuaia","Río Grande"],
-  Catamarca: ["San Fernando del Valle","Tinogasta"],
-  "La Pampa": ["Santa Rosa","General Pico"],
-  "La Rioja": ["La Rioja","Chilecito"],
-  Formosa: ["Formosa","Clorinda"],
-  "Santiago del Estero": ["Santiago del Estero","La Banda"],
+  "Buenos Aires": ["Adolfo Alsina","Adolfo Gonzales Chaves","Alberti","Almirante Brown","Arrecifes","Avellaneda","Ayacucho","Azul","Bahía Blanca","Balcarce","Baradero","Benito Juárez","Berazategui","Berisso","Bolívar","Bragado","Brandsen","Campana","Cañuelas","Capitán Sarmiento","Carlos Casares","Carlos Tejedor","Carmen de Areco","Castelli","Chacabuco","Chascomús","Chivilcoy","Colón","Coronel Dorrego","Coronel Pringles","Coronel Rosales","Coronel Suárez","Daireaux","Dolores","Ensenada","Escobar","Esteban Echeverría","Exaltación de la Cruz","Ezeiza","Florencio Varela","Florentino Ameghino","General Alvarado","General Alvear","General Arenales","General Belgrano","General Guido","General Juan Madariaga","General La Madrid","General Las Heras","General Lavalle","General Paz","General Pinto","General Pueyrredón","General Rodríguez","General San Martín","General Sarmiento","General Viamonte","General Villegas","Guaminí","Hipólito Yrigoyen","Hurlingham","Ituzaingó","José C. Paz","Junín","La Costa","La Matanza","La Plata","Lanús","Laprida","Las Flores","Leandro N. Alem","Lincoln","Lomas de Zamora","Luján","Magdalena","Maipú","Malvinas Argentinas","Mar Chiquita","Marcos Paz","Mercedes","Merlo","Monte","Monte Hermoso","Moreno","Morón","Navarro","Necochea","Nueve de Julio","Olavarría","Patagones","Pehuajó","Pellegrini","Pergamino","Pila","Pilar","Pinamar","Presidente Perón","Puán","Punta Indio","Quilmes","Ramallo","Rauch","Rivadavia","Rojas","Roque Pérez","Saavedra","Saladillo","Salliqueló","Salto","San Andrés de Giles","San Antonio de Areco","San Cayetano","San Fernando","San Isidro","San Miguel","San Nicolás","San Pedro","San Vicente","Suipacha","Tandil","Tapalqué","Tigre","Tordillo","Tornquist","Trenque Lauquen","Tres Arroyos","Tres de Febrero","Tres Lomas","Vicente López","Villa Gesell","Villarino","Zárate"],
+  CABA: ["Agronomía","Almagro","Balvanera","Barracas","Belgrano","Boedo","Caballito","Chacarita","Coghlan","Colegiales","Constitución","Flores","Floresta","La Boca","La Paternal","Liniers","Mataderos","Monte Castro","Montserrat","Nueva Pompeya","Núñez","Palermo","Parque Avellaneda","Parque Chacabuco","Parque Chas","Parque Patricios","Puerto Madero","Recoleta","Retiro","Saavedra","San Cristóbal","San Nicolás","San Telmo","Vélez Sársfield","Versalles","Villa Crespo","Villa del Parque","Villa Devoto","Villa General Mitre","Villa Lugano","Villa Luro","Villa Ortúzar","Villa Pueyrredón","Villa Real","Villa Riachuelo","Villa Santa Rita","Villa Soldati","Villa Urquiza"],
+  Córdoba: ["Córdoba","Río Cuarto","San Francisco","Villa María","Villa Carlos Paz","Cosquín","La Falda","Alta Gracia","Bell Ville","Jesús María","Laboulaye","Marcos Juárez","Oncativo","Río Ceballos","Unquillo","Villa Allende","Villa del Totoral","Villa Dolores","Villa General Belgrano","Cruz del Eje","Dean Funes","Huerta Grande","La Carlota","Mina Clavero","Morteros","Río Segundo","Río Tercero","Sampacho","San Marcos Sierras","Villa Cura Brochero","Leones","Morrison","Hernando","Monte Cristo","Salsipuedes","Bialet Massé","Capilla del Monte","Las Varillas","Porteña","Sacanta"],
+  "Santa Fe": ["Rosario","Santa Fe","Rafaela","Venado Tuerto","Reconquista","Santo Tomé","Esperanza","Casilda","Cañada de Gómez","San Lorenzo","Firmat","Rufino","Las Rosas","Arroyito","Tostado","Vera","Gálvez","Sunchales","Villa Constitución","Villa Gobernador Gálvez","Avellaneda","Ceres","Coronda","San Genaro","San Justo","Sastre","Las Colonias","Frontera","Malabrigo"],
+  Mendoza: ["Mendoza","Godoy Cruz","Guaymallén","Las Heras","Luján de Cuyo","Maipú","San Rafael","General Alvear","Malargüe","Rivadavia","Junín","La Paz","Lavalle","Rodeo del Medio","San Martín","Tunuyán","Tupungato","San Carlos","Ciudad","Palmira","Dorrego"],
+  Tucumán: ["San Miguel de Tucumán","Yerba Buena","Tafí Viejo","Concepción","Banda del Río Salí","Aguilares","Alderetes","Famaillá","Monteros","Simoca","Lules","San Isidro de Lules","Bella Vista","Graneros","Juan Bautista Alberdi","Leales","Tafí del Valle","Trancas","Burruyacu","La Cocha","Los Díaz"],
+  Salta: ["Salta","Tartagal","Orán","Rosario de la Frontera","Metán","Güemes","Cafayate","General Güemes","Joaquín V. González","Embarcación","Rivadavia","Pichanal","Salvador Mazza","San Ramón de la Nueva Orán"],
+  Jujuy: ["San Salvador de Jujuy","Palpalá","San Pedro de Jujuy","Libertador General San Martín","Perico","Humahuaca","Tilcara","La Quiaca","Abra Pampa","El Carmen"],
+  Misiones: ["Posadas","Oberá","Eldorado","Puerto Iguazú","Leandro N. Alem","Apóstoles","Montecarlo","San Vicente","Jardín América","Aristóbulo del Valle"],
+  "Entre Ríos": ["Paraná","Concordia","Gualeguaychú","Concepción del Uruguay","Villaguay","Federación","Colón","Gualeguay","Victoria","La Paz","Chajarí","Crespo","San Salvador","Diamante"],
+  Chaco: ["Resistencia","Presidencia Roque Sáenz Peña","Barranqueras","Villa Ángela","Charata","Las Breñas","General San Martín","Quitilipi","Fontana","Juan José Castelli"],
+  Corrientes: ["Corrientes","Goya","Curuzú Cuatiá","Paso de los Libres","Mercedes","Monte Caseros","Esquina","Bella Vista","Ituzaingó","Santo Tomé"],
+  Neuquén: ["Neuquén","San Martín de los Andes","Zapala","Junín de los Andes","Plottier","Cutral Có","Plaza Huincul","Cipolletti","Centenario","Rincón de los Sauces"],
+  "Río Negro": ["Viedma","General Roca","Bariloche","Cipolletti","Allen","Catriel","El Bolsón","Cinco Saltos","Choele Choel","San Antonio Oeste"],
+  Chubut: ["Rawson","Trelew","Comodoro Rivadavia","Puerto Madryn","Esquel","Río Gallegos","Sarmiento","Puerto Pirámides","Gaiman"],
+  "Santa Cruz": ["Río Gallegos","Caleta Olivia","El Calafate","Puerto Madryn","Perito Moreno","Los Antiguos","Gobernador Gregores","Las Heras","Puerto San Julián"],
+  "Tierra del Fuego": ["Ushuaia","Río Grande","Tolhuin"],
+  "San Juan": ["San Juan","Rawson","Chimbas","Rivadavia","Santa Lucía","Pocito","Caucete","Albardón","Angaco","Calingasta","Iglesia","Jáchal","San Martín","Sarmiento","Valle Fértil","Zonda"],
+  "San Luis": ["San Luis","Villa Mercedes","Merlo","Quines","Juana Koslay","Potrero de los Funes","La Punta","Justo Daract","Arizona","Buena Esperanza"],
+  "La Rioja": ["La Rioja","Chilecito","Aimogasta","Chamical","Chepes","General Ángel Vicente Peñaloza","Vinchina"],
+  Catamarca: ["San Fernando del Valle de Catamarca","Tinogasta","Santa María","Andalgalá","Belén","Recreo","San Isidro","Pomán","La Paz","Fiambalá"],
+  Formosa: ["Formosa","Clorinda","Pirané","Las Lomitas","Ingeniero Juárez","General Lucio Victorio Mansilla"],
+  "La Pampa": ["Santa Rosa","General Pico","Toay","Realicó","General Acha","Eduardo Castex","Victorica","Macachín","Winifreda"],
+  "Santiago del Estero": ["Santiago del Estero","La Banda","Termas de Río Hondo","Añatuya","Frías","Loreto","Monte Quemado","Quimilí","Suncho Corral"],
+  Peluquería: [],
+  "Buenos Aires": [],
 };
 
 const TIER_META = {
@@ -166,6 +168,13 @@ export default function FormularioCheckout({ total, productos }) {
     if (!res.ok) throw new Error(data.message || "Error enviando comprobante");
 
     clearCart();
+    try {
+      addOrderRef({
+        _id: data.orderId,
+        code: data.ticket || data.shippingTicket || null,
+        createdAt: Date.now(),
+      });
+    } catch {}
     window.location.href = `/pago/exito?o=${data.orderId}`;
   };
 
@@ -193,6 +202,13 @@ export default function FormularioCheckout({ total, productos }) {
     if (!res.ok) throw new Error(data?.message || "Error iniciando Mercado Pago");
 
     clearCart();
+    try {
+      addOrderRef({
+        _id: data.orderId,
+        code: data.ticket || data.shippingTicket || null,
+        createdAt: Date.now(),
+      });
+    } catch {}
     if (!data?.init_point) throw new Error("Mercado Pago no devolvió el link de pago.");
     window.location.href = data.init_point;
   };
@@ -371,16 +387,43 @@ export default function FormularioCheckout({ total, productos }) {
                 {PROVINCIAS.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ position: "relative" }}>
               <label>Ciudad</label>
-              <select className="control" value={address.ciudad}
+              <input
+                className="control"
+                placeholder={address.provincia ? "Buscá tu ciudad..." : "Primero elegí provincia"}
+                value={address.ciudad}
+                disabled={!address.provincia}
                 onChange={(e) => setAddress({ ...address, ciudad: e.target.value })}
-                required disabled={!address.provincia}>
-                <option value="" disabled>
-                  {address.provincia ? "Seleccioná ciudad" : "Primero elegí provincia"}
-                </option>
-                {ciudadesDisponibles.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+                required
+                autoComplete="off"
+              />
+              {address.provincia && address.ciudad && ciudadesDisponibles.filter(c =>
+                c.toLowerCase().includes(address.ciudad.toLowerCase()) && c !== address.ciudad
+              ).length > 0 && (
+                <div style={{
+                  position: "absolute", top: "100%", left: 0, right: 0, zIndex: 100,
+                  background: "#fff", border: "2px solid #f4c5df", borderRadius: "0 0 12px 12px",
+                  maxHeight: 180, overflowY: "auto", boxShadow: "0 8px 20px rgba(255,46,166,.12)"
+                }}>
+                  {ciudadesDisponibles
+                    .filter(c => c.toLowerCase().includes(address.ciudad.toLowerCase()) && c !== address.ciudad)
+                    .slice(0, 8)
+                    .map(c => (
+                      <div key={c} onClick={() => setAddress({ ...address, ciudad: c })}
+                        style={{
+                          padding: ".55rem .95rem", cursor: "pointer", fontSize: ".9rem",
+                          color: "#374151", borderBottom: "1px solid #ffe0f0",
+                          transition: "background .12s"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#fff0f8"}
+                        onMouseLeave={e => e.currentTarget.style.background = "#fff"}
+                      >
+                        {c}
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
             <div className="form-group">
               <label>Código Postal</label>
