@@ -312,18 +312,17 @@ export default function FormularioCheckout({ total, productos }) {
                 <div className="pay-sub">Alias: <strong>{BANK_ALIAS.toUpperCase()}</strong></div>
               </label>
 
-              <label className={`pay-card pay-card--mp ${pago === "mercadopago" ? "active" : ""}`}>
-                <input type="radio" name="pago" value="mercadopago"
-                  checked={pago === "mercadopago"} onChange={(e) => setPago(e.target.value)} />
+              <label className="pay-card disabled" title="Próximamente">
+                <input type="radio" name="pago" value="mercadopago" disabled />
                 <div className="pay-icon" aria-hidden>
                   <svg width="24" height="24" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.6" />
                     <path d="M7 12c2.2-2.2 7.8-2.2 10 0" fill="none" stroke="currentColor"
-                      strokeWidth="1.6" strokeLinecap="round" />
+                    strokeWidth="1.6" strokeLinecap="round" />
                   </svg>
                 </div>
                 <div className="pay-title-1">Mercado Pago</div>
-                <div className="pay-sub1">Tarjeta / Débito / Transferencia</div>
+                <div className="pay-badge2">Próximamente</div>
               </label>
 
               <label className="pay-card disabled" title="Próximamente">

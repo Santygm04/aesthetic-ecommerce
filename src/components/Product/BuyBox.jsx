@@ -43,15 +43,17 @@ const precioMayoristaP = producto.precioMayorista != null ? Number(producto.prec
 const totalUnidadesSimuladas = cartCount + qty;
 // Calculamos primero si aplica especial por cantidad
 // Verificamos mayorista usando el precio mayorista directamente
-const precioMayoristaCheck = precioMayoristaP ?? precioEspecialP ?? precioUnitario;
-const subtotalConMayorista  = subtotal + (precioMayoristaCheck * qty);
-const faltaParaMayorista    = Math.max(0, PRECIO_MAYORISTA_MIN_ARS - subtotalConMayorista);
+// ✅ FIX: usar precioUnitario (igual que calcTier en CartContext)
+// El umbral se calcula con precio mayorista (lo que el cliente realmente paga)
+const subtotalSimulado = subtotal + (precioUnitario * qty);
 
+const faltaParaMayorista = Math.max(
+  0,
+  PRECIO_MAYORISTA_MIN_ARS - subtotalSimulado
+);
 const tierSimulado = (() => {
-  // Si con precio mayorista el subtotal supera el mínimo → mayorista
-  if (precioMayoristaP != null && subtotalConMayorista >= PRECIO_MAYORISTA_MIN_ARS) return "mayorista";
-  // Si hay 5+ unidades → especial
-  if (precioEspecialP != null && totalUnidadesSimuladas >= PRECIO_ESPECIAL_MIN_ITEMS) return "especial";
+  if (precioMayoristaP != null && subtotalSimulado >= PRECIO_MAYORISTA_MIN_ARS) return "mayorista";
+  if (precioEspecialP  != null && totalUnidadesSimuladas >= PRECIO_ESPECIAL_MIN_ITEMS) return "especial";
   return "unitario";
 })();
 
@@ -131,7 +133,7 @@ const precioActual = precioEfectivo(itemRef, tierSimulado);
       Total: {fmtARS(precioActual * qty)}
       {tierSimulado !== "mayorista" && precioMayoristaP != null && faltaParaMayorista > 0 && (
     <span style={{ color: "#15803d", marginLeft: 6 }}>
-      · con Mayorista: {fmtARS(precioMayoristaCheck * qty)}
+      · con Mayorista: {fmtARS((precioMayoristaP ?? precioUnitario) * qty)}
     </span>
   )}
 </span>

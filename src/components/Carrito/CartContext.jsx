@@ -11,7 +11,7 @@ export function useCart() {
 
 // ─── CONSTANTES DEL SISTEMA DE PRECIOS ────────────────────────────────────
 export const PRECIO_ESPECIAL_MIN_ITEMS = 5;    // 5+ productos distintos (sum de cantidades)
-export const PRECIO_MAYORISTA_MIN_ARS  = 30000; // subtotal >= $30.000 (usando precio unitario)
+export const PRECIO_MAYORISTA_MIN_ARS  = 30500; // subtotal >= $30.000 (usando precio unitario)
 
 /**
  * Dado el carrito, devuelve el tier de precio que aplica:
@@ -27,10 +27,15 @@ export function calcTier(items) {
 
   const totalUnits = items.reduce((s, it) => s + Number(it.cantidad || 1), 0);
 
-  const subtotalBase = items.reduce(
-    (s, it) => s + Number(it.precioUnitario ?? it.precio ?? 0) * Number(it.cantidad || 1),
-    0
-  );
+  // Usar precio mayorista si existe, sino unitario (lo que el cliente realmente paga)
+const subtotalBase = items.reduce(
+  (s, it) => {
+    const precioUnitario = Number(it.precioUnitario ?? it.precio ?? 0);
+    return s + precioUnitario * Number(it.cantidad || 1);
+  },
+  0
+);
+  console.log("[calcTier]", { totalUnits, subtotalBase, items });
 
   // ¿Algún producto tiene precio mayorista definido?
   const hayMayorista = items.some(
@@ -178,6 +183,12 @@ export function CartProvider({ children }) {
 
   // ── addToCart ───────────────────────────────────────────────────────────
   const addToCart = (producto) => {
+     console.log("[addToCart]", {
+    precioUnitario: producto.precioUnitario,
+    precioEspecial: producto.precioEspecial,
+    precioMayorista: producto.precioMayorista,
+    cantidad: producto.cantidad,
+  });
     const id       = producto._id || producto.id;
     const variant  = producto.variant || null;
     const key      = makeKey(id, variant);
