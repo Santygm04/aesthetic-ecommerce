@@ -51,7 +51,9 @@ const faltaParaMayorista = Math.max(
   0,
   PRECIO_MAYORISTA_MIN_ARS - subtotalSimulado
 );
+
 const tierSimulado = (() => {
+  if (minimoMayoristaProducto > 0 && precioMayoristaP != null && qty >= minimoMayoristaProducto) return "mayorista";
   if (precioMayoristaP != null && subtotalSimulado >= PRECIO_MAYORISTA_MIN_ARS) return "mayorista";
   if (precioEspecialP  != null && totalUnidadesSimuladas >= PRECIO_ESPECIAL_MIN_ITEMS) return "especial";
   return "unitario";
@@ -61,7 +63,10 @@ const itemRef = { precioUnitario, precioEspecial: precioEspecialP, precioMayoris
 const precioActual = precioEfectivo(itemRef, tierSimulado);
 
   // ← CAMBIO #8: unidades por caja — el paso del contador
-  const paso = Number(producto.unidadesPorCaja) || 1;
+  const minimoMayoristaProducto = Number(producto.minimoMayorista) || 0;
+  const paso = minimoMayoristaProducto > 0
+  ? minimoMayoristaProducto
+  : Number(producto.unidadesPorCaja) || 1;
   const dec  = () => setQty(q => Math.max(paso, q - paso));
   const inc  = () => setQty(q => Math.min(maxQty, q + paso));
 
@@ -148,12 +153,23 @@ const precioActual = precioEfectivo(itemRef, tierSimulado);
           <strong>Precio Especial</strong>
         </div>
       )}
-      {tierSimulado !== "mayorista" && precioMayoristaP != null && faltaParaMayorista > 0 && (
-        <div className="bb-nudge bb-nudge--mayorista">
+      {tierSimulado !== "mayorista" && precioMayoristaP != null && (
+    minimoMayoristaProducto > 0 ? (
+    qty < minimoMayoristaProducto && (
+      <div className="bb-nudge bb-nudge--mayorista">
+        🏆 Llevá {minimoMayoristaProducto} o más unidades y pasás al <strong>Precio Mayorista</strong>
+        {" "}({fmtARS(precioMayoristaP)}/u)
+      </div>
+    )
+  ) : (
+    faltaParaMayorista > 0 && (
+      <div className="bb-nudge bb-nudge--mayorista">
         🏆 Te faltan {fmtARS(faltaParaMayorista)} para el <strong>Precio Mayorista</strong>
         {" "}(calculado a ${precioMayoristaP?.toLocaleString("es-AR")}/u)
-        </div>
-         )}
+      </div>
+    )
+  )
+)}
 
       {/* ── VARIANTES ← CAMBIO: recibidas como props desde ProductDetail */}
       {variants?.length > 0 && (
@@ -231,10 +247,12 @@ const precioActual = precioEfectivo(itemRef, tierSimulado);
 
       {/* ← CAMBIO #8: indicador de caja */}
       {paso > 1 && (
-        <div style={{ fontSize: ".78rem", color: "#7a7a7a", marginTop: -6, marginBottom: 8, textAlign: "right" }}>
-          Venta de a <strong>{paso}</strong> unidades
-        </div>
-      )}
+  <div style={{ fontSize: ".78rem", color: "#7a7a7a", marginTop: -6, marginBottom: 8, textAlign: "right" }}>
+    {minimoMayoristaProducto > 0
+      ? <>Mayorista desde <strong>{minimoMayoristaProducto}</strong> unidades</>
+      : <>Venta de a <strong>{paso}</strong> unidades</>}
+  </div>
+)}
 
       {/* ── TONOS ← CAMBIO #8 */}
       {cantTonos > 0 && qty > 0 && (

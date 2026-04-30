@@ -35,7 +35,6 @@ const subtotalBase = items.reduce(
   },
   0
 );
-  console.log("[calcTier]", { totalUnits, subtotalBase, items });
 
   // ¿Algún producto tiene precio mayorista definido?
   const hayMayorista = items.some(
@@ -46,6 +45,17 @@ const subtotalBase = items.reduce(
   const hayEspecial = items.some(
     (it) => it.precioEspecial != null && Number(it.precioEspecial) > 0
   );
+
+  const mayoristaPorCantidad = items.some((it) => {
+  const min = Number(it.minimoMayorista);
+  return (
+    min > 0 &&
+    it.precioMayorista != null &&
+    Number(it.precioMayorista) > 0 &&
+    Number(it.cantidad || 1) >= min
+  );
+});
+if (mayoristaPorCantidad) return "mayorista";
 
   if (hayMayorista && subtotalBase >= PRECIO_MAYORISTA_MIN_ARS) return "mayorista";
   if (hayEspecial  && totalUnits  >= PRECIO_ESPECIAL_MIN_ITEMS) return "especial";
@@ -183,12 +193,6 @@ export function CartProvider({ children }) {
 
   // ── addToCart ───────────────────────────────────────────────────────────
   const addToCart = (producto) => {
-     console.log("[addToCart]", {
-    precioUnitario: producto.precioUnitario,
-    precioEspecial: producto.precioEspecial,
-    precioMayorista: producto.precioMayorista,
-    cantidad: producto.cantidad,
-  });
     const id       = producto._id || producto.id;
     const variant  = producto.variant || null;
     const key      = makeKey(id, variant);
@@ -223,6 +227,7 @@ export function CartProvider({ children }) {
           precioUnitario:   Number(producto.precio          ?? producto.precioUnitario  ?? 0),
           precioEspecial:   producto.precioEspecial  != null ? Number(producto.precioEspecial)  : null,
           precioMayorista:  producto.precioMayorista != null ? Number(producto.precioMayorista) : null,
+          minimoMayorista:  producto.minimoMayorista != null ? Number(producto.minimoMayorista) : null,
           // ← CAMBIO #8
           unidadesPorCaja:   producto.unidadesPorCaja  ?? null,
           distribucionTonos: producto.distribucionTonos ?? null,
