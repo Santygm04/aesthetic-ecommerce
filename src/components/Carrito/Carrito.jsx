@@ -4,6 +4,7 @@ import { useCart, precioEfectivo } from "./CartContext";
 import { Link } from "react-router-dom";
 import FormularioCheckout from "../../components/Carrito/FormularioCheckout";
 import { FaPlus, FaMinus, FaTrashAlt } from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 export default function Carrito() {
   // ← CAMBIO: traemos tier y subtotal del contexto
@@ -22,16 +23,27 @@ export default function Carrito() {
   };
   const tierInfo = TIER_LABEL[tier] || TIER_LABEL.unitario;
 
+  const [mostrarVacio, setMostrarVacio] = useState(false);
+
+useEffect(() => {
   if (cart.length === 0) {
-    return (
-      <section className="carrito-vacio">
-        <h2>Tu carrito está vacío 🛒</h2>
-        <button className="volver-inicio-btn">
-          <Link to="/">Volver al inicio</Link>
-        </button>
-      </section>
-    );
+    const t = setTimeout(() => setMostrarVacio(true), 300);
+    return () => clearTimeout(t);
+  } else {
+    setMostrarVacio(false);
   }
+}, [cart]);
+
+if (mostrarVacio && cart.length === 0) {
+  return (
+    <section className="carrito-vacio">
+      <h2>Tu carrito está vacío 🛒</h2>
+      <button className="volver-inicio-btn">
+        <Link to="/">Volver al inicio</Link>
+      </button>
+    </section>
+  );
+}
 
   return (
     <section className="carrito-container" aria-labelledby="carrito-title">
