@@ -71,19 +71,26 @@ const dec = () => {
     if (qty <= minimoMayoristaProducto) {
       setQty(1);
     } else {
-      setQty(q => Math.max(minimoMayoristaProducto, q - minimoMayoristaProducto));
+      const prevMultiplo = Math.floor((qty - 1) / minimoMayoristaProducto) * minimoMayoristaProducto;
+      setQty(Math.max(minimoMayoristaProducto, prevMultiplo));
     }
   } else {
     setQty(q => Math.max(paso, q - paso));
   }
 };
+
   const inc = () => {
-    if (minimoMayoristaProducto > 0 && qty === 1) {
-      setQty(minimoMayoristaProducto); // saltar de 1 a 6
+  if (minimoMayoristaProducto > 0) {
+    if (qty === 1) {
+      setQty(minimoMayoristaProducto);
     } else {
-      setQty(q => Math.min(maxQty, q + paso));
+      const nextMultiplo = Math.ceil((qty + 1) / minimoMayoristaProducto) * minimoMayoristaProducto;
+      setQty(Math.min(maxQty, nextMultiplo));
     }
-  };
+  } else {
+    setQty(q => Math.min(maxQty, q + paso));
+  }
+};
 
 
 

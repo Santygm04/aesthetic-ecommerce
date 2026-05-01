@@ -294,12 +294,12 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 1.4rem;
+  margin-top: -1.5rem;
   flex-wrap: wrap;
 }
 
 .nosotros-logo-img {
-  height: 80px;
+  height: 170px;
   width: auto;
   object-fit: contain;
   display: block;
