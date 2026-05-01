@@ -20,7 +20,15 @@ export default function Nosotros() {
       <div className="nosotros-container">
 
         {/* ── HERO TEXT ───────────────────────────────────────── */}
-        <h2 className="fade-in">Sobre <span className="brand-highlight">AESTHETIC</span></h2>
+        <div className="fade-in nosotros-logo-wrap">
+  <img
+    src="/assets/logo-aesthetic.png"
+    alt="AESTHETIC"
+    className="nosotros-logo-img"
+    loading="lazy"
+    draggable="false"
+  />
+</div>
 
         <p className="nosotros-intro fade-in">
           En <strong>Aesthetic</strong> creemos que la belleza no es solo cómo te ves, sino cómo te sentís.

@@ -67,12 +67,16 @@ const precioActual = precioEfectivo(itemRef, tierSimulado);
 
   // ← CAMBIO #8: unidades por caja — el paso del contador
 const dec = () => {
-    if (minimoMayoristaProducto > 0 && qty === minimoMayoristaProducto) {
-      setQty(1); // saltar de 6 a 1
+  if (minimoMayoristaProducto > 0) {
+    if (qty <= minimoMayoristaProducto) {
+      setQty(1);
     } else {
-      setQty(q => Math.max(1, q - paso));
+      setQty(q => Math.max(minimoMayoristaProducto, q - minimoMayoristaProducto));
     }
-  };
+  } else {
+    setQty(q => Math.max(paso, q - paso));
+  }
+};
   const inc = () => {
     if (minimoMayoristaProducto > 0 && qty === 1) {
       setQty(minimoMayoristaProducto); // saltar de 1 a 6
@@ -249,16 +253,17 @@ const dec = () => {
 <input
   type="number" value={qty} min={1} step={1} max={maxQty}
   onChange={e => {
-    const val = Number(e.target.value) || 1;
-    if (minimoMayoristaProducto > 0) {
-      if (val <= 1) { setQty(1); return; }
-      const rounded = Math.round(val / minimoMayoristaProducto) * minimoMayoristaProducto;
-      setQty(Math.max(minimoMayoristaProducto, Math.min(rounded, maxQty)));
-    } else {
-      const rounded = Math.round(val / paso) * paso;
-      setQty(Math.max(paso, Math.min(rounded, maxQty)));
-    }
-  }}
+  const val = Number(e.target.value) || 1;
+  if (minimoMayoristaProducto > 0) {
+    if (val <= 1) { setQty(1); return; }
+    if (val < minimoMayoristaProducto) { setQty(1); return; }
+    const rounded = Math.round(val / minimoMayoristaProducto) * minimoMayoristaProducto;
+    setQty(Math.max(minimoMayoristaProducto, Math.min(rounded, maxQty)));
+  } else {
+    const rounded = Math.round(val / paso) * paso;
+    setQty(Math.max(paso, Math.min(rounded, maxQty)));
+  }
+}}
 />
 <button onClick={inc} aria-label="Sumar" disabled={qty >= maxQty || agotado}><FaPlus /></button>
         </div>

@@ -288,3 +288,24 @@
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
+.nosotros-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.nosotros-logo-img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .nosotros-logo-img { height: 60px; }
+  .nosotros-sobre { font-size: 1.8rem; }
+}
