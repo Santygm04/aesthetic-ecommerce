@@ -255,6 +255,7 @@ useEffect(() => {
     precioUnitario:  Number(raw?.precio          ?? p?.precio ?? 0),
     precioEspecial:  raw?.precioEspecial  != null ? Number(raw.precioEspecial)  : null,
     precioMayorista: raw?.precioMayorista != null ? Number(raw.precioMayorista) : null,
+    minimoMayorista: raw?.minimoMayorista != null ? Number(raw.minimoMayorista) : null,
     stock:           Number(p?.stock || 0),
     variant: chosenVariant
     ? {
@@ -430,6 +431,7 @@ useEffect(() => {
               precio:          Number(raw?.precio ?? p?.precio ?? 0),
               precioEspecial:  raw?.precioEspecial  != null ? Number(raw.precioEspecial)  : null,
               precioMayorista: raw?.precioMayorista != null ? Number(raw.precioMayorista) : null,
+              minimoMayorista: raw?.minimoMayorista != null ? Number(raw.minimoMayorista) : null,
               tienda:          raw?.tienda   ?? null,
               garantiaDias:    raw?.garantiaDias ?? null,
               unidadesPorCaja: raw?.unidadesPorCaja ?? null,

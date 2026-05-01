@@ -33,7 +33,10 @@ export default function BuyBox({
   setSelTonos,
 }) {
 
-  const { tier, cart, cartCount, subtotal } = useCart();
+ const { tier, cart, cartCount, subtotal } = useCart();
+
+const minimoMayoristaProducto = Number(producto.minimoMayorista) || 0;
+const paso = minimoMayoristaProducto > 0 ? minimoMayoristaProducto : Number(producto.unidadesPorCaja) || 1;
 
 const precioUnitario   = Number(producto.precio          ?? 0);
 const precioEspecialP  = producto.precioEspecial  != null ? Number(producto.precioEspecial)  : null;
@@ -63,12 +66,22 @@ const itemRef = { precioUnitario, precioEspecial: precioEspecialP, precioMayoris
 const precioActual = precioEfectivo(itemRef, tierSimulado);
 
   // ← CAMBIO #8: unidades por caja — el paso del contador
-  const minimoMayoristaProducto = Number(producto.minimoMayorista) || 0;
-  const paso = minimoMayoristaProducto > 0
-  ? minimoMayoristaProducto
-  : Number(producto.unidadesPorCaja) || 1;
-  const dec  = () => setQty(q => Math.max(paso, q - paso));
-  const inc  = () => setQty(q => Math.min(maxQty, q + paso));
+const dec = () => {
+    if (minimoMayoristaProducto > 0 && qty === minimoMayoristaProducto) {
+      setQty(1); // saltar de 6 a 1
+    } else {
+      setQty(q => Math.max(1, q - paso));
+    }
+  };
+  const inc = () => {
+    if (minimoMayoristaProducto > 0 && qty === 1) {
+      setQty(minimoMayoristaProducto); // saltar de 1 a 6
+    } else {
+      setQty(q => Math.min(maxQty, q + paso));
+    }
+  };
+
+
 
   // ← CAMBIO #8: distribución de tonos
   const cantTonos    = Number(producto.cantidadTonos) || 0;
@@ -232,16 +245,22 @@ const precioActual = precioEfectivo(itemRef, tierSimulado);
           {chosenVariant ? ` · ${chosenVariant.size} / ${chosenVariant.color}` : ""}
         </span>
         <div className="qty">
-          <button onClick={dec} aria-label="Restar" disabled={qty <= paso}><FaMinus /></button>
-          <input
-            type="number" value={qty} min={paso} step={paso} max={maxQty}
-            onChange={e => {
-              const raw = Number(e.target.value) || paso;
-              const rounded = Math.round(raw / paso) * paso;
-              setQty(Math.max(paso, Math.min(rounded, maxQty)));
-            }}
-          />
-          <button onClick={inc} aria-label="Sumar" disabled={qty >= maxQty || agotado}><FaPlus /></button>
+          <button onClick={dec} aria-label="Restar" disabled={qty <= 1}><FaMinus /></button>
+<input
+  type="number" value={qty} min={1} step={1} max={maxQty}
+  onChange={e => {
+    const val = Number(e.target.value) || 1;
+    if (minimoMayoristaProducto > 0) {
+      if (val <= 1) { setQty(1); return; }
+      const rounded = Math.round(val / minimoMayoristaProducto) * minimoMayoristaProducto;
+      setQty(Math.max(minimoMayoristaProducto, Math.min(rounded, maxQty)));
+    } else {
+      const rounded = Math.round(val / paso) * paso;
+      setQty(Math.max(paso, Math.min(rounded, maxQty)));
+    }
+  }}
+/>
+<button onClick={inc} aria-label="Sumar" disabled={qty >= maxQty || agotado}><FaPlus /></button>
         </div>
       </div>
 
