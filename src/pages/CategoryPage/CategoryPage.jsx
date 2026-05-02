@@ -9,16 +9,25 @@ import useProductStream from "../../hooks/useProductStream";
 import { markSeen } from "../../../src/utils/seen";
 
 // Imágenes
-import ingresosImg from "../../../assets/ingresos.png";
-import skincareImg from "../../../assets/skincare.png";
-import bodycareImg from "../../../assets/bodycare.avif";
-import maquillajeImg from "../../../assets/maquillaje.avif";
-import unasImg from "../../../assets/uñas.avif";
-import pestañasImg from "../../../assets/pestañas.avif";
-import peluqueriaImg from "../../../assets/peluqueria.avif";
-import bijouterieImg from "../../../assets/bijouteria.avif";
-import lenceriaImg from "../../../assets/lenceria.avif";
-import carterasImg from "../../../assets/carteras.avif";
+import skincareImg from "../../../assets/Skincaree.PNG";
+import bodycareImg from "../../../assets/Bodycare.png"
+import unasImg from "../../../assets/Unas.PNG";
+import pestañasImg from "../../../assets/Pestanas.PNG";
+import peluqueriaImg from "../../../assets/Peluquería.PNG";
+import marroquineriaImg from "../../../assets/Marroquineria.PNG";
+import maquillajeImg from "../../../assets/Maquillajes.PNG";
+import bijouteriaImg from "../../../assets/Bijouterie.PNG";
+import lenceriaImg from "../../../assets/Lenceria.PNG";
+import accesoriosImg from "../../../assets/Accesorios.PNG"; 
+import ingresosImg from "../../../assets/ingresos.png"
+import conjuntosImg from "../../../assets/Conjuntos.PNG"
+import topsImg from "../../../assets/TOPS.PNG"
+import vedetinasImg from "../../../assets/Vedetinas.PNG"
+import colalesImg from "../../../assets/Colales.PNG"
+import slipImg from "../../../assets/Slips.PNG"
+import boxerImg from "../../../assets/Boxers.PNG"
+import mediasImg from "../../../assets/Medias.PNG"
+import niñaImg from "../../../assets/Niña.PNG"
 
 const categoryNames = {
   skincare: "Skincare",
@@ -31,7 +40,7 @@ const categoryNames = {
   lenceria: "Lencería",
   marroquineria: "Marroquineria",
   conjuntos: "Conjuntos",
-  "tops-y-corpiños": "Tops y corpiños",
+  "tops-y-corpiños": "tops y corpiños",
   vedetinas: "Vedetinas",
   colales: "Colales",
   boxer: "Boxer",
@@ -50,18 +59,18 @@ const categoryImages = {
   uñas: unasImg,
   pestañas: pestañasImg,
   peluquería: peluqueriaImg,
-  bijouteria: bijouterieImg,
-  marroquineria: carterasImg,
+  bijouteria: bijouteriaImg,
+  marroquineria: marroquineriaImg,
   lenceria: lenceriaImg,
-  conjuntos: lenceriaImg,
-  "tops-y-corpiños": lenceriaImg,
-  vedetinas: lenceriaImg,
-  colales: lenceriaImg,
-  boxer: lenceriaImg,
-  slip: lenceriaImg,
-  niña: lenceriaImg,
-  medias: lenceriaImg,
-  accesorios: ingresosImg,
+  conjuntos: conjuntosImg,
+  "tops-y-corpiños": topsImg,
+  vedetinas: vedetinasImg,
+  colales: colalesImg,
+  boxer: boxerImg,
+  slip: slipImg,
+  niña: niñaImg,
+  medias: mediasImg,
+  accesorios: accesoriosImg,
   "nuevos-ingresos": ingresosImg,
   default: ingresosImg,
 };

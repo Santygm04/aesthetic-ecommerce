@@ -10,7 +10,7 @@
 /* Hero */
 .category-hero-img {
   width: 100%;
-  max-height: 320px;
+  max-height: 400px;
   object-fit: cover;
   object-position: center;
   border-radius: 22px;

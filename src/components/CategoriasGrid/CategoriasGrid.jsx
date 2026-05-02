@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import "../../components/CategoriasGrid/CategoriasGrid.css";
 import skincareImg from "../../../assets/Skincaree.PNG";
+import bodycareImg from "../../../assets/Bodycare.png"
 import unasImg from "../../../assets/Unas.PNG";
 import pestañasImg from "../../../assets/Pestanas.PNG";
 import peluqueriaImg from "../../../assets/Peluquería.PNG";
@@ -32,6 +33,7 @@ const FEATURED = [
 
 const CATEGORIES = [
   { id: "skincare",   label: "SKIN CARE",    to: "/category/skincare",      img: skincareImg,     tone: "t-pink-soft"  },
+  { id: "bodycare",   label: "BODY CARE",    to: "/category/bodycare",      img: bodycareImg,     tone: "t-pink-soft"  },
   { id: "unas",       label: "UÑAS",         to: "/category/uñas",          img: unasImg,         tone: "t-nude"       },
   { id: "pestañas",   label: "PESTAÑAS",     to: "/category/pestañas",      img: pestañasImg,     tone: "t-gray"       },
   { id: "peluqueria", label: "PELUQUERÍA",   to: "/category/peluquería",    img: peluqueriaImg,   tone: "t-violet-soft"},
@@ -45,13 +47,13 @@ const CATEGORIES = [
 /* Subcategorías de Lencería */
 const LENCERIA_SUBS = [
   { id: "conjuntos",  label: "CONJUNTOS",   to: "/category/lenceria/conjuntos",  img: conjuntosImg, tone: "t-pink-soft" },
-  { id: "tops",       label: "TOPS",        to: "/category/lenceria/tops",       img: topsImg, tone: "t-nude"      },
+  { id: "tops",       label: "TOPS",        to: "/category/lenceria/tops-y-corpiños",       img: topsImg, tone: "t-nude"      },
   { id: "vedetinas",  label: "VEDETINAS",   to: "/category/lenceria/vedetinas",  img: vedetinasImg, tone: "t-cream"     },
   { id: "colales",    label: "COLALES",     to: "/category/lenceria/colales",    img: colalesImg, tone: "t-rose"      },
   { id: "boxer",      label: "BOXERS",       to: "/category/lenceria/boxer",      img: boxerImg, tone: "t-violet-soft"},
   { id: "slip",       label: "SLIPS",        to: "/category/lenceria/slip",       img: slipImg, tone: "t-pink"      },
   { id: "medias",     label: "MEDIAS",      to: "/category/lenceria/medias",     img: mediasImg, tone: "t-peach"     },
-  { id: "niña",       label: "NIÑA",        to: "/category/lenceria/nina",       img: niñaImg, tone: "t-pink-soft" },
+  { id: "niña",       label: "NIÑA",        to: "/category/lenceria/Niña",       img: niñaImg, tone: "t-pink-soft" },
 ];
 
 function Tile({ item, big = false }) {
